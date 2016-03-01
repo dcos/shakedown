@@ -11,4 +11,4 @@ DCOS test harness.
 
 
 ## Contributing
-
+See the [CONTRIBUTING](CONTRIBUTING.md) file in the root of this repository.

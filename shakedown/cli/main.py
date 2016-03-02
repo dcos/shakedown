@@ -53,6 +53,7 @@ def cli(**args):
     echo('Checking DCOS cluster state...', d='step-min', n=False)
     try:
         from dcos import (config, marathon, util)
+
         with stdchannel_redirected(sys.stdout, os.devnull):
             config.set_val('core.dcos_url', args['dcos_url'])
 

@@ -39,14 +39,14 @@ def cli(**args):
     echo('Checking for pytest library...', d='step-min', n=False)
     try:
         import pytest
-    except:
+    except ImportError:
         click.secho("error: pytest is not installed; run 'pip install pytest'.", fg='red', bold=True)
         exit(1)
     echo(pytest.__version__)
     echo('Checking for dcos library...', d='step-min', n=False)
     try:
         import dcos
-    except:
+    except ImportError:
         click.secho("error: dcos is not installed; run 'pip install dcos'.", fg='red', bold=True)
         exit(1)
     echo(dcos.version)
@@ -162,7 +162,7 @@ def cli(**args):
             # Suppress excess terminal output
             return report.outcome, None, None
 
-                        
+
         def pytest_runtest_logreport(self, report):
             """ Log the [stdout, stderr] results of tests if desired
             """
@@ -208,23 +208,22 @@ def cli(**args):
 
             echo('Test phase completed.', d='step-maj')
 
-            if args['stdout']:
-                if shakedown.tests['test']:
-                    for test in shakedown.tests['test']:
-                        for result in ['fail', 'pass', 'skip']:
-                            if result in shakedown.tests['test'][test]:
-                                echo('Output during ', d='quote-head-' + result, n=False)
+            if ('stdout' in args and args['stdout']) and \
+                    ('test' in shakedown.tests and shakedown.tests['test']):
+                for test in shakedown.tests['test']:
+                    for result in ['fail', 'pass', 'skip']:
+                        if result in shakedown.tests['test'][test]:
+                            echo('Output during ', d='quote-head-' + result, n=False)
 
-                                if args['quiet']:
-                                    print('-' * len(test) + "\n" + test + "\n" + '-' * len(test))
-                                    print(shakedown.tests['test'][test][result])
-                                else:
-                                    click.secho(decorate(test, style=result), bold=True)
-                                    click.echo(decorate(shakedown.tests['test'][test][result], style='quote-' + result))
+                            if 'quiet' in args and args['quiet']:
+                                print('-' * len(test) + "\n" + test + "\n" + '-' * len(test))
+                                print(shakedown.tests['test'][test][result])
+                            else:
+                                click.secho(decorate(test, style=result), bold=True)
+                                click.echo(decorate(shakedown.tests['test'][test][result], style='quote-' + result))
 
             if args['report'] == 'json':
                 click.echo("\n" + json.dumps(shakedown.report_stats, sort_keys=True, indent=4, separators=(',', ': ')))
-
 
     opts = ['-q', '--tb=no']
 

@@ -47,7 +47,4 @@ def get_service_ips(service_name, task_name=None, inactive=False, completed=Fals
             if task['statuses'][0]['container_status']['network_infos'][0]['ip_address']:
                 ips.add(task['statuses'][0]['container_status']['network_infos'][0]['ip_address'])
 
-    if not ips:
-        return None
-    else:
-        return ips
+    return ips

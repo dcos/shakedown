@@ -12,6 +12,7 @@ from shakedown.cli.helpers import *
 @click.argument('path', type=click.Path(exists=True), nargs=-1)
 @click.option('--dcos_url', help='URL to a running DCOS cluster.')
 @click.option('--fail', type=click.Choice(['fast', 'never']), default='fast', help='Sepcify whether to continue testing when encountering failures. (default: fast)')
+@click.option('--ssh_key_file', type=click.Path(), help='Path to the SSH keyfile to use for authentication')
 @click.option('--no_banner', is_flag=True, help='Suppress the product banner.')
 @click.option('--quiet', is_flag=True, help='Suppress all superfluous output.')
 @click.option('--report', type=click.Choice(['json', 'junit']), help='Return a report in the specified format.')
@@ -31,6 +32,9 @@ def cli(**args):
     else:
         click.secho('error: --dcos_url is a required option; see --help for more information.', fg='red', bold=True)
         exit(1)
+
+    if args['ssh_key_file']:
+        os.environ["SSH_KEY_FILE"] = os.path.expanduser(args['ssh_key_file'])
 
     if not args['no_banner']:
         echo(banner(), n=False)

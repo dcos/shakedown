@@ -182,8 +182,11 @@ def cli(**args):
                     if report.skipped and args['stdout'] in ['skip', 'all']:
                         state = 'skip'
 
-                if state:
-                    shakedown.tests['test'][report.nodeid][state] = content.rstrip()
+                    if state and report.when == 'call':
+                        if not state in shakedown.tests['test'][report.nodeid]:
+                            shakedown.tests['test'][report.nodeid][state] = content
+                        else:
+                            shakedown.tests['test'][report.nodeid][state] += content
 
 
         def pytest_runtest_makereport(self, item, call, __multicall__):
@@ -214,10 +217,12 @@ def cli(**args):
 
             if ('stdout' in args and args['stdout']) and \
                     ('test' in shakedown.tests and shakedown.tests['test']):
-                for test in shakedown.tests['test']:
+                for test in sorted(shakedown.tests['test']):
                     for result in ['fail', 'pass', 'skip']:
                         if result in shakedown.tests['test'][test]:
                             echo('Output during ', d='quote-head-' + result, n=False)
+
+                            shakedown.tests['test'][test][result] = shakedown.tests['test'][test][result].strip()
 
                             if 'quiet' in args and args['quiet']:
                                 print('-' * len(test) + "\n" + test + "\n" + '-' * len(test))

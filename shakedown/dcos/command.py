@@ -1,9 +1,7 @@
 import paramiko
 import select
 
-from dcos import (marathon, mesos, package, util)
-from dcos.errors import DCOSException
-
+from shakedown.cli.helpers import *
 from shakedown.dcos import *
 
 
@@ -44,7 +42,7 @@ def run_command(
     _start_transport(transport, username, key)
 
     if transport.is_authenticated():
-        print("\n" + chr(12299) + host + " $ " + command + "\n")
+        print("\n" + _fchr('>>') + host + " $ " + command + "\n")
 
         channel = transport.open_session()
         channel.exec_command(command)

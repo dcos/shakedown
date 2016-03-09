@@ -18,6 +18,7 @@ setup(name='shakedown',
       install_requires=[
           'click',
           'dcoscli',
+          'paramiko',
           'pytest',
       ],
       entry_points="""

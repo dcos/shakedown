@@ -3,6 +3,7 @@ import time
 from dcos import (marathon, mesos, package, util)
 from dcos.errors import DCOSException
 
+from shakedown.cli.helpers import *
 from shakedown.dcos import service
 
 
@@ -34,6 +35,8 @@ def install_package(
     options = pkg.options(pkg_revision, None)
     revision_map = pkg.package_revisions_map()
     package_version = revision_map.get(pkg_revision)
+
+    print("\n" + _fchr('>>') + "installing package '" + package_name + "'" + "\n")
 
     # Print pre-install notes to console log
     pre_install_notes = pkg_json.get('preInstallNotes')
@@ -126,6 +129,8 @@ def uninstall_package(
 
     init_client = marathon.create_client(config)
     dcos_client = mesos.DCOSClient()
+
+    print("\n" + _fchr('>>') + "uninstalling package '" + package_name + "'" + "\n")
 
     package.uninstall_app(package_name, True, app_id, init_client, dcos_client)
 

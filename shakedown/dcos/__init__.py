@@ -1,3 +1,6 @@
+import os
+import requests
+
 import dcos
 
 
@@ -17,3 +20,19 @@ def dcos_service_url(service):
     :return: the full DCOS service URL, as a string
     """
     return '/'.join([dcos_url(), 'service', service])
+
+
+def master_ip():
+    """Returns the public IP address of the DCOS master.
+    return: DCOS IP address as a string
+    """
+    return requests.get(dcos_url() + '/metadata').json()["PUBLIC_IPV4"].strip()
+
+
+def ssh_key_path():
+    """Returns the path to the SSH key to use for master & agent communication.
+    """
+    try:
+        return os.environ['SSH_KEY_FILE']
+    except:
+        return os.path.expanduser('~/.ssh/id_rsa')

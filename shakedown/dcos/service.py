@@ -29,11 +29,11 @@ def get_service_tasks(service_name, inactive=False, completed=False):
     if service is not None and service['tasks']:
         return service['tasks']
 
-    return None
+    return []
 
 
 def get_service_ips(service_name, task_name=None, inactive=False, completed=False):
-    """ Returns all the IPS associated with a service, or None """
+    """ Returns all the IPS associated with a service, or an empty set """
     service_tasks = get_service_tasks(service_name, inactive, completed)
 
     ips = set([])

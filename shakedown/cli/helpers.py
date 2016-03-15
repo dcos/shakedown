@@ -6,6 +6,12 @@ import re
 import shakedown as shakedown
 
 
+def fchr(char):
+    return {
+        '>>': chr(12299)
+    }.get(char, '')
+
+
 def banner():
     """Display a product banner
     """
@@ -27,7 +33,7 @@ def banner():
         'h1': click.style(chr(9624), fg='magenta', bold=True),
         'i0': click.style(chr(9629), fg='magenta'),
         'i1': click.style(chr(9629), fg='magenta', bold=True),
-        'j0': click.style(_fchr('>>'), fg='magenta'),
+        'j0': click.style(fchr('>>'), fg='magenta'),
         'k0': click.style(chr(9473), fg='magenta'),
         'v0': click.style('mesosphere', fg='magenta',),
         'x1': click.style('shakedown', fg='magenta', bold=True),
@@ -70,11 +76,6 @@ def decorate(text, style):
         'skip': click.style(text + ' ', fg='yellow')
     }.get(style, '')
 
-
-def _fchr(char):
-    return {
-        '>>': chr(12299)
-    }.get(char, '')
 
 def echo(text, **kwargs):
     """ Print results to the console

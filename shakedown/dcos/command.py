@@ -42,7 +42,7 @@ def run_command(
     _start_transport(transport, username, key)
 
     if transport.is_authenticated():
-        print("\n" + _fchr('>>') + host + " $ " + command + "\n")
+        print("\n" + fchr('>>') + host + " $ " + command + "\n")
 
         channel = transport.open_session()
         channel.exec_command(command)

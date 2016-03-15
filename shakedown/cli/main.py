@@ -3,8 +3,6 @@ import json
 import os
 import sys
 
-import shakedown as shakedown
-
 from shakedown.cli.helpers import *
 
 
@@ -23,6 +21,7 @@ from shakedown.cli.helpers import *
 def cli(**args):
     """ Main CLI entry-point; perform pre-flight and parse arguments
     """
+    import shakedown as shakedown
 
     if args['quiet']:
         shakedown.cli.quiet = True
@@ -34,7 +33,7 @@ def cli(**args):
         exit(1)
 
     if args['ssh_key_file']:
-        os.environ["SSH_KEY_FILE"] = os.path.expanduser(args['ssh_key_file'])
+        shakedown.cli.ssh_key_file = os.path.expanduser(args['ssh_key_file'])
 
     if not args['no_banner']:
         echo(banner(), n=False)

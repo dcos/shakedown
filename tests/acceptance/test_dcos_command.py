@@ -1,22 +1,20 @@
-from shakedown import dcos
-
-from shakedown.dcos import command as cmd
-from shakedown.dcos import package as pkg
-from shakedown.dcos import service as svc
+from shakedown import *
 
 
 def test_run_command():
-    assert cmd.run_command(dcos.master_ip(), 'cat /etc/motd') != False
+    assert run_command(master_ip(), 'cat /etc/motd') != False
 
 def test_run_command_on_master():
-    assert cmd.run_command_on_master('uname -a')
+    assert run_command_on_master('uname -a')
 
 def test_run_command_on_agent():
-    pkg.install_package_and_wait('jenkins')
+    if not package_installed('jenkins'):
+        install_package_and_wait('jenkins')
 
     # Get all IPs associated with the 'jenkins' task running in the 'marathon' service
-    service_ips = svc.get_service_ips('marathon', 'jenkins')
+    service_ips = get_service_ips('marathon', 'jenkins')
     for host in service_ips:
-        assert cmd.run_command_on_agent(host, 'ps -eaf | grep -i docker | grep -i jenkins')
+        assert run_command_on_agent(host, 'ps -eaf | grep -i docker | grep -i jenkins')
 
-    pkg.uninstall_package_and_wait('jenkins')
+    if package_installed('jenkins'):
+        uninstall_package_and_wait('jenkins')

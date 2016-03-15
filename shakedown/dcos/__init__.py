@@ -3,6 +3,8 @@ import requests
 
 import dcos
 
+import shakedown as shakedown
+
 
 def dcos_url():
     """Return the DCOS URL as configured in the DCOS library. This is
@@ -27,12 +29,3 @@ def master_ip():
     return: DCOS IP address as a string
     """
     return requests.get(dcos_url() + '/metadata').json()["PUBLIC_IPV4"].strip()
-
-
-def ssh_key_path():
-    """Returns the path to the SSH key to use for master & agent communication.
-    """
-    try:
-        return os.environ['SSH_KEY_FILE']
-    except:
-        return os.path.expanduser('~/.ssh/id_rsa')

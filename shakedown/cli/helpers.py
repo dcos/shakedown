@@ -3,7 +3,7 @@ import contextlib
 import os
 import re
 
-import shakedown as shakedown
+import shakedown
 
 
 def fchr(char):

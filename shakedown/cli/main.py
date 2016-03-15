@@ -21,7 +21,7 @@ from shakedown.cli.helpers import *
 def cli(**args):
     """ Main CLI entry-point; perform pre-flight and parse arguments
     """
-    import shakedown as shakedown
+    import shakedown
 
     if args['quiet']:
         shakedown.cli.quiet = True

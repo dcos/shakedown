@@ -2,7 +2,7 @@ import os
 import paramiko
 import select
 
-import shakedown as shakedown
+import shakedown
 
 
 def run_command(

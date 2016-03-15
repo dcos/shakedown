@@ -3,7 +3,7 @@ import requests
 
 import dcos
 
-import shakedown as shakedown
+import shakedown
 
 
 def dcos_url():

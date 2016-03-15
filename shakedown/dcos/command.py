@@ -1,15 +1,15 @@
+import os
 import paramiko
 import select
 
-from shakedown.cli.helpers import *
-from shakedown.dcos import *
+import shakedown
 
 
 def run_command(
     host,
     command,
     username='core',
-    key_path=ssh_key_path()
+    key_path=None
 ):
     """ Run a command via SSH, proxyied through the mesos master
 
@@ -18,6 +18,11 @@ def run_command(
         username (str): SSH username
         key_path (str): path to the SSH private key to use for SSH authentication
     """
+    if not key_path:
+        key_path = shakedown.cli.ssh_key_file
+
+    key_path = os.path.expanduser(key_path)
+
     if not os.path.isfile(key_path):
         print('error: key not found: ' + key_path)
         return False
@@ -26,14 +31,14 @@ def run_command(
 
     transport = None
 
-    if host == master_ip():
+    if host == shakedown.master_ip():
         transport = paramiko.Transport(host)
     else:
-        transport_master = paramiko.Transport(master_ip())
+        transport_master = paramiko.Transport(shakedown.master_ip())
         _start_transport(transport_master, username, key)
 
         if not transport_master.is_authenticated():
-           print('error: unable to authentication ' + username + '@' + master_ip() + ' with key ' + key_path)
+           print('error: unable to authentication ' + username + '@' + shakedown.master_ip() + ' with key ' + key_path)
            return False
 
         channel = transport_master.open_channel('direct-tcpip', (host, 22), ('127.0.0.1', 0))
@@ -42,7 +47,7 @@ def run_command(
     _start_transport(transport, username, key)
 
     if transport.is_authenticated():
-        print("\n" + _fchr('>>') + host + " $ " + command + "\n")
+        print("\n" + shakedown.cli.helpers.fchr('>>') + host + " $ " + command + "\n")
 
         channel = transport.open_session()
         channel.exec_command(command)
@@ -57,7 +62,7 @@ def run_command(
         channel.close()
         transport.close()
 
-        if host != master_ip():
+        if host != shakedown.master_ip():
             transport_master.close()
 
         return True
@@ -69,16 +74,16 @@ def run_command(
 def run_command_on_master(
     command,
     username='core',
-    key_path=ssh_key_path()
+    key_path=None
 ):
-    return run_command(master_ip(), command, username, key_path)
+    return run_command(shakedown.master_ip(), command, username, key_path)
 
 
 def run_command_on_agent(
     host,
     command,
     username='core',
-    key_path=ssh_key_path()
+    key_path=None
 ):
     return run_command(host, command, username, key_path)
 

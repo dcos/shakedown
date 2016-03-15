@@ -1,10 +1,10 @@
-from shakedown.dcos import package as pkg
+from shakedown import *
 
 
 def test_install_package_and_wait():
-    assert pkg.install_package_and_wait('jenkins') == True
-    assert pkg.package_installed('jenkins') == True
+    assert install_package_and_wait('jenkins')
+    assert package_installed('jenkins')
 
 def test_uninstall_package_and_wait():
-    assert pkg.uninstall_package_and_wait('jenkins') == True
-    assert pkg.package_installed('jenkins') == False
+    assert uninstall_package_and_wait('jenkins')
+    assert package_installed('jenkins') == False

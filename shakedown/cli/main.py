@@ -26,14 +26,12 @@ def cli(**args):
     if args['quiet']:
         shakedown.cli.quiet = True
 
-    if args['dcos_url']:
-        os.environ["TEST_MASTER_URI"] = args['dcos_url']
-    else:
+    if not args['dcos_url']:
         click.secho('error: --dcos_url is a required option; see --help for more information.', fg='red', bold=True)
         exit(1)
 
     if args['ssh_key_file']:
-        shakedown.cli.ssh_key_file = os.path.expanduser(args['ssh_key_file'])
+        shakedown.cli.ssh_key_file = args['ssh_key_file']
 
     if not args['no_banner']:
         echo(banner(), n=False)

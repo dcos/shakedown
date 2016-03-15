@@ -21,6 +21,8 @@ def run_command(
     if not key_path:
         key_path = shakedown.cli.ssh_key_file
 
+    key_path = os.path.expanduser(key_path)
+
     if not os.path.isfile(key_path):
         print('error: key not found: ' + key_path)
         return False

@@ -2,7 +2,7 @@ from shakedown import *
 
 
 def test_run_command():
-    assert run_command(master_ip(), 'cat /etc/motd') != False
+    assert run_command(master_ip(), 'cat /etc/motd')
 
 def test_run_command_on_master():
     assert run_command_on_master('uname -a')

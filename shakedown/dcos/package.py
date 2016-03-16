@@ -1,6 +1,6 @@
 import time
 
-from dcos import (marathon, mesos, package, util)
+from dcos import (marathon, mesos, package, util, cosmospackage)
 from dcos.errors import DCOSException
 
 import shakedown
@@ -26,28 +26,20 @@ def install_package(
 
     # Get the dcos configuration object
     config = util.get_config()
-
-    pkg = package.resolve_package(package_name, config)
-    pkg_revision = pkg.latest_package_revision(package_version)
-    pkg_json = pkg.package_json(pkg_revision)
-
-    options = pkg.options(pkg_revision, None)
-    revision_map = pkg.package_revisions_map()
-    package_version = revision_map.get(pkg_revision)
+    cosmos = cosmospackage.Cosmos(_get_cosmos_url())
+    pkg = cosmos.get_package_version(package_name, package_version)
 
     print("\n" + shakedown.cli.helpers.fchr('>>') + "installing package '" + package_name + "'" + "\n")
 
     # Print pre-install notes to console log
-    pre_install_notes = pkg_json.get('preInstallNotes')
+    pre_install_notes = pkg.package_json().get('preInstallNotes')
     if pre_install_notes:
         print(pre_install_notes)
 
-    # Create a marathon init client and install the package
-    init_client = marathon.create_client(config)
-    package.install_app(pkg, pkg_revision, init_client, options, app_id)
+    cosmos.install_app(pkg, {}, app_id)
 
     # Print post-install notes to console log
-    post_install_notes = pkg_json.get('postInstallNotes')
+    post_install_notes = pkg.package_json().get('postInstallNotes')
     if post_install_notes:
         print(post_install_notes)
 
@@ -95,17 +87,8 @@ def package_installed(package_name, app_id=None):
         package_name (str): name of the package to check
         app_id (str): ???
     """
-
-    config = util.get_config()
-
-    init_client = marathon.create_client(config)
-    installed_apps = package.installed_apps(init_client)
-
-    for app in installed_apps:
-        if app['name'] == package_name:
-            return True
-
-    return False
+    cosmos = cosmospackage.Cosmos(_get_cosmos_url())
+    return len(cosmos.installed_apps(package_name, None)) > 0
 
 
 def uninstall_package(
@@ -167,3 +150,14 @@ def uninstall_package_and_wait(
         wait_for_completion,
         timeout_sec
     )
+
+def _get_cosmos_url():
+    """
+    :returns: cosmos base url
+    :rtype: str
+    """
+    config = util.get_config()
+    cosmos_url = config.get("package.cosmos_url")
+    if cosmos_url is None:
+        cosmos_url = util.get_config_vals(['core.dcos_url'], config)[0]
+    return cosmos_url

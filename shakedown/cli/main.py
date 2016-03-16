@@ -185,6 +185,15 @@ def cli(**args):
                         else:
                             shakedown.tests['test'][report.nodeid][state] += content
 
+                # Capture execution crashes
+                if hasattr(report.longrepr, 'reprcrash'):
+                    longreport = report.longrepr
+
+                    if not 'fail' in shakedown.tests['test'][report.nodeid]:
+                        shakedown.tests['test'][report.nodeid]['fail'] = 'error: ' + str(longreport.reprcrash)
+                    else:
+                        shakedown.tests['test'][report.nodeid]['fail'] += 'error: ' + str(longreport.reprcrash)
+
 
         def pytest_runtest_makereport(self, item, call, __multicall__):
             """ Store "simple" (pass, fail, skip) test results

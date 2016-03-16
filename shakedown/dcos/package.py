@@ -88,7 +88,7 @@ def package_installed(package_name, app_id=None):
         app_id (str): ???
     """
     cosmos = cosmospackage.Cosmos(_get_cosmos_url())
-    return len(cosmos.installed_apps(package_name, None)) > 0
+    return len(cosmos.installed_apps(package_name, app_id)) > 0
 
 
 def uninstall_package(

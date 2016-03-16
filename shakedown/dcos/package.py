@@ -1,10 +1,34 @@
 import time
+import json
 
 from dcos import (marathon, mesos, package, util, cosmospackage)
 from dcoscli.package.main import _get_cosmos_url
 from dcos.errors import DCOSException
 
 import shakedown
+
+
+def _get_options(options_file=None):
+    """ Read in options_file as JSON.
+    (str) -> dict
+
+    :param options_file: filename to return
+    :return: options as dictionary
+    """
+    if options_file is not None:
+        with open(options_file, 'r') as opt_file:
+            options = json.loads(opt_file.read())
+    else:
+        options = {}
+    return options
+
+
+def _get_cosmos():
+    """ Get an instance of Cosmos with the correct URL.
+
+    :return: Cosmos instance
+    """
+    return cosmospackage.Cosmos(_get_cosmos_url())
 
 
 def install_package(
@@ -24,10 +48,7 @@ def install_package(
         wait_for_completion (bool): whether or not to wait for task completion before returning
         timeout_sec (int): time in seconds to wait before timing out
     """
-
-    # Get the dcos configuration object
-    config = util.get_config()
-    cosmos = cosmospackage.Cosmos(_get_cosmos_url())
+    cosmos = _get_cosmos()
     pkg = cosmos.get_package_version(package_name, package_version)
 
     print("\n" + shakedown.cli.helpers.fchr('>>') + "installing package '" + package_name + "'" + "\n")
@@ -37,7 +58,8 @@ def install_package(
     if pre_install_notes:
         print(pre_install_notes)
 
-    cosmos.install_app(pkg, {}, app_id)
+    options = _get_options(options_file)
+    cosmos.install_app(pkg, options, app_id)
 
     # Print post-install notes to console log
     post_install_notes = pkg.package_json().get('postInstallNotes')
@@ -88,7 +110,7 @@ def package_installed(package_name, app_id=None):
         package_name (str): name of the package to check
         app_id (str): ???
     """
-    cosmos = cosmospackage.Cosmos(_get_cosmos_url())
+    cosmos = _get_cosmos()
     return len(cosmos.installed_apps(package_name, app_id)) > 0
 
 
@@ -107,15 +129,10 @@ def uninstall_package(
         wait_for_completion (bool): whether or not to wait for task completion before returning
         timeout_sec (int): time in seconds to wait before timing out
     """
-
-    config = util.get_config()
-
-    init_client = marathon.create_client(config)
-    dcos_client = mesos.DCOSClient()
-
     print("\n" + shakedown.cli.helpers.fchr('>>') + "uninstalling package '" + package_name + "'" + "\n")
 
-    package.uninstall_app(package_name, True, app_id, init_client, dcos_client)
+    cosmos = _get_cosmos()
+    cosmos.uninstall_app(package_name, all_instances, app_id)
 
     # Optionally wait for the service to unregister as a framework
     if wait_for_completion:

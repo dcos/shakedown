@@ -1,6 +1,7 @@
 import time
 
 from dcos import (marathon, mesos, package, util, cosmospackage)
+from dcoscli.package.main import _get_cosmos_url
 from dcos.errors import DCOSException
 
 import shakedown
@@ -150,14 +151,3 @@ def uninstall_package_and_wait(
         wait_for_completion,
         timeout_sec
     )
-
-def _get_cosmos_url():
-    """
-    :returns: cosmos base url
-    :rtype: str
-    """
-    config = util.get_config()
-    cosmos_url = config.get("package.cosmos_url")
-    if cosmos_url is None:
-        cosmos_url = util.get_config_vals(['core.dcos_url'], config)[0]
-    return cosmos_url

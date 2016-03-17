@@ -7,13 +7,25 @@ import shakedown
 
 
 def fchr(char):
+    """ Print a fancy character
+
+        :param char: the shorthand character key
+        :type char: str
+
+        :return: a fancy character
+        :rtype: str
+    """
+
     return {
         '>>': chr(12299)
     }.get(char, '')
 
 
 def banner():
-    """Display a product banner
+    """ Display a product banner
+
+        :return: a delightful Mesosphere logo rendered in unicode
+        :rtype: str
     """
 
     banner_dict = {
@@ -58,6 +70,14 @@ def banner():
 
 def decorate(text, style):
     """ Console decoration style definitions
+
+        :param text: the text string to decorate
+        :type text: str
+        :param style: the style used to decorate the string
+        :type style: str
+
+        :return: a decorated string
+        :rtype: str
     """
 
     return {
@@ -79,6 +99,12 @@ def decorate(text, style):
 
 def echo(text, **kwargs):
     """ Print results to the console
+
+        :param text: the text string to print
+        :type text: str
+
+        :return: a string
+        :rtype: str
     """
 
     if shakedown.cli.quiet:
@@ -96,6 +122,14 @@ def echo(text, **kwargs):
 @contextlib.contextmanager
 def stdchannel_redirected(stdchannel, dest_filename):
     """ A context manager to temporarily redirect stdout or stderr
+
+        :param stdchannel: the channel to redirect
+        :type stdchannel: sys.std
+        :param dest_filename: the filename to redirect output to
+        :type dest_filename: os.devnull
+
+        :return: nothing
+        :rtype: None
     """
 
     try:

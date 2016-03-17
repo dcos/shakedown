@@ -1,20 +1,22 @@
-import time
 import json
+import time
 
-from dcos import (marathon, mesos, package, util, cosmospackage)
+from dcos import (cosmospackage)
 from dcoscli.package.main import _get_cosmos_url
-from dcos.errors import DCOSException
 
 import shakedown
 
 
 def _get_options(options_file=None):
     """ Read in options_file as JSON.
-    (str) -> dict
 
-    :param options_file: filename to return
-    :return: options as dictionary
+        :param options_file: filename to return
+        :type options_file: str
+
+        :return: options as dictionary
+        :rtype: dict
     """
+
     if options_file is not None:
         with open(options_file, 'r') as opt_file:
             options = json.loads(opt_file.read())
@@ -26,32 +28,44 @@ def _get_options(options_file=None):
 def _get_cosmos():
     """ Get an instance of Cosmos with the correct URL.
 
-    :return: Cosmos instance
+        :return: Cosmos instance
+        :rtype: cosmospackage.Cosmos
     """
+
     return cosmospackage.Cosmos(_get_cosmos_url())
 
 
 def install_package(
-    package_name,
-    package_version=None,
-    app_id=None,
-    options_file=None,
-    wait_for_completion=False,
-    timeout_sec=600
+        package_name,
+        package_version=None,
+        app_id=None,
+        options_file=None,
+        wait_for_completion=False,
+        timeout_sec=600
 ):
     """ Install a package via the DCOS library
 
-        package_name (str): name of the package to install
-        package_version (str): version of the package to install (defaults to latest)
-        app_id (str): ??
-        options_file (?): ??
-        wait_for_completion (bool): whether or not to wait for task completion before returning
-        timeout_sec (int): time in seconds to wait before timing out
+        :param package_name: name of the package
+        :type package_name: str
+        :param package_version: version of the package (defaults to latest)
+        :type package_version: str
+        :param app_id: unique app_id for the package
+        :type app_id: str
+        :param options_file: filename that has options to use and is JSON format
+        :type options_file: str
+        :param wait_for_completion: whether or not to wait for task completion before returning
+        :type wait_for_completion: bool
+        :param timeout_sec: number of seconds to wait for task completion
+        :type timeout_sec: int
+
+        :return: True if installation was successful, False otherwise
+        :rtype: bool
     """
+
     cosmos = _get_cosmos()
     pkg = cosmos.get_package_version(package_name, package_version)
 
-    print("\n" + shakedown.cli.helpers.fchr('>>') + "installing package '" + package_name + "'" + "\n")
+    print("\n{}installing package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
 
     # Print pre-install notes to console log
     pre_install_notes = pkg.package_json().get('preInstallNotes')
@@ -84,12 +98,12 @@ def install_package(
 
 
 def install_package_and_wait(
-    package_name,
-    package_version=None,
-    app_id=None,
-    options_file=None,
-    wait_for_completion=True,
-    timeout_sec=600
+        package_name,
+        package_version=None,
+        app_id=None,
+        options_file=None,
+        wait_for_completion=True,
+        timeout_sec=600
 ):
     """ Install a package via the DCOS library and wait for completion
     """
@@ -105,31 +119,46 @@ def install_package_and_wait(
 
 
 def package_installed(package_name, app_id=None):
-    """ Check whether a package is currently installed
+    """ Check whether thea package package_name is currently installed.
 
-        package_name (str): name of the package to check
-        app_id (str): ???
+        :param package_name: package name
+        :type package_name: str
+        :param app_id: app_id
+        :type app_id: str
+
+        :return: True if installed, False otherwise
+        :rtype: bool
     """
+
     cosmos = _get_cosmos()
     return len(cosmos.installed_apps(package_name, app_id)) > 0
 
 
 def uninstall_package(
-    package_name,
-    app_id=None,
-    all_instances=False,
-    wait_for_completion=False,
-    timeout_sec=600
+        package_name,
+        app_id=None,
+        all_instances=False,
+        wait_for_completion=False,
+        timeout_sec=600
 ):
-    """ Uninstall a package using the DCOS library
+    """ Uninstall a package using the DCOS library.
 
-        package_name (str): name of the package to uninstall
-        app_id (str): ??
-        all_instances (bool): ??
-        wait_for_completion (bool): whether or not to wait for task completion before returning
-        timeout_sec (int): time in seconds to wait before timing out
+        :param package_name: name of the package
+        :type package_name: str
+        :param app_id: unique app_id for the package
+        :type app_id: str
+        :param all_instances: uninstall all instances of package
+        :type all_instances: bool
+        :param wait_for_completion: whether or not to wait for task completion before returning
+        :type wait_for_completion: bool
+        :param timeout_sec: number of seconds to wait for task completion
+        :type timeout_sec: int
+
+        :return: True if uninstall was successful, False otherwise
+        :rtype: bool
     """
-    print("\n" + shakedown.cli.helpers.fchr('>>') + "uninstalling package '" + package_name + "'" + "\n")
+
+    print("\n{}uninstalling package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
 
     cosmos = _get_cosmos()
     cosmos.uninstall_app(package_name, all_instances, app_id)
@@ -152,11 +181,11 @@ def uninstall_package(
 
 
 def uninstall_package_and_wait(
-    package_name,
-    app_id=None,
-    all_instances=False,
-    wait_for_completion=True,
-    timeout_sec=600
+        package_name,
+        app_id=None,
+        all_instances=False,
+        wait_for_completion=True,
+        timeout_sec=600
 ):
     """ Install a package via the DCOS library and wait for completion
     """

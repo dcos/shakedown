@@ -1,3 +1,5 @@
+import json
+
 from shakedown import *
 
 
@@ -18,3 +20,8 @@ def test_run_command_on_agent():
 
     if package_installed('jenkins'):
         uninstall_package_and_wait('jenkins')
+
+def test_run_dcos_command():
+    result, error = run_dcos_command('package search jenkins --json')
+    result_json = json.loads(result)
+    assert result_json['packages'][0]['name'] == 'jenkins'

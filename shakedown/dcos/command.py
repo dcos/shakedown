@@ -1,6 +1,7 @@
 import os
 import paramiko
 import select
+import subprocess
 
 import shakedown
 
@@ -86,6 +87,26 @@ def run_command_on_agent(
     key_path=None
 ):
     return run_command(host, command, username, key_path)
+
+
+def run_dcos_command(command):
+    """ Run a command via DCOS CLI
+
+        command (str): command to run
+    """
+
+    call = command.split()
+    call.insert(0, 'dcos')
+
+    print("\n{} {}\n".format(shakedown.cli.helpers.fchr('>>'), ' '.join(call)))
+
+    output, error = subprocess.Popen(call, stdout = subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    output = output.decode('utf-8')
+    error = error.decode('utf-8')
+
+    print(output, error)
+
+    return output, error
 
 
 def _start_transport(transport, username, key):

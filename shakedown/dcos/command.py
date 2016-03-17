@@ -7,18 +7,26 @@ import shakedown
 
 
 def run_command(
-    host,
-    command,
-    username='core',
-    key_path=None
+        host,
+        command,
+        username='core',
+        key_path=None
 ):
     """ Run a command via SSH, proxyied through the mesos master
 
-        host (str): host or IP of the machine to execute the command on
-        command (str): the command to execute
-        username (str): SSH username
-        key_path (str): path to the SSH private key to use for SSH authentication
+        :param host: host or IP of the machine to execute the command on
+        :type host: str
+        :param command: the command to execute
+        :type command: str
+        :param username: SSH username
+        :type username: str
+        :param key_path: path to the SSH private key to use for SSH authentication
+        :type key_path: str
+
+        :return: True if successful, False otherwise
+        :rtype: bool
     """
+
     if not key_path:
         key_path = shakedown.cli.ssh_key_file
 
@@ -73,26 +81,36 @@ def run_command(
 
 
 def run_command_on_master(
-    command,
-    username='core',
-    key_path=None
+        command,
+        username='core',
+        key_path=None
 ):
+    """ Run a command on the Mesos master
+    """
+
     return run_command(shakedown.master_ip(), command, username, key_path)
 
 
 def run_command_on_agent(
-    host,
-    command,
-    username='core',
-    key_path=None
+        host,
+        command,
+        username='core',
+        key_path=None
 ):
+    """ Run a command on a Mesos agent, proxied through the master
+    """
+
     return run_command(host, command, username, key_path)
 
 
 def run_dcos_command(command):
     """ Run a command via DCOS CLI
 
-        command (str): command to run
+        :param command: the command to execute
+        :type command: str
+
+        :return: stdout and stderr of the command execution
+        :rtype: tuple
     """
 
     call = command.split()
@@ -110,6 +128,19 @@ def run_dcos_command(command):
 
 
 def _start_transport(transport, username, key):
+    """ Begin a transport client and authenticate it
+
+        :param transport: the transport object to start
+        :type transport: paramiko.Transport
+        :param username: SSH username
+        :type username: str
+        :param key: key object used for authentication
+        :type key: paramiko.RSAKey
+
+        :return: the transport object passed
+        :rtype: paramiko.Transport
+    """
+
     transport.start_client()
     transport.auth_publickey(username, key)
 

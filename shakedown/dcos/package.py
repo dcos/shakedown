@@ -51,7 +51,7 @@ def install_package(
     cosmos = _get_cosmos()
     pkg = cosmos.get_package_version(package_name, package_version)
 
-    print("\n" + shakedown.cli.helpers.fchr('>>') + "installing package '" + package_name + "'" + "\n")
+    print("\n{}installing package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
 
     # Print pre-install notes to console log
     pre_install_notes = pkg.package_json().get('preInstallNotes')
@@ -129,7 +129,7 @@ def uninstall_package(
         wait_for_completion (bool): whether or not to wait for task completion before returning
         timeout_sec (int): time in seconds to wait before timing out
     """
-    print("\n" + shakedown.cli.helpers.fchr('>>') + "uninstalling package '" + package_name + "'" + "\n")
+    print("\n{}uninstalling package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
 
     cosmos = _get_cosmos()
     cosmos.uninstall_app(package_name, all_instances, app_id)

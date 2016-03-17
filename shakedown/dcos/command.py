@@ -48,7 +48,7 @@ def run_command(
     _start_transport(transport, username, key)
 
     if transport.is_authenticated():
-        print("\n" + shakedown.cli.helpers.fchr('>>') + host + " $ " + command + "\n")
+        print("\n{}{} $ {}\n".format(shakedown.cli.helpers.fchr('>>'), host, command))
 
         channel = transport.open_session()
         channel.exec_command(command)
@@ -98,7 +98,7 @@ def run_dcos_command(command):
     call = command.split()
     call.insert(0, 'dcos')
 
-    print("\n{} {}\n".format(shakedown.cli.helpers.fchr('>>'), ' '.join(call)))
+    print("\n{}{}\n".format(shakedown.cli.helpers.fchr('>>'), ' '.join(call)))
 
     output, error = subprocess.Popen(call, stdout = subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     output = output.decode('utf-8')

@@ -35,7 +35,7 @@ for more information.
 
 ## License
 
-Shakedown is licensed under the [Apache License, Version 2.0]. For additional
+Shakedown is licensed under the Apache License, Version 2.0.  For additional
 information, see the [LICENSE](LICENSE) file included at the root of this repository.
 
 

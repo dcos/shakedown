@@ -15,6 +15,9 @@
       * [uninstall_package()](#uninstall_package)
       * [uninstall_package_and_wait()](#uninstall_package_and_wait)
       * [package_installed()](#package_installed)
+      * [get_package_repos()](#get_package_repos)
+      * [add_package_repo()](#add_package_repo)
+      * [remove_package_repo()](#remove_package_repo)
     * Command execution
       * [run_command()](#run_command)
       * [run_command_on_master()](#run_command_on_master)
@@ -163,6 +166,61 @@ app_id | custom app ID | str | `None`
 # Is the 'jenkins' package installed?
 if package_installed('jenkins'):
     print('Jenkins is installed!')
+```
+
+
+### add_package_repo()
+
+Add a repository to the list of package sources.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**repo_name** | the name of the repository | str
+**repo_url** | the location of the repository | str
+index | the repository index order | int | *-1*
+
+##### *example usage*
+
+```python
+# Search the Multiverse before any other repositories
+add_package_repo('Multiverse', 'https://github.com/mesosphere/multiverse/archive/version-2.x.zip', 0)
+```
+
+
+### remove_package_repo()
+
+Remove a repository from the list of package sources.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**repo_name** | the name of the repository | str
+
+##### *example usage*
+
+```python
+# No longer search the Multiverse
+remove_package_repo('Multiverse')
+```
+
+
+### get_package_repos()
+
+Retrieve a dictionary describing the configured package source repositories.
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+# Which repository am I searching through first?
+repos = get_package_repos()
+print("First searching " + repos['repositories'][0]['name'])
 ```
 
 

@@ -1,6 +1,6 @@
 # Shakedown
 
-DCOS test harness.
+DC/OS test harness.
 
 
 ## Overview
@@ -26,9 +26,16 @@ Given a Python 3.4 + pip + git environment,
 - `shakedown --help` is your friend.
 
 
+## Helper methods
+
+`shakedown` is a testing tool as well as a library.  Many helper functions are
+available via `from shakedown import *` in your tests.  See the [API documentation](API.md)
+for more information.
+
+
 ## License
 
-Shakedown is licensed under the [Apache License, Version 2.0]. For additional
+Shakedown is licensed under the Apache License, Version 2.0.  For additional
 information, see the [LICENSE](LICENSE) file included at the root of this repository.
 
 

@@ -1,6 +1,6 @@
 # Shakedown
 
-DCOS test harness.
+DC/OS test harness.
 
 
 ## Overview
@@ -24,6 +24,13 @@ Given a Python 3.4 + pip + git environment,
 - `--dcos_url` is required.
 - tests within the current working directory will be auto-discovered unless specified.
 - `shakedown --help` is your friend.
+
+
+## Helper methods
+
+`shakedown` is a testing tool as well as a library.  Many helper functions are
+available via `from shakedown import *` in your tests.  See the [API documentation](API.md)
+for more information.
 
 
 ## License

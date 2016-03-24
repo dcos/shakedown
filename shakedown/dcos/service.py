@@ -77,6 +77,36 @@ def get_service_tasks(
     return []
 
 
+def get_service_task(
+        service_name,
+        task_name,
+        inactive=False,
+        completed=False
+):
+    """ Get a dictionary describing a service task, or None
+        :param service_name: the service name
+        :type service_name: str
+        :param task_name: the task name
+        :type task_name: str
+        :param inactive: whether to include inactive services
+        :type inactive: bool
+        :param completed: whether to include completed services
+        :type completed: bool
+
+        :return: a dictionary describing the service
+        :rtye: dict, or None
+    """
+
+    service = get_service_tasks(service_name, inactive, completed)
+
+    if service is not None:
+        for task in service:
+            if task['name'] == task_name:
+                return task
+
+    return None
+
+
 def get_service_ips(
         service_name,
         task_name=None,

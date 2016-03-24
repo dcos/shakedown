@@ -21,6 +21,14 @@ def test_get_service_tasks():
     uninstall_package_and_wait('hdfs')
 
 
+def test_get_service_task():
+    install_package_and_wait('jenkins')
+    service_task = get_service_task('marathon', 'jenkins')
+    assert service_task is not None
+
+    uninstall_package_and_wait('jenkins')
+
+
 def test_get_service_ips():
     install_package_and_wait('chronos')
 

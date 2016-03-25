@@ -77,6 +77,16 @@ def get_service_tasks(
     return []
 
 
+def get_marathon_tasks(
+    inactive=False,
+    completed=False
+):
+    """ Get a list of marathon tasks
+    """
+
+    return get_service_tasks('marathon', inactive, completed)
+
+
 def get_service_task(
         service_name,
         task_name,
@@ -105,6 +115,17 @@ def get_service_task(
                 return task
 
     return None
+
+
+def get_marathon_task(
+    task_name,
+    inactive=False,
+    completed=False
+):
+    """ Get a dictionary describing a named marathon task
+    """
+
+    return get_service_task('marathon', task_name, inactive, completed)
 
 
 def get_service_ips(

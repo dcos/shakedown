@@ -26,6 +26,8 @@
       * [get_service_task()](#get_service_task)
       * [get_service_tasks()](#get_service_tasks)
       * [get_service_ips()](#get_service_ips)
+      * [get_marathon_task()](#get_marathon_task)
+      * [get_marathon_tasks()](#get_marathon_tasks)
 
 
 ## Usage
@@ -275,6 +277,27 @@ jenkins_framework_id = get_framework_id('jenkins')
 ```
 
 
+### get_service_task()
+
+Get a dictionary describing a named service task.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**service_name** | the name of the service | str
+**task_name** | the name of the task | str
+inactive | include inactive services? | bool | `False`
+completed | include completed services? | bool | `False`
+
+##### *example usage*
+
+```python
+# Tell me about marathon's 'jenkins' task
+jenkins_tasks = get_service_task('marathon', 'jenkins')
+```
+
+
 ### get_service_tasks()
 
 Get a list of task IDs associated with a named service.
@@ -295,15 +318,14 @@ service_tasks = get_service_tasks('marathon')
 ```
 
 
-### get_service_task()
+### get_marathon_task()
 
-Get a dictionary describing a named service task.
+Get a dictionary describing a named Marathon task.
 
 ##### *parameters*
 
 parameter | description | type | default
 --------- | ----------- | ---- | -------
-**service_name** | the name of the service | str
 **task_name** | the name of the task | str
 inactive | include inactive services? | bool | `False`
 completed | include completed services? | bool | `False`
@@ -312,7 +334,26 @@ completed | include completed services? | bool | `False`
 
 ```python
 # Tell me about marathon's 'jenkins' task
-jenkins__tasks = get_service_task('marathon', 'jenkins')
+jenkins_tasks = get_marathon_task('jenkins')
+```
+
+
+### get_marathon_tasks()
+
+Get a list of Marathon tasks.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+inactive | include inactive services? | bool | `False`
+completed | include completed services? | bool | `False`
+
+##### *example usage*
+
+```python
+# What's marathon doing right now?
+service_tasks = get_marathon_tasks()
 ```
 
 

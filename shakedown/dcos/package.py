@@ -197,3 +197,51 @@ def uninstall_package_and_wait(
         wait_for_completion,
         timeout_sec
     )
+
+
+def get_package_repos(
+):
+    """ Return a list of configured package repositories
+    """
+
+    cosmos = _get_cosmos()
+    return cosmos.get_repos()
+
+
+
+def add_package_repo(
+        repo_name,
+        repo_url,
+        index=None
+):
+    """ Add a repository to the list of package sources
+
+        :param repo_name: name of the repository to add
+        :type repo_name: str
+        :param repo_url: location of the repository to add
+        :type repo_url: str
+        :param index: index (precedence) for this repository
+        :type index: int
+
+        :return: True if successful, False otherwise
+        :rtype: bool
+    """
+
+    cosmos = _get_cosmos()
+    return cosmos.add_repo(repo_name, repo_url, index)
+
+
+def remove_package_repo(
+        repo_name
+):
+    """ Remove a repository from the list of package sources
+
+        :param repo_name: name of the repository to remove
+        :type repo_name: str
+
+        :returns: True if successful, False otherwise
+        :rtype: bool
+    """
+
+    cosmos = _get_cosmos()
+    return cosmos.remove_repo(repo_name)

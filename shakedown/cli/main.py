@@ -55,7 +55,7 @@ def cli(**args):
     try:
         from dcos import (config, marathon, util)
 
-        with stdchannel_redirected(sys.stdout, os.devnull):
+        with stdchannel_redirected(sys.stderr, os.devnull):
             config.set_val('core.dcos_url', args['dcos_url'])
 
         with stdchannel_redirected(sys.stderr, os.devnull):

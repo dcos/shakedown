@@ -1,6 +1,4 @@
 import os
-import requests
-
 import dcos
 
 import shakedown
@@ -28,4 +26,4 @@ def master_ip():
     """Returns the public IP address of the DCOS master.
     return: DCOS IP address as a string
     """
-    return requests.get(dcos_url() + '/metadata').json()["PUBLIC_IPV4"].strip()
+    return dcos.mesos.DCOSClient().metadata().get('PUBLIC_IPV4')

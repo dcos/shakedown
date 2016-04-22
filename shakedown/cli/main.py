@@ -23,6 +23,9 @@ def cli(**args):
     """
     import shakedown
 
+    # Read configuration options from ~/.shakedown (if exists)
+    args = read_config(args)
+
     if args['quiet']:
         shakedown.cli.quiet = True
 

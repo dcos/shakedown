@@ -2,8 +2,26 @@ import click
 import contextlib
 import os
 import re
+import toml
 
 import shakedown
+
+
+def read_config(args):
+    """ Read configuration options from ~/.shakedown (if exists)
+    """
+
+    configfile = os.path.expanduser('~/.shakedown')
+
+    if os.path.isfile(configfile):
+        with open(configfile, 'r') as f:
+            config = toml.loads(f.read())
+
+        for key in config:
+            if not args[key]:
+                args[key] = config[key]
+
+    return args
 
 
 def fchr(char):

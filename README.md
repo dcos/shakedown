@@ -23,6 +23,7 @@ Given a Python 3.4 + pip + git environment,
 
 - `--dcos_url` is required.
 - tests within the current working directory will be auto-discovered unless specified.
+- arguments can be stored in a `~/.shakedown` [TOML](https://github.com/toml-lang/toml) file (command-line takes precedence)
 - `shakedown --help` is your friend.
 
 

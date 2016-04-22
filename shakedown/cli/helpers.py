@@ -9,6 +9,12 @@ import shakedown
 
 def read_config(args):
     """ Read configuration options from ~/.shakedown (if exists)
+
+        :param args: a dict of arguments
+        :type args: dict
+
+        :return: a dict of arguments
+        :rtype: dict
     """
 
     configfile = os.path.expanduser('~/.shakedown')
@@ -20,6 +26,28 @@ def read_config(args):
         for key in config:
             if not args[key]:
                 args[key] = config[key]
+
+    return args
+
+
+def set_config_defaults(args):
+    """ Set configuration defaults
+
+        :param args: a dict of arguments
+        :type args: dict
+
+        :return: a dict of arguments
+        :rtype: dict
+    """
+
+    defaults = {
+        'fail': 'fast',
+        'stdout': 'fail'
+    }
+
+    for key in defaults:
+        if not key in args:
+            args[key] = defaults[key]
 
     return args
 

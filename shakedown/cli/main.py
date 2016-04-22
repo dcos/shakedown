@@ -9,12 +9,12 @@ from shakedown.cli.helpers import *
 @click.command('shakedown')
 @click.argument('path', type=click.Path(exists=True), nargs=-1)
 @click.option('--dcos_url', help='URL to a running DCOS cluster.')
-@click.option('--fail', type=click.Choice(['fast', 'never']), default='fast', help='Sepcify whether to continue testing when encountering failures. (default: fast)')
+@click.option('--fail', type=click.Choice(['fast', 'never']), help='Sepcify whether to continue testing when encountering failures. (default: fast)')
 @click.option('--ssh_key_file', type=click.Path(), help='Path to the SSH keyfile to use for authentication')
 @click.option('--no_banner', is_flag=True, help='Suppress the product banner.')
 @click.option('--quiet', is_flag=True, help='Suppress all superfluous output.')
 @click.option('--report', type=click.Choice(['json', 'junit']), help='Return a report in the specified format.')
-@click.option('--stdout', type=click.Choice(['pass', 'fail', 'skip', 'all', 'none']), default='fail', help='Print the standard output of tests with the specified result. (default: fail)')
+@click.option('--stdout', type=click.Choice(['pass', 'fail', 'skip', 'all', 'none']), help='Print the standard output of tests with the specified result. (default: fail)')
 @click.version_option(version=shakedown.VERSION)
 
 
@@ -25,6 +25,9 @@ def cli(**args):
 
     # Read configuration options from ~/.shakedown (if exists)
     args = read_config(args)
+
+    # Set configuration defaults
+    args = set_config_defaults(args)
 
     if args['quiet']:
         shakedown.cli.quiet = True

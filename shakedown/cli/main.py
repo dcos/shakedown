@@ -106,9 +106,9 @@ def cli(**args):
                 echo(report.nodeid, d='item-maj', n=False)
 
                 if report.failed:
-                    echo('import fail', d='fail')
+                    echo(fchr('FF'), d='fail')
                 else:
-                    echo(chr(10003), d='pass')
+                    echo(fchr('PP'), d='pass')
 
                 if args['stdout'] and report.longrepr:
                     state = None
@@ -156,15 +156,14 @@ def cli(**args):
                 shakedown.tests['test'][report.nodeid] = {}
                 echo(report_test, d='item-min', n=False)
 
-            if report.passed:
-                echo(report.when, d='pass', n=False)
-            elif report.skipped:
-                echo(report.when, d='skip', n=False)
-            elif report.failed:
-                echo(report.when, d='fail', n=False)
+            if report.failed:
+                shakedown.tests['test'][report.nodeid]['test_fail'] = True
 
             if report.when == 'teardown':
-                echo('')
+                if 'test_fail' in shakedown.tests['test'][report.nodeid]:
+                    echo(fchr('FF'), d='fail')
+                else:
+                    echo(fchr('PP'), d='pass')
 
             # Suppress excess terminal output
             return report.outcome, None, None

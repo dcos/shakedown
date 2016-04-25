@@ -106,12 +106,12 @@ def banner():
     }
 
     banner_map = [
-        "%(z0)s%(z0)s%(z0)s%(a0)s%(a0)s%(a1)s%(a0)s%(a1)s%(a1)s%(a1)s%(a1)s%(a1)s%(a1)s%(a1)s",
-        "%(z0)s%(z0)s%(b0)s%(z0)s%(c0)s%(z0)s%(d0)s%(z0)s%(z0)s%(z0)s%(z0)s%(e1)s%(z0)s%(f1)s%(z0)s%(g1)s",
-        "%(z0)s%(z0)s%(b0)s%(z0)s%(z0)s%(c0)s%(z0)s%(h0)s%(e0)s%(d1)s%(i1)s%(z0)s%(f1)s%(z0)s%(z0)s%(g1)s%(z0)s%(j0)s%(v0)s %(x1)s %(y0)s",
-        "%(k0)s%(z0)s%(b0)s%(z0)s%(z0)s%(f0)s%(c0)s%(i0)s%(z0)s%(z0)s%(h1)s%(f1)s%(c1)s%(z0)s%(z0)s%(g1)s%(z0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(z0)s%(k0)s%(k0)s%(z0)s%(z0)s%(k0)s",
-        "%(z0)s%(z0)s%(i0)s%(f0)s%(h0)s%(z0)s%(z0)s%(c0)s%(z0)s%(z0)s%(f0)s%(z0)s%(z0)s%(i1)s%(c1)s%(h1)s",
-        "%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(c0)s%(f0)s",
+        " %(z0)s%(z0)s%(a0)s%(a0)s%(a1)s%(a0)s%(a1)s%(a1)s%(a1)s%(a1)s%(a1)s%(a1)s%(a1)s",
+        " %(z0)s%(b0)s%(z0)s%(c0)s%(z0)s%(d0)s%(z0)s%(z0)s%(z0)s%(z0)s%(e1)s%(z0)s%(f1)s%(z0)s%(g1)s",
+        " %(z0)s%(b0)s%(z0)s%(z0)s%(c0)s%(z0)s%(h0)s%(e0)s%(d1)s%(i1)s%(z0)s%(f1)s%(z0)s%(z0)s%(g1)s%(z0)s%(j0)s%(v0)s %(x1)s %(y0)s",
+        " %(z0)s%(b0)s%(z0)s%(z0)s%(f0)s%(c0)s%(i0)s%(z0)s%(z0)s%(h1)s%(f1)s%(c1)s%(z0)s%(z0)s%(g1)s%(z0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(z0)s%(k0)s%(k0)s%(z0)s%(z0)s%(k0)s",
+        " %(z0)s%(i0)s%(f0)s%(h0)s%(z0)s%(z0)s%(c0)s%(z0)s%(z0)s%(f0)s%(z0)s%(z0)s%(i1)s%(c1)s%(h1)s",
+        " %(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(c0)s%(f0)s",
     ]
 
     if os.environ['TERM'] in ('xterm', 'xterm-256color', 'xterm-color'):

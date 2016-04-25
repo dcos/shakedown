@@ -121,7 +121,9 @@ def cli(**args):
                 o += decorate(text.strip(), style='quote-' + state)
 
                 if args['stdout_inline']:
-                    echo(o + "\n")
+                    echo(o)
+                    if state == 'pass':
+                        echo('')
                 else:
                     shakedown.stdout.append(o)
 
@@ -217,6 +219,9 @@ def cli(**args):
 
                 if 'tested' in shakedown.tests['test'][report.nodeid]:
                     shakedown.output(report.nodeid, 'fail', 'error: ' + str(longreport.reprcrash), False)
+
+                    if args['stdout_inline']:
+                        echo('')
                 else:
                     shakedown.tests['test'][report.nodeid]['tested'] = True
                     shakedown.output(report.nodeid, 'fail', 'error: ' + str(longreport.reprcrash))

@@ -19,9 +19,9 @@ Given a Python 3.4 + pip + git environment,
 
 ## Usage
 
-`shakedown --dcos_url=http://dcos.example.com [options] [path_to_tests]`
+`shakedown --dcos-url=http://dcos.example.com [options] [path_to_tests]`
 
-- `--dcos_url` is required.
+- `--dcos-url` is required.
 - tests within the current working directory will be auto-discovered unless specified.
 - arguments can be stored in a `~/.shakedown` [TOML](https://github.com/toml-lang/toml) file (command-line takes precedence)
 - `shakedown --help` is your friend.

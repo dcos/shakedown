@@ -24,8 +24,12 @@ def read_config(args):
             config = toml.loads(f.read())
 
         for key in config:
-            if not args[key]:
-                args[key] = config[key]
+            param = key.replace('-', '_')
+
+            if not param in args:
+                args[param] = config[key]
+            elif args[param] is None:
+                args[param] = config[key]
 
     return args
 

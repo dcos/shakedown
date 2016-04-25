@@ -26,9 +26,7 @@ def read_config(args):
         for key in config:
             param = key.replace('-', '_')
 
-            if not param in args:
-                args[param] = config[key]
-            elif args[param] is None:
+            if not param in args or args[param] in [False, None]:
                 args[param] = config[key]
 
     return args
@@ -50,7 +48,7 @@ def set_config_defaults(args):
     }
 
     for key in defaults:
-        if not key in args:
+        if not args[key]:
             args[key] = defaults[key]
 
     return args

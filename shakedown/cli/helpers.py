@@ -97,14 +97,16 @@ def banner():
         'i1': click.style(chr(9629), fg='magenta', bold=True),
         'j0': click.style(fchr('>>'), fg='magenta'),
         'k0': click.style(chr(9473), fg='magenta'),
-        'v0': click.style('mesosphere', fg='magenta',),
+        'l0': click.style('_', fg='magenta'),
+        'l1': click.style('_', fg='magenta', bold=True),
+        'v0': click.style('mesosphere', fg='magenta'),
         'x1': click.style('shakedown', fg='magenta', bold=True),
         'y0': click.style('v' + shakedown.VERSION, fg='magenta'),
         'z0': chr(32)
     }
 
     banner_map = [
-        " %(z0)s%(z0)s%(a0)s%(a0)s%(a1)s%(a0)s%(a1)s%(a1)s%(a1)s%(a1)s%(a1)s%(a1)s%(a1)s",
+        " %(z0)s%(z0)s%(l0)s%(l0)s%(l1)s%(l0)s%(l1)s%(l1)s%(l1)s%(l1)s%(l1)s%(l1)s%(l1)s%(l1)s",
         " %(z0)s%(b0)s%(z0)s%(c0)s%(z0)s%(d0)s%(z0)s%(z0)s%(z0)s%(z0)s%(e1)s%(z0)s%(f1)s%(z0)s%(g1)s",
         " %(z0)s%(b0)s%(z0)s%(z0)s%(c0)s%(z0)s%(h0)s%(e0)s%(d1)s%(i1)s%(z0)s%(f1)s%(z0)s%(z0)s%(g1)s%(z0)s%(j0)s%(v0)s %(x1)s %(y0)s",
         " %(z0)s%(b0)s%(z0)s%(z0)s%(f0)s%(c0)s%(i0)s%(z0)s%(z0)s%(h1)s%(f1)s%(c1)s%(z0)s%(z0)s%(g1)s%(z0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(z0)s%(k0)s%(k0)s%(z0)s%(z0)s%(k0)s",
@@ -112,10 +114,10 @@ def banner():
         " %(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(c0)s%(f0)s",
     ]
 
-    if os.environ['TERM'] in ('xterm', 'xterm-256color', 'xterm-color'):
+    if 'TERM' in os.environ and os.environ['TERM'] in ('velocity', 'xterm', 'xterm-256color', 'xterm-color'):
         return echo("\n".join(banner_map) % banner_dict)
     else:
-        return echo('>> mesosphere shakedown v' + shakedown.VERSION, b=True)
+        return echo(fchr('>>') + 'mesosphere shakedown v' + shakedown.VERSION, b=True)
 
 
 def decorate(text, style):
@@ -166,7 +168,13 @@ def echo(text, **kwargs):
     if 'd' in kwargs:
         text = decorate(text, kwargs['d'])
 
-    click.echo(text, nl=kwargs.get('n'))
+    if 'TERM' in os.environ and os.environ['TERM'] == 'velocity':
+        if text:
+            print(text, end="", flush=True)
+        if kwargs.get('n'):
+            print()
+    else:
+        click.echo(text, nl=kwargs.get('n'))
 
 
 @contextlib.contextmanager

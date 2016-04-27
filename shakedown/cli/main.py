@@ -8,13 +8,14 @@ from shakedown.cli.helpers import *
 
 @click.command('shakedown')
 @click.argument('path', type=click.Path(exists=True), nargs=-1)
-@click.option('--dcos_url', help='URL to a running DCOS cluster.')
-@click.option('--fail', type=click.Choice(['fast', 'never']), default='fast', help='Sepcify whether to continue testing when encountering failures. (default: fast)')
-@click.option('--ssh_key_file', type=click.Path(), help='Path to the SSH keyfile to use for authentication')
-@click.option('--no_banner', is_flag=True, help='Suppress the product banner.')
+@click.option('--dcos-url', help='URL to a running DCOS cluster.')
+@click.option('--fail', type=click.Choice(['fast', 'never']), help='Sepcify whether to continue testing when encountering failures. (default: fast)')
+@click.option('--ssh-key-file', type=click.Path(), help='Path to the SSH keyfile to use for authentication')
+@click.option('--no-banner', is_flag=True, help='Suppress the product banner.')
 @click.option('--quiet', is_flag=True, help='Suppress all superfluous output.')
 @click.option('--report', type=click.Choice(['json', 'junit']), help='Return a report in the specified format.')
-@click.option('--stdout', type=click.Choice(['pass', 'fail', 'skip', 'all', 'none']), default='fail', help='Print the standard output of tests with the specified result. (default: fail)')
+@click.option('--stdout', type=click.Choice(['pass', 'fail', 'skip', 'all', 'none']), help='Print the standard output of tests with the specified result. (default: fail)')
+@click.option('--stdout-inline', is_flag=True, help='Display output inline rather than after test phase completion.')
 @click.version_option(version=shakedown.VERSION)
 
 
@@ -26,11 +27,14 @@ def cli(**args):
     # Read configuration options from ~/.shakedown (if exists)
     args = read_config(args)
 
+    # Set configuration defaults
+    args = set_config_defaults(args)
+
     if args['quiet']:
         shakedown.cli.quiet = True
 
     if not args['dcos_url']:
-        click.secho('error: --dcos_url is a required option; see --help for more information.', fg='red', bold=True)
+        click.secho('error: --dcos-url is a required option; see --help for more information.', fg='red', bold=True)
         exit(1)
 
     if args['ssh_key_file']:
@@ -76,6 +80,8 @@ def cli(**args):
 
         state = {}
 
+        stdout = []
+
         tests = {
             'file': {},
             'test': {}
@@ -91,6 +97,37 @@ def cli(**args):
         }
 
 
+        def output(title, state, text, status=True):
+            """ Capture and display stdout/stderr output
+
+                :param title: the title of the output box (eg. test name)
+                :type title: str
+                :param state: state of the result (pass, fail)
+                :type state: str
+                :param text: the stdout/stderr output
+                :type text: str
+                :param status: whether to output a status marker
+                :type status: bool
+            """
+            if status:
+                if state == 'fail':
+                    echo(fchr('FF'), d='fail')
+                elif state == 'pass':
+                    echo(fchr('PP'), d='pass')
+
+            if text and args['stdout'] in [state, 'all']:
+                o = decorate('Output during ', 'quote-head-' + state)
+                o += click.style(decorate(title, style=state), bold=True) + "\n"
+                o += decorate(text.strip(), style='quote-' + state)
+
+                if args['stdout_inline']:
+                    echo(o)
+                    if state == 'pass':
+                        echo('')
+                else:
+                    shakedown.stdout.append(o)
+
+
         def pytest_collectreport(self, report):
             """ Collect and validate individual test files
             """
@@ -102,28 +139,20 @@ def cli(**args):
             if report.nodeid:
                 echo(report.nodeid, d='item-maj', n=False)
 
+                state = None
+
                 if report.failed:
-                    echo('import fail', d='fail')
-                else:
-                    echo(chr(10003), d='pass')
+                    state = 'fail'
+                if report.passed:
+                    state = 'pass'
+                if report.skipped:
+                    state = 'skip'
 
-                if args['stdout'] and report.longrepr:
-                    state = None
-
-                    if report.failed and args['stdout'] in ['fail', 'all']:
-                        state = 'fail'
-                    if report.passed and args['stdout'] in ['pass', 'all']:
-                        state = 'pass'
-                    if report.skipped and args['stdout'] in ['skip', 'all']:
-                        state = 'skip'
-
-                    if state:
-                        try:
-                            shakedown.tests['test'][report.nodeid]
-                        except KeyError:
-                            shakedown.tests['test'][report.nodeid] = {}
-
-                        shakedown.tests['test'][report.nodeid][state] = str(report.longrepr).rstrip()
+                if state:
+                    if report.longrepr:
+                        shakedown.output(report.nodeid, state, report.longrepr)
+                    else:
+                        shakedown.output(report.nodeid, state, None)
 
 
         def pytest_sessionstart(self):
@@ -153,15 +182,11 @@ def cli(**args):
                 shakedown.tests['test'][report.nodeid] = {}
                 echo(report_test, d='item-min', n=False)
 
-            if report.passed:
-                echo(report.when, d='pass', n=False)
-            elif report.skipped:
-                echo(report.when, d='skip', n=False)
-            elif report.failed:
-                echo(report.when, d='fail', n=False)
+            if report.failed:
+                shakedown.tests['test'][report.nodeid]['fail'] = True
 
-            if report.when == 'teardown':
-                echo('')
+            if report.when == 'teardown' and not 'tested' in shakedown.tests['test'][report.nodeid]:
+                shakedown.output(report.nodeid, 'pass', None)
 
             # Suppress excess terminal output
             return report.outcome, None, None
@@ -171,31 +196,35 @@ def cli(**args):
             """ Log the [stdout, stderr] results of tests if desired
             """
 
-            if args['stdout']:
-                state = None
+            state = None
 
-                for secname, content in report.sections:
-                    if report.failed and args['stdout'] in ['fail', 'all']:
-                        state = 'fail'
-                    if (report.passed) and args['stdout'] in ['pass', 'all']:
-                        state = 'pass'
-                    if report.skipped and args['stdout'] in ['skip', 'all']:
-                        state = 'skip'
+            for secname, content in report.sections:
+                if report.failed:
+                    state = 'fail'
+                if report.passed:
+                    state = 'pass'
+                if report.skipped:
+                    state = 'skip'
 
-                    if state and report.when == 'call':
-                        if not state in shakedown.tests['test'][report.nodeid]:
-                            shakedown.tests['test'][report.nodeid][state] = content
-                        else:
-                            shakedown.tests['test'][report.nodeid][state] += content
-
-                # Capture execution crashes
-                if hasattr(report.longrepr, 'reprcrash'):
-                    longreport = report.longrepr
-
-                    if not 'fail' in shakedown.tests['test'][report.nodeid]:
-                        shakedown.tests['test'][report.nodeid]['fail'] = 'error: ' + str(longreport.reprcrash)
+                if state and report.when == 'call':
+                    if 'tested' in shakedown.tests['test'][report.nodeid]:
+                        shakedown.output(report.nodeid, state, content, False)
                     else:
-                        shakedown.tests['test'][report.nodeid]['fail'] += 'error: ' + str(longreport.reprcrash)
+                        shakedown.tests['test'][report.nodeid]['tested'] = True
+                        shakedown.output(report.nodeid, state, content)
+
+            # Capture execution crashes
+            if hasattr(report.longrepr, 'reprcrash'):
+                longreport = report.longrepr
+
+                if 'tested' in shakedown.tests['test'][report.nodeid]:
+                    shakedown.output(report.nodeid, 'fail', 'error: ' + str(longreport.reprcrash), False)
+
+                    if args['stdout_inline']:
+                        echo('')
+                else:
+                    shakedown.tests['test'][report.nodeid]['tested'] = True
+                    shakedown.output(report.nodeid, 'fail', 'error: ' + str(longreport.reprcrash))
 
 
         def pytest_runtest_makereport(self, item, call, __multicall__):
@@ -224,21 +253,9 @@ def cli(**args):
 
             echo('Test phase completed.', d='step-maj')
 
-            if ('stdout' in args and args['stdout']) and \
-                    ('test' in shakedown.tests and shakedown.tests['test']):
-                for test in sorted(shakedown.tests['test']):
-                    for result in ['fail', 'pass', 'skip']:
-                        if result in shakedown.tests['test'][test]:
-                            echo('Output during ', d='quote-head-' + result, n=False)
-
-                            shakedown.tests['test'][test][result] = shakedown.tests['test'][test][result].strip()
-
-                            if 'quiet' in args and args['quiet']:
-                                print('-' * len(test) + "\n" + test + "\n" + '-' * len(test))
-                                print(shakedown.tests['test'][test][result])
-                            else:
-                                click.secho(decorate(test, style=result), bold=True)
-                                click.echo(decorate(shakedown.tests['test'][test][result], style='quote-' + result))
+            if ('stdout' in args and args['stdout']) and shakedown.stdout:
+                for output in shakedown.stdout:
+                    echo(output)
 
             if args['report'] == 'json':
                 click.echo("\n" + json.dumps(shakedown.report_stats, sort_keys=True, indent=4, separators=(',', ': ')))

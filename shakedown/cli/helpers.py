@@ -9,6 +9,12 @@ import shakedown
 
 def read_config(args):
     """ Read configuration options from ~/.shakedown (if exists)
+
+        :param args: a dict of arguments
+        :type args: dict
+
+        :return: a dict of arguments
+        :rtype: dict
     """
 
     configfile = os.path.expanduser('~/.shakedown')
@@ -18,8 +24,32 @@ def read_config(args):
             config = toml.loads(f.read())
 
         for key in config:
-            if not args[key]:
-                args[key] = config[key]
+            param = key.replace('-', '_')
+
+            if not param in args or args[param] in [False, None]:
+                args[param] = config[key]
+
+    return args
+
+
+def set_config_defaults(args):
+    """ Set configuration defaults
+
+        :param args: a dict of arguments
+        :type args: dict
+
+        :return: a dict of arguments
+        :rtype: dict
+    """
+
+    defaults = {
+        'fail': 'fast',
+        'stdout': 'fail'
+    }
+
+    for key in defaults:
+        if not args[key]:
+            args[key] = defaults[key]
 
     return args
 
@@ -35,6 +65,8 @@ def fchr(char):
     """
 
     return {
+        'PP': chr(10003),
+        'FF': chr(10005),
         '>>': chr(12299)
     }.get(char, '')
 
@@ -65,25 +97,27 @@ def banner():
         'i1': click.style(chr(9629), fg='magenta', bold=True),
         'j0': click.style(fchr('>>'), fg='magenta'),
         'k0': click.style(chr(9473), fg='magenta'),
-        'v0': click.style('mesosphere', fg='magenta',),
+        'l0': click.style('_', fg='magenta'),
+        'l1': click.style('_', fg='magenta', bold=True),
+        'v0': click.style('mesosphere', fg='magenta'),
         'x1': click.style('shakedown', fg='magenta', bold=True),
         'y0': click.style('v' + shakedown.VERSION, fg='magenta'),
         'z0': chr(32)
     }
 
     banner_map = [
-        "%(z0)s%(z0)s%(z0)s%(a0)s%(a0)s%(a1)s%(a0)s%(a1)s%(a1)s%(a1)s%(a1)s%(a1)s%(a1)s%(a1)s",
-        "%(z0)s%(z0)s%(b0)s%(z0)s%(c0)s%(z0)s%(d0)s%(z0)s%(z0)s%(z0)s%(z0)s%(e1)s%(z0)s%(f1)s%(z0)s%(g1)s",
-        "%(z0)s%(z0)s%(b0)s%(z0)s%(z0)s%(c0)s%(z0)s%(h0)s%(e0)s%(d1)s%(i1)s%(z0)s%(f1)s%(z0)s%(z0)s%(g1)s%(z0)s%(j0)s%(v0)s %(x1)s %(y0)s",
-        "%(k0)s%(z0)s%(b0)s%(z0)s%(z0)s%(f0)s%(c0)s%(i0)s%(z0)s%(z0)s%(h1)s%(f1)s%(c1)s%(z0)s%(z0)s%(g1)s%(z0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(z0)s%(k0)s%(k0)s%(z0)s%(z0)s%(k0)s",
-        "%(z0)s%(z0)s%(i0)s%(f0)s%(h0)s%(z0)s%(z0)s%(c0)s%(z0)s%(z0)s%(f0)s%(z0)s%(z0)s%(i1)s%(c1)s%(h1)s",
-        "%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(c0)s%(f0)s",
+        " %(z0)s%(z0)s%(l0)s%(l0)s%(l1)s%(l0)s%(l1)s%(l1)s%(l1)s%(l1)s%(l1)s%(l1)s%(l1)s%(l1)s",
+        " %(z0)s%(b0)s%(z0)s%(c0)s%(z0)s%(d0)s%(z0)s%(z0)s%(z0)s%(z0)s%(e1)s%(z0)s%(f1)s%(z0)s%(g1)s",
+        " %(z0)s%(b0)s%(z0)s%(z0)s%(c0)s%(z0)s%(h0)s%(e0)s%(d1)s%(i1)s%(z0)s%(f1)s%(z0)s%(z0)s%(g1)s%(z0)s%(j0)s%(v0)s %(x1)s %(y0)s",
+        " %(z0)s%(b0)s%(z0)s%(z0)s%(f0)s%(c0)s%(i0)s%(z0)s%(z0)s%(h1)s%(f1)s%(c1)s%(z0)s%(z0)s%(g1)s%(z0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(k0)s%(z0)s%(k0)s%(k0)s%(z0)s%(z0)s%(k0)s",
+        " %(z0)s%(i0)s%(f0)s%(h0)s%(z0)s%(z0)s%(c0)s%(z0)s%(z0)s%(f0)s%(z0)s%(z0)s%(i1)s%(c1)s%(h1)s",
+        " %(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(z0)s%(c0)s%(f0)s",
     ]
 
-    if os.environ['TERM'] in ('xterm', 'xterm-256color', 'xterm-color'):
+    if 'TERM' in os.environ and os.environ['TERM'] in ('velocity', 'xterm', 'xterm-256color', 'xterm-color'):
         return echo("\n".join(banner_map) % banner_dict)
     else:
-        return echo('>> mesosphere shakedown v' + shakedown.VERSION, b=True)
+        return echo(fchr('>>') + 'mesosphere shakedown v' + shakedown.VERSION, b=True)
 
 
 def decorate(text, style):
@@ -134,7 +168,13 @@ def echo(text, **kwargs):
     if 'd' in kwargs:
         text = decorate(text, kwargs['d'])
 
-    click.echo(text, nl=kwargs.get('n'))
+    if 'TERM' in os.environ and os.environ['TERM'] == 'velocity':
+        if text:
+            print(text, end="", flush=True)
+        if kwargs.get('n'):
+            print()
+    else:
+        click.echo(text, nl=kwargs.get('n'))
 
 
 @contextlib.contextmanager

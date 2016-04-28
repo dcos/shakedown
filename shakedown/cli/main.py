@@ -118,7 +118,7 @@ def cli(**args):
             if text and args['stdout'] in [state, 'all']:
                 o = decorate('Output during ', 'quote-head-' + state)
                 o += click.style(decorate(title, style=state), bold=True) + "\n"
-                o += decorate(text.strip(), style='quote-' + state)
+                o += decorate(str(text).strip(), style='quote-' + state)
 
                 if args['stdout_inline']:
                     echo(o)

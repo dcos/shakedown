@@ -1,5 +1,6 @@
 import click
 import json
+import importlib
 import os
 import sys
 
@@ -44,34 +45,51 @@ def cli(**args):
         echo(banner(), n=False)
 
     echo('Running pre-flight checks...', d='step-maj')
-    echo('Checking for pytest library...', d='step-min', n=False)
-    try:
-        import pytest
-    except ImportError:
-        click.secho("error: pytest is not installed; run 'pip install pytest'.", fg='red', bold=True)
-        exit(1)
-    echo(pytest.__version__)
-    echo('Checking for dcos library...', d='step-min', n=False)
-    try:
-        import dcos
-    except ImportError:
-        click.secho("error: dcos is not installed; run 'pip install dcos'.", fg='red', bold=True)
-        exit(1)
-    echo(dcos.version)
-    echo('Checking DCOS cluster state...', d='step-min', n=False)
-    try:
-        from dcos import (config, marathon, util)
 
-        with stdchannel_redirected(sys.stderr, os.devnull):
-            config.set_val('core.dcos_url', args['dcos_url'])
+    # required modules and their 'version' method
+    imported = {}
+    requirements = {
+        'pytest': '__version__',
+        'dcos': 'version'
+    }
 
-        with stdchannel_redirected(sys.stderr, os.devnull):
-            dcos_config = util.get_config()
-            init_client = marathon.create_client(dcos_config)
+    for req in requirements:
+        ver = requirements[req]
+
+        echo("Checking for {} library...".format(req), d='step-min', n=False)
+        try:
+            imported[req] = importlib.import_module(req, package=None)
+        except ImportError:
+            click.secho("error: {p} is not installed; run 'pip install {p}'.".format(p=req), fg='red', bold=True)
+            os.exit(1)
+
+        echo(getattr(imported[req], requirements[req]))
+
+    echo('Checking for DC/OS cluster...', d='step-min', n=False)
+
+    with stdchannel_redirected(sys.stderr, os.devnull):
+        imported['dcos'].config.set_val('core.dcos_url', args['dcos_url'])
+
+    try:
+        echo(shakedown.dcos_version())
     except:
         click.secho("error: cluster '" + args['dcos_url'] + "' is unreachable.", fg='red', bold=True)
         exit(1)
-    echo('running')
+
+    if set(['username', 'password']).issubset(args):
+        echo('Authenticating with cluster...', d='step-maj')
+
+        try:
+            echo('Retrieving ACS token...', d='step-min', n=False)
+            token = shakedown.authenticate(args['username'], args['password'])
+
+            with stdchannel_redirected(sys.stderr, os.devnull):
+                imported['dcos'].config.set_val('core.dcos_acs_token', token)
+
+            echo('ok')
+        except:
+            click.secho("error: authentication failed.", fg='red', bold=True)
+            exit(1)
 
 
     class shakedown:
@@ -268,4 +286,4 @@ def cli(**args):
     if args['path']:
         opts.append(' '.join(args['path']))
 
-    pytest.main(' '.join(opts), plugins=[shakedown()])
+    imported['pytest'].main(' '.join(opts), plugins=[shakedown()])

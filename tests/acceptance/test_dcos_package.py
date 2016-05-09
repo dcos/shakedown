@@ -11,6 +11,15 @@ def test_uninstall_package_and_wait():
     assert uninstall_package_and_wait('jenkins')
     assert package_installed('jenkins') == False
 
+def test_install_package_with_subcommand():
+    assert install_package_and_wait('spark')
+    result, error = run_dcos_command('spark --version')
+    assert result.startswith('dcos-spark version')
+
+    assert uninstall_package_and_wait('spark')
+    result, error = run_dcos_command('spark --version')
+    assert result.startswith("'spark' is not a dcos command.")
+
 def test_add_package_repo():
     assert add_package_repo('Multiverse', 'https://github.com/mesosphere/multiverse/archive/version-2.x.zip', 0)
 

@@ -20,14 +20,14 @@ def dcos_service_url(service):
     :param service: the name of a registered DCOS service, as a string
     :return: the full DCOS service URL, as a string
     """
-    return '/'.join([dcos_url(), 'service', service])
+    return _gen_url("/service/{}".format(service))
 
 
 def dcos_version():
     """Return the version of the running cluster.
     :return: DC/OS cluster version as a string
     """
-    url = "{}/dcos-metadata/dcos-version.json".format(dcos_url())
+    url = _gen_url('dcos-metadata/dcos-version.json')
     response = requests.request('get', url)
 
     if response.status_code == 200:
@@ -47,9 +47,7 @@ def authenticate(username, password):
     """Authenticate with a DC/OS cluster and return an ACS token.
     return: ACS token
     """
-
-    from six.moves import urllib
-    url = urllib.parse.urljoin(dcos_url(), 'acs/api/v1/auth/login')
+    url = _gen_url('acs/api/v1/auth/login')
 
     creds = {
         'uid': username,
@@ -62,3 +60,15 @@ def authenticate(username, password):
         return response.json()['token']
     else:
         return None
+
+
+def _gen_url(url_path):
+    """Return an absolute URL by combining DC/OS URL and url_path.
+
+    :param url_path: path to append to DC/OS URL
+    :type url_path: str
+    :return: absolute URL
+    :rtype: str
+    """
+    from six.moves import urllib
+    return urllib.parse.urljoin(dcos_url(), url_path)

@@ -1,7 +1,7 @@
 import json
 import time
 
-from dcos import (cosmospackage)
+from dcos import (cosmospackage, subcommand)
 from dcoscli.package.main import _get_cosmos_url
 
 import shakedown
@@ -93,6 +93,11 @@ def install_package(
             now = time.time()
 
         return False
+
+    # Install subcommands (if defined)
+    if pkg.has_command_definition():
+        print("\n{}installing CLI commands for package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
+        subcommand.install(pkg, pkg.options(options))
 
     return True
 

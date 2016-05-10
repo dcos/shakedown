@@ -23,7 +23,13 @@
       * [run_command_on_master()](#run_command_on_master)
       * [run_command_on_agent()](#run_command_on_agent)
       * [run_dcos_command()](#run_dcos_command)
-    * Services
+    * File operations
+      * [copy_file()](#copy_file)
+      * [copy_file_to_master()](#copy_file_to_master)
+      * [copy_file_to_agent()](#copy_file_to_agent)
+      * [copy_file_from_master()](#copy_file_from_master)
+      * [copy_file_from_agent()](#copy_file_from_agent)
+    * Services and tasks
       * [get_service()](#get_service)
       * [get_service_framework_id()](#get_service_framework_id)
       * [get_service_task()](#get_service_task)
@@ -292,6 +298,102 @@ parameter | description | type | default
 result, error = run_dcos_command('package search jenkins --json')
 result_json = json.loads(result)
 print(result_json['packages'][0]['currentVersion'])
+```
+
+
+### copy_file()
+
+Copy a file via SCP.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**host** | the hostname or IP to copy the file to/from | str
+**file_path** | the local path to the file to be copied | str
+remote_path | the remote path to copy the file to | str | `.`
+username | the username used for SSH authentication | str | `core`
+key_path | the path to the SSH keyfile used for authentication | str | `None`
+action | 'put' (default) or 'get' | str | `put`
+
+##### *example usage*
+
+```python
+# Copy a datafile onto the Mesos master
+copy_file(master_ip(), '/var/data/datafile.txt')
+```
+
+
+### copy_file_to_master()
+
+Copy a file to the Mesos master.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**file_path** | the local path to the file to be copied | str
+remote_path | the remote path to copy the file to | str | `.`
+username | the username used for SSH authentication | str | `core`
+key_path | the path to the SSH keyfile used for authentication | str | `None`
+
+##### *example usage*
+
+```python
+# Copy a datafile onto the Mesos master
+copy_file_to_master('/var/data/datafile.txt')
+```
+
+
+### copy_file_to_agent()
+
+Copy a file to a Mesos agent, proxied through the Mesos master.
+
+*This method uses the same parameters as [`copy_file()`](#copy_file)*
+
+
+### copy_file_from_master()
+
+Copy a file from the Mesos master.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**remote_path** | the remote path of the file to copy | str |
+file_path | the local path to copy the file to | str | `.`
+username | the username used for SSH authentication | str | `core`
+key_path | the path to the SSH keyfile used for authentication | str | `None`
+
+##### *example usage*
+
+```python
+# Copy a datafile from the Mesos master
+copy_file_from_master('/var/data/datafile.txt')
+```
+
+
+### copy_file_from_agent()
+
+Copy a file from a Mesos agent, proxied through the Mesos master.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**host** | the hostname or IP to copy the file from | str
+**remote_path** | the remote path of the file to copy | str
+file_path | the local path to copy the file to | str | `.`
+username | the username used for SSH authentication | str | `core`
+key_path | the path to the SSH keyfile used for authentication | str | `None`
+
+##### *example usage*
+
+```python
+# Copy a datafile from an agent running Jenkins
+service_ips = get_service_ips('marathon', 'jenkins')
+for host in service_ips:
+    assert copy_file_from_agent(host, '/home/jenkins/datafile.txt')
 ```
 
 

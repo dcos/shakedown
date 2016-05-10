@@ -1,7 +1,7 @@
-import os
-import paramiko
 import select
 import subprocess
+
+from shakedown.dcos.helpers import *
 
 import shakedown
 
@@ -12,7 +12,7 @@ def run_command(
         username='core',
         key_path=None
 ):
-    """ Run a command via SSH, proxyied through the mesos master
+    """ Run a command via SSH, proxied through the mesos master
 
         :param host: host or IP of the machine to execute the command on
         :type host: str
@@ -30,30 +30,10 @@ def run_command(
     if not key_path:
         key_path = shakedown.cli.ssh_key_file
 
-    key_path = os.path.expanduser(key_path)
+    key = validate_key(key_path)
 
-    if not os.path.isfile(key_path):
-        print('error: key not found: ' + key_path)
-        return False
-
-    key = paramiko.RSAKey.from_private_key_file(key_path)
-
-    transport = None
-
-    if host == shakedown.master_ip():
-        transport = paramiko.Transport(host)
-    else:
-        transport_master = paramiko.Transport(shakedown.master_ip())
-        _start_transport(transport_master, username, key)
-
-        if not transport_master.is_authenticated():
-           print('error: unable to authentication ' + username + '@' + shakedown.master_ip() + ' with key ' + key_path)
-           return False
-
-        channel = transport_master.open_channel('direct-tcpip', (host, 22), ('127.0.0.1', 0))
-        transport = paramiko.Transport(channel)
-
-    _start_transport(transport, username, key)
+    transport = get_transport(host, username, key)
+    transport = start_transport(transport, username, key)
 
     if transport.is_authenticated():
         print("\n{}{} $ {}\n".format(shakedown.cli.helpers.fchr('>>'), host, command))
@@ -71,12 +51,9 @@ def run_command(
         channel.close()
         transport.close()
 
-        if host != shakedown.master_ip():
-            transport_master.close()
-
         return True
     else:
-        print('error: unable to authentication ' + username + '@' + host + ' with key ' + key_path)
+        print('error: unable to authenticate ' + username + '@' + host + ' with key ' + key_path)
         return False
 
 
@@ -125,23 +102,3 @@ def run_dcos_command(command):
     print(output, error)
 
     return output, error
-
-
-def _start_transport(transport, username, key):
-    """ Begin a transport client and authenticate it
-
-        :param transport: the transport object to start
-        :type transport: paramiko.Transport
-        :param username: SSH username
-        :type username: str
-        :param key: key object used for authentication
-        :type key: paramiko.RSAKey
-
-        :return: the transport object passed
-        :rtype: paramiko.Transport
-    """
-
-    transport.start_client()
-    transport.auth_publickey(username, key)
-
-    return transport

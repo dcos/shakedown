@@ -20,6 +20,7 @@ setup(name='shakedown',
           'dcoscli==0.4.4',
           'paramiko',
           'pytest',
+          'scp'
       ],
       entry_points="""
       [console_scripts]

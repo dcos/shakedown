@@ -62,8 +62,14 @@ def install_package(
         :rtype: bool
     """
 
+    options = _get_options(options_file)
     cosmos = _get_cosmos()
     pkg = cosmos.get_package_version(package_name, package_version)
+
+    # Install subcommands (if defined)
+    if pkg.has_command_definition():
+        print("\n{}installing CLI commands for package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
+        subcommand.install(pkg, pkg.options(options))
 
     print("\n{}installing package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
 
@@ -72,7 +78,6 @@ def install_package(
     if pre_install_notes:
         print(pre_install_notes)
 
-    options = _get_options(options_file)
     cosmos.install_app(pkg, options, app_id)
 
     # Print post-install notes to console log
@@ -93,11 +98,6 @@ def install_package(
             now = time.time()
 
         return False
-
-    # Install subcommands (if defined)
-    if pkg.has_command_definition():
-        print("\n{}installing CLI commands for package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
-        subcommand.install(pkg, pkg.options(options))
 
     return True
 
@@ -166,6 +166,13 @@ def uninstall_package(
     print("\n{}uninstalling package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
 
     cosmos = _get_cosmos()
+    pkg = cosmos.get_package_version(package_name, None)
+
+    # Uninstall subcommands (if defined)
+    if pkg.has_command_definition():
+        print("\n{}uninstalling CLI commands for package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
+        subcommand.uninstall(package_name)
+
     cosmos.uninstall_app(package_name, all_instances, app_id)
 
     # Optionally wait for the service to unregister as a framework

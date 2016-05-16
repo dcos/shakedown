@@ -37,6 +37,7 @@
       * [get_service_ips()](#get_service_ips)
       * [get_marathon_task()](#get_marathon_task)
       * [get_marathon_tasks()](#get_marathon_tasks)
+      * [service_healthy()](#service_healthy)
 
 
 ## Usage
@@ -536,4 +537,24 @@ completed | include completed services? | bool | `False`
 # Get all IPs associated with the 'chronos' task running in the 'marathon' service
 service_ips = get_service_ips('marathon', 'chronos')
 print('service_ips: ' + str(service_ips))
+```
+
+
+### service_healthy()
+
+Check whether a specified service is currently healthy.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**service_name** | the name of the service | str
+app_id | custom app ID | str | `None`
+
+##### *example usage*
+
+```python
+# Is the 'jenkins' service healthy?
+if service_healthy('jenkins'):
+    print('Jenkins is healthy!')
 ```

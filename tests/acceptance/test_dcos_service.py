@@ -1,3 +1,5 @@
+import time
+
 from shakedown import *
 
 
@@ -38,3 +40,13 @@ def test_get_service_ips():
     print('service_ips: ' + str(service_ips))
 
     uninstall_package_and_wait('chronos')
+
+
+def test_service_healthy():
+    assert not service_healthy('jenkins')
+    install_package_and_wait('jenkins')
+
+    time.sleep(60)
+    assert service_healthy('jenkins')
+
+    uninstall_package_and_wait('jenkins')

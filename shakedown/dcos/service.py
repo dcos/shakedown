@@ -1,4 +1,4 @@
-from dcos import mesos
+from dcos import (marathon, mesos)
 
 
 def get_service(
@@ -162,3 +162,32 @@ def get_service_ips(
                 ips.add(task['statuses'][0]['container_status']['network_infos'][0]['ip_address'])
 
     return ips
+
+
+def service_healthy(service_name, app_id=None):
+    """ Check whether a named service is healthy
+
+        :param service_name: the service name
+        :type service_name: str
+        :param app_id: app_id to filter
+        :type app_id: str
+
+        :return: True if healthy, False otherwise
+        :rtype: bool
+    """
+
+    marathon_client = marathon.create_client()
+    apps = marathon_client.get_apps_for_framework(service_name)
+
+    if apps:
+        for app in apps:
+            if (app_id is not None) and (app['id'] != "/{}".format(str(app_id))):
+                continue
+
+            if (app['tasksHealthy']) \
+            and (app['tasksRunning']) \
+            and (not app['tasksStaged']) \
+            and (not app['tasksUnhealthy']):
+                return True
+
+    return False

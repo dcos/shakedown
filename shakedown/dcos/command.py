@@ -1,4 +1,5 @@
 import select
+import shlex
 import subprocess
 
 from shakedown.dcos.helpers import *
@@ -90,7 +91,7 @@ def run_dcos_command(command):
         :rtype: tuple
     """
 
-    call = command.split()
+    call = shlex.split(command)
     call.insert(0, 'dcos')
 
     print("\n{}{}\n".format(shakedown.cli.helpers.fchr('>>'), ' '.join(call)))

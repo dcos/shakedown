@@ -29,7 +29,7 @@
       * [copy_file_to_agent()](#copy_file_to_agent)
       * [copy_file_from_master()](#copy_file_from_master)
       * [copy_file_from_agent()](#copy_file_from_agent)
-    * Services and tasks
+    * Services
       * [get_service()](#get_service)
       * [get_service_framework_id()](#get_service_framework_id)
       * [get_service_task()](#get_service_task)
@@ -38,6 +38,11 @@
       * [get_marathon_task()](#get_marathon_task)
       * [get_marathon_tasks()](#get_marathon_tasks)
       * [service_healthy()](#service_healthy)
+    * Tasks
+      * [get_task()](#get_task)
+      * [get_tasks()](#get_tasks)
+      * [get_active_tasks()](#get_active_tasks)
+      * [task_completed()](#task_completed)
 
 
 ## Usage
@@ -549,7 +554,6 @@ Check whether a specified service is currently healthy.
 parameter | description | type | default
 --------- | ----------- | ---- | -------
 **service_name** | the name of the service | str
-app_id | custom app ID | str | `None`
 
 ##### *example usage*
 
@@ -557,4 +561,73 @@ app_id | custom app ID | str | `None`
 # Is the 'jenkins' service healthy?
 if service_healthy('jenkins'):
     print('Jenkins is healthy!')
+```
+
+
+### get_task()
+
+Get information about a task.
+
+*This method uses the same parameters as [`get_tasks()`](#get_tasks)*
+
+
+### get_tasks()
+
+Get a list of tasks, optionally filtered by task name.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+task_name | the nameof the task | str
+completed | include completed tasks? | `True`
+
+##### *example usage*
+
+```python
+# What tasks have been run?
+tasks = get_tasks()
+for task in tasks:
+    print("{} has state {}".format(task['id'], task['state']))
+```
+
+
+### get_active_tasks()
+
+Get a list of active tasks, optionally filtered by task name.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+task_name | the nameof the task | str
+completed | include completed tasks? | `False`
+
+##### *example usage*
+
+```python
+# What tasks are running?
+tasks = get_active_tasks()
+for task in tasks:
+    print("{} has state {}".format(task['id'], task['state']))
+```
+
+
+### task_completed()
+
+Check whether a task has completed.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+task_name | the nameof the task | str
+
+##### *example usage*
+
+```python
+# Wait for task 'driver-20160517222552-0072' to complete
+while not task_completed('driver-20160517222552-0072'):
+    print('Task not complete; sleeping...')
+    time.sleep(5)
 ```

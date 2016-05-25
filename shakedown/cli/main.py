@@ -36,7 +36,7 @@ def cli(**args):
 
     if not args['dcos_url']:
         click.secho('error: --dcos-url is a required option; see --help for more information.', fg='red', bold=True)
-        exit(1)
+        sys.exit(1)
 
     if args['ssh_key_file']:
         shakedown.cli.ssh_key_file = args['ssh_key_file']
@@ -61,7 +61,7 @@ def cli(**args):
             imported[req] = importlib.import_module(req, package=None)
         except ImportError:
             click.secho("error: {p} is not installed; run 'pip install {p}'.".format(p=req), fg='red', bold=True)
-            os.exit(1)
+            sys.exit(1)
 
         echo(getattr(imported[req], requirements[req]))
 
@@ -74,7 +74,7 @@ def cli(**args):
         echo(shakedown.dcos_version())
     except:
         click.secho("error: cluster '" + args['dcos_url'] + "' is unreachable.", fg='red', bold=True)
-        exit(1)
+        sys.exit(1)
 
     if set(['username', 'password']).issubset(args):
         echo('Authenticating with cluster...', d='step-maj')
@@ -89,7 +89,7 @@ def cli(**args):
             echo('ok')
         except:
             click.secho("error: authentication failed.", fg='red', bold=True)
-            exit(1)
+            sys.exit(1)
 
 
     class shakedown:
@@ -286,4 +286,6 @@ def cli(**args):
     if args['path']:
         opts.append(' '.join(args['path']))
 
-    imported['pytest'].main(' '.join(opts), plugins=[shakedown()])
+    exitstatus = imported['pytest'].main(' '.join(opts), plugins=[shakedown()])
+
+    sys.exit(exitstatus)

@@ -4,11 +4,13 @@ from shakedown import *
 
 
 def test_install_package_and_wait():
-    assert install_package_and_wait('jenkins')
+    assert not package_installed('jenkins')
+    install_package_and_wait('jenkins')
     assert package_installed('jenkins')
 
 def test_uninstall_package_and_wait():
-    assert uninstall_package_and_wait('jenkins')
+    assert package_installed('jenkins')
+    uninstall_package_and_wait('jenkins')
     assert package_installed('jenkins') == False
 
 def test_install_package_with_subcommand():
@@ -19,7 +21,7 @@ def test_install_package_with_subcommand():
 def test_uninstall_package_with_subcommand():
     uninstall_package_and_wait('spark')
     result, err = run_dcos_command('spark --version')
-    assert err.endswith('is not a dcos command.')
+    assert err.endswith("is not a dcos command.\n")
 
 def test_add_package_repo():
     assert add_package_repo('Multiverse', 'https://github.com/mesosphere/multiverse/archive/version-2.x.zip', 0)

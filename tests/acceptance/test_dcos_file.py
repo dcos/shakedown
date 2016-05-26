@@ -57,6 +57,8 @@ def test_copy_file_from_master():
     print(f.read())
     f.close()
 
+    os.remove('motd')
+
 
 def test_copy_file_from_agent():
     if not package_installed('jenkins'):
@@ -70,3 +72,8 @@ def test_copy_file_from_agent():
     f = open('motd', 'r')
     print(f.read())
     f.close()
+
+    if package_installed('jenkins'):
+        uninstall_package_and_wait('jenkins')
+
+    os.remove('motd')

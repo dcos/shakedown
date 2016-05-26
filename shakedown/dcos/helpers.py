@@ -2,6 +2,8 @@ import os
 import paramiko
 import scp
 
+from dcos import http
+
 import shakedown
 
 

@@ -5,6 +5,13 @@ import requests
 import shakedown
 
 
+def dcos_acs_token():
+    """Return the DCOS ACS token as configured in the DCOS library.
+    :return: DCOS ACS token as a string
+    """
+    return dcos.util.get_config().get('core.dcos_acs_token')
+
+
 def dcos_url():
     """Return the DCOS URL as configured in the DCOS library. This is
     equivalent to the value of '--dcos_url' passed into Shakedown on the

@@ -7,7 +7,9 @@
   * [Methods](#methods)
     * General
       * [dcos_url()](#dcos_url)
-      * [dcos_service_uri()](#dcos_service_uri)
+      * [dcos_service_url()](#dcos_service_url)
+      * [dcos_version()](#dcos_version)
+      * [dcos_acs_token()](#dcos_acs_token)
       * [master_ip()](#master_ip)
     * Packaging
       * [install_package()](#install_package)
@@ -69,7 +71,7 @@ print("Dashboard located at: " + dcos_url)
 ```
 
 
-### dcos_service_uri()
+### dcos_service_url()
 
 The URI to a named service.
 
@@ -83,9 +85,44 @@ parameter | description | type | default
 
 ```python
 # Print the location of the Jenkins service's dashboard
-jenkins_uri = dcos_service_uri('jenkins')
-print("Jenkins dashboard located at: " + jenkins_uri)
+jenkins_url = dcos_service_url('jenkins')
+print("Jenkins dashboard located at: " + jenkins_url)
 ```
+
+
+### dcos_version()
+
+The DC/OS version number.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# Print the DC/OS version.
+dcos_version = dcos_version()
+print("Cluster is running DC/OS version " + dcos_version)
+```
+
+
+### dcos_acs_token()
+
+The DC/OS ACS token (if authenticated).
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# Print the DC/OS ACS token.
+token = dcos_acs_token()
+print("Using token " + token)
+```
+
 
 
 ### master_ip()

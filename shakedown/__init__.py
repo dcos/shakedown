@@ -7,4 +7,4 @@ from shakedown.dcos.package import *
 from shakedown.dcos.service import *
 from shakedown.dcos.task import *
 
-VERSION='0.0.1'
+VERSION='1.0.0'

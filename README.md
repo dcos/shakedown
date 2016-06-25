@@ -40,6 +40,10 @@ Shakedown is licensed under the Apache License, Version 2.0.  For additional
 information, see the [LICENSE](LICENSE) file included at the root of this repository.
 
 
+## Reporting Issues
+
+Please report issues and submit feature requests for Shakedown by [creating an issue in the DC/OS JIRA with the "shakedown" component](https://dcosjira.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=10001&issuetype=10003&components=10700).
+
 ## Contributing
 
 See the [CONTRIBUTING](CONTRIBUTING.md) file in the root of this repository.

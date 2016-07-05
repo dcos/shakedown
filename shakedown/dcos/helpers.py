@@ -52,7 +52,20 @@ def start_transport(transport, username, key):
     """
 
     transport.start_client()
-    transport.auth_publickey(username, key)
+
+    if key:
+        transport.auth_publickey(username, key)
+        return transport
+
+    agent = paramiko.agent.Agent()
+    for key in agent.get_keys():
+        try:
+            transport.auth_publickey(username, key)
+            break
+        except paramiko.AuthenticationException as e:
+            pass
+    else:
+        raise ValueError('No valid key supplied')
 
     return transport
 

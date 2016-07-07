@@ -29,6 +29,20 @@ def dcos_service_url(service):
     return _gen_url("/service/{}".format(service))
 
 
+def dcos_state():
+    client = dcos.mesos.DCOSClient()
+    json_data = client.get_state_summary()
+
+    if json_data:
+        return json_data
+    else:
+        return None
+
+
+def dcos_leader():
+    return dcos.mesos.MesosDNSClient().hosts('leader.mesos.')
+
+
 def dcos_version():
     """Return the version of the running cluster.
     :return: DC/OS cluster version as a string

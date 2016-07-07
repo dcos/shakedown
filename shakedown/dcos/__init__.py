@@ -1,6 +1,5 @@
 import os
 import dcos
-import requests
 
 import shakedown
 
@@ -35,7 +34,7 @@ def dcos_version():
     :return: DC/OS cluster version as a string
     """
     url = _gen_url('dcos-metadata/dcos-version.json')
-    response = requests.request('get', url)
+    response = dcos.http.request('get', url)
 
     if response.status_code == 200:
         return response.json()['version']
@@ -61,7 +60,7 @@ def authenticate(username, password):
         'password': password
     }
 
-    response = requests.request('post', url, json=creds)
+    response = dcos.http.request('post', url, json=creds)
 
     if response.status_code == 200:
         return response.json()['token']

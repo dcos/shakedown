@@ -11,7 +11,7 @@ def partition_agent(
         :param hostname: host or IP of the machine to partition from the cluster
     """
 
-    copy_file_to_agent(hostname, shakedown_dir() + "/partition_cmd")
+    copy_file_to_agent(hostname, "{}/partition_cmd".format(shakedown_dcos_dir()))
     run_command_on_agent(hostname, "sh partition_cmd")
 
 def reconnect_agent(
@@ -22,9 +22,9 @@ def reconnect_agent(
         :param hostname: host or IP of the machine to partition from the cluster
     """
 
-    copy_file_to_agent(hostname, shakedown_dir() + "/reconnect_cmd")
+    copy_file_to_agent(hostname, "{}/reconnect_cmd".format(shakedown_dcos_dir()))
     run_command_on_agent(hostname, "sh reconnect_cmd")
 
-def shakedown_dir():
-    """Gets the path to the shakedown directory"""
+def shakedown_dcos_dir():
+    """Gets the path to the shakedown dcos directory"""
     return os.path.dirname(os.path.realpath(__file__))

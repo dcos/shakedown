@@ -7,5 +7,6 @@ from shakedown.dcos.package import *
 from shakedown.dcos.service import *
 from shakedown.dcos.task import *
 from shakedown.dcos.zookeeper import *
+from shakedown.dcos.agent import *
 
 VERSION='1.0.0'

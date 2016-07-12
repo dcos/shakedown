@@ -48,6 +48,10 @@
       * [task_completed()](#task_completed)
     * ZooKeeper
       * [delete_zk_node()](#delete_zk_node)
+    * Agents
+      * [get_agents()](#get_agents)
+      * [get_private_agents()](#get_private_agents)
+      * [get_public_agents()](#get_public_agents)
 
 
 ## Usage
@@ -705,4 +709,54 @@ node_name | the name of the node | str
 ```python
 # Delete a 'universe/marathon-user' ZooKeeper node
 delete_zk_node('universe/marathon-user')
+```
+
+
+### get_agents()
+
+Retrieve a list of all agent node IP addresses.
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+# What do I look like in IP space?
+nodes = get_agents()
+print("Node IP addresses: " + nodes)
+```
+
+### get_agents()
+
+Retrieve a list of all agent node IP addresses.
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+# What do I look like in IP space?
+private_nodes = get_private_agents()
+print("Private IP addresses: " + private_nodes)
+```
+
+
+### get_public_agents()
+
+Retrieve a list of all public agent node IP addresses.
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+# What do I look like in IP space?
+public_nodes = get_public_agents()
+print("Public IP addresses: " + public_nodes)
 ```

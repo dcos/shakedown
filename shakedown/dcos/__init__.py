@@ -8,7 +8,7 @@ def dcos_acs_token():
     """Return the DCOS ACS token as configured in the DCOS library.
     :return: DCOS ACS token as a string
     """
-    return dcos.util.get_config().get('core.dcos_acs_token')
+    return dcos.config.get_config().get('core.dcos_acs_token')
 
 
 def dcos_url():
@@ -17,7 +17,7 @@ def dcos_url():
     command line.
     :return: DCOS cluster URL as a string
     """
-    return dcos.util.get_config().get('core.dcos_url')
+    return dcos.config.get_config().get('core.dcos_url')
 
 
 def dcos_service_url(service):

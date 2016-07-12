@@ -20,12 +20,18 @@ def get_private_agents():
     agent_list = []
     agents = __get_all_agents()
     for agent in agents:
-        for reservation in agent["reserved_resources"]:
-            if "slave_public" not in reservation:
+        if(len(agent["reserved_resources"]) == 0):
+            agent_list.append(agent["hostname"])
+        else:
+            private = True
+            for reservation in agent["reserved_resources"]:
+                if("slave_public" in reservation):
+                    private = False
+
+            if(private):
                 agent_list.append(agent["hostname"])
 
     return agent_list
-
 
 def get_agents():
     """Provides a list of hostnames / IPs of all agents in the cluster"""

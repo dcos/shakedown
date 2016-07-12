@@ -45,6 +45,10 @@
       * [get_tasks()](#get_tasks)
       * [get_active_tasks()](#get_active_tasks)
       * [task_completed()](#task_completed)
+    * Agents
+      * [get_agents()](#get_agents)
+      * [get_private_agents()](#get_private_agents)
+      * [get_public_agents()](#get_public_agents)
 
 
 ## Usage
@@ -667,4 +671,54 @@ task_name | the nameof the task | str
 while not task_completed('driver-20160517222552-0072'):
     print('Task not complete; sleeping...')
     time.sleep(5)
+```
+
+
+### get_agents()
+
+Retrieve a list of all agent node IP addresses.
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+# What do I look like in IP space?
+nodes = get_agents()
+print("Node IP addresses: " + nodes)
+```
+
+### get_agents()
+
+Retrieve a list of all agent node IP addresses.
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+# What do I look like in IP space?
+private_nodes = get_private_agents()
+print("Private IP addresses: " + private_nodes)
+```
+
+
+### get_public_agents()
+
+Retrieve a list of all public agent node IP addresses.
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+# What do I look like in IP space?
+public_nodes = get_public_agents()
+print("Public IP addresses: " + public_nodes)
 ```

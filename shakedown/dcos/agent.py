@@ -41,5 +41,5 @@ def __get_all_agents():
     """Provides all agent json in the cluster which can be used for filtering"""
 
     client = mesos.DCOSClient()
-    slaves = client.get_state_summary()['slaves']
-    return slaves
+    agents = client.get_state_summary()['slaves']
+    return agents

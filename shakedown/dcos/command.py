@@ -49,8 +49,8 @@ def run_command(
                 recv = str(channel.recv(1024), "utf-8")
                 print(recv, end='', flush=True)
 
-        channel.close()
-        transport.close()
+        try_close(channel)
+        try_close(transport)
 
         return True
     else:

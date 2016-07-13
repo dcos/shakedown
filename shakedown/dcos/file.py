@@ -54,8 +54,8 @@ def copy_file(
 
         print(str(os.path.getsize(file_path)) + ' bytes copied in ' + str(round(time.time() - start, 2))  + ' seconds.')
 
-        channel.close()
-        transport.close()
+        try_close(channel)
+        try_close(transport)
 
         return True
     else:

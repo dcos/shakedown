@@ -155,11 +155,8 @@ def get_service_ips(
     for task in service_tasks:
         if task_name is not None:
             if task['name'] == task_name:
-                if task['statuses'][0]['container_status']['network_infos'][0]['ip_address']:
-                    ips.add(task['statuses'][0]['container_status']['network_infos'][0]['ip_address'])
-        else:
-            if task['statuses'][0]['container_status']['network_infos'][0]['ip_address']:
-                ips.add(task['statuses'][0]['container_status']['network_infos'][0]['ip_address'])
+                for ip in task['statuses'][0]['container_status']['network_infos'][0]['ip_addresses']:
+                    ips.add(ip['ip_address'])
 
     return ips
 

@@ -4,14 +4,14 @@ from shakedown import *
 
 
 def test_install_package_and_wait():
-    assert not package_installed('jenkins')
-    install_package_and_wait('jenkins')
-    assert package_installed('jenkins')
+    assert not package_installed('marathon-lb')
+    install_package_and_wait('marathon-lb')
+    assert package_installed('marathon-lb')
 
 def test_uninstall_package_and_wait():
-    assert package_installed('jenkins')
-    uninstall_package_and_wait('jenkins')
-    assert package_installed('jenkins') == False
+    assert package_installed('marathon-lb')
+    uninstall_package_and_wait('marathon-lb')
+    assert package_installed('marathon-lb') == False
 
 def test_install_package_with_subcommand():
     install_package_and_wait('spark')

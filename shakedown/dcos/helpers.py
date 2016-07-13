@@ -70,6 +70,16 @@ def start_transport(transport, username, key):
     return transport
 
 
+# SSH connection will be auto-terminated at the conclusion of this operation, causing
+# a race condition; the try/except block attempts to close the channel and/or transport
+# but does not issue a failure if it has already been closed.
+def try_close(obj):
+    try:
+        obj.close()
+    except:
+        pass
+
+
 def validate_key(key_path):
     """ Validate a key
 

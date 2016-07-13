@@ -35,17 +35,11 @@ def test_copy_file_to_agent():
     f.write('Hello world!')
     f.close()
 
-    if not package_installed('jenkins'):
-        install_package_and_wait('jenkins')
-
     # Get all IPs associated with the 'jenkins' task running in the 'marathon' service
     service_ips = get_service_ips('marathon', 'jenkins')
     for host in service_ips:
         assert copy_file_to_agent(host, '/tmp/' + filename)
         assert run_command_on_agent(host, 'cat ' + filename)
-
-    if package_installed('jenkins'):
-        uninstall_package_and_wait('jenkins')
 
     os.remove('/tmp/' + filename)
 
@@ -61,9 +55,6 @@ def test_copy_file_from_master():
 
 
 def test_copy_file_from_agent():
-    if not package_installed('jenkins'):
-        install_package_and_wait('jenkins')
-
     # Get all IPs associated with the 'jenkins' task running in the 'marathon' service
     service_ips = get_service_ips('marathon', 'jenkins')
     for host in service_ips:
@@ -72,8 +63,5 @@ def test_copy_file_from_agent():
     f = open('motd', 'r')
     print(f.read())
     f.close()
-
-    if package_installed('jenkins'):
-        uninstall_package_and_wait('jenkins')
 
     os.remove('motd')

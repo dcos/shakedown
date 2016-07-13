@@ -8,6 +8,7 @@
     * General
       * [dcos_url()](#dcos_url)
       * [dcos_service_url()](#dcos_service_url)
+      * [dcos_state()](#dcos_state)
       * [dcos_version()](#dcos_version)
       * [dcos_acs_token()](#dcos_acs_token)
       * [master_ip()](#master_ip)
@@ -45,6 +46,12 @@
       * [get_tasks()](#get_tasks)
       * [get_active_tasks()](#get_active_tasks)
       * [task_completed()](#task_completed)
+    * ZooKeeper
+      * [delete_zk_node()](#delete_zk_node)
+    * Agents
+      * [get_agents()](#get_agents)
+      * [get_private_agents()](#get_private_agents)
+      * [get_public_agents()](#get_public_agents)
 
 
 ## Usage
@@ -87,6 +94,23 @@ parameter | description | type | default
 # Print the location of the Jenkins service's dashboard
 jenkins_url = dcos_service_url('jenkins')
 print("Jenkins dashboard located at: " + jenkins_url)
+```
+
+
+### dcos_state()
+
+A JSON hash containing DC/OS state information.
+
+#### *parameters*
+
+None.
+
+#### *example usage*
+
+```python
+# Print state information of DC/OS slaves.
+state_json = json.loads(dcos_json_state())
+print(state_json['slaves'])
 ```
 
 
@@ -667,4 +691,72 @@ task_name | the nameof the task | str
 while not task_completed('driver-20160517222552-0072'):
     print('Task not complete; sleeping...')
     time.sleep(5)
+```
+
+
+### delete_zk_node()
+
+Delete a named ZooKeeper node.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+node_name | the name of the node | str
+
+##### *example usage*
+
+```python
+# Delete a 'universe/marathon-user' ZooKeeper node
+delete_zk_node('universe/marathon-user')
+```
+
+
+### get_agents()
+
+Retrieve a list of all agent node IP addresses.
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+# What do I look like in IP space?
+nodes = get_agents()
+print("Node IP addresses: " + nodes)
+```
+
+### get_agents()
+
+Retrieve a list of all agent node IP addresses.
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+# What do I look like in IP space?
+private_nodes = get_private_agents()
+print("Private IP addresses: " + private_nodes)
+```
+
+
+### get_public_agents()
+
+Retrieve a list of all public agent node IP addresses.
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+# What do I look like in IP space?
+public_nodes = get_public_agents()
+print("Public IP addresses: " + public_nodes)
 ```

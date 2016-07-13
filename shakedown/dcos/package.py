@@ -2,7 +2,7 @@ import json
 import time
 
 from dcos import (cosmospackage, subcommand)
-from dcoscli.package.main import _get_cosmos_url
+from dcoscli.package.main import get_cosmos_url
 
 import shakedown
 
@@ -32,7 +32,7 @@ def _get_cosmos():
         :rtype: cosmospackage.Cosmos
     """
 
-    return cosmospackage.Cosmos(_get_cosmos_url())
+    return cosmospackage.Cosmos(get_cosmos_url())
 
 
 def install_package(
@@ -67,9 +67,9 @@ def install_package(
     pkg = cosmos.get_package_version(package_name, package_version)
 
     # Install subcommands (if defined)
-    if pkg.has_command_definition():
+    if pkg.has_cli_definition():
         print("\n{}installing CLI commands for package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
-        subcommand.install(pkg, pkg.options(options))
+        subcommand.install(pkg)
 
     print("\n{}installing package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
 
@@ -169,7 +169,7 @@ def uninstall_package(
     pkg = cosmos.get_package_version(package_name, None)
 
     # Uninstall subcommands (if defined)
-    if pkg.has_command_definition():
+    if pkg.has_cli_definition():
         print("\n{}uninstalling CLI commands for package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
         subcommand.uninstall(package_name)
 

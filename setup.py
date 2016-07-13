@@ -17,7 +17,7 @@ setup(name='shakedown',
       zip_safe=False,
       install_requires=[
           'click',
-          'dcoscli==0.4.4',
+          'dcoscli==0.4.10',
           'paramiko',
           'pytest',
           'scp'

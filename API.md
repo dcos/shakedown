@@ -52,6 +52,8 @@
       * [get_agents()](#get_agents)
       * [get_private_agents()](#get_private_agents)
       * [get_public_agents()](#get_public_agents)
+      * [partition_agent()](#partition_agent)
+      * [reconnect_agent()](#reconnect_agent)
 
 
 ## Usage
@@ -194,8 +196,8 @@ install_package('jenkins')
 Install a package, and wait for the service to register.
 
 *This method uses the same parameters as [`install_package()`](#install_package)*
-    
-    
+
+
 ### uninstall_package()
 
 Uninstall a package.
@@ -223,8 +225,8 @@ uninstall_package('jenkins')
 Uninstall a package, and wait for the service to unregister.
 
 *This method uses the same parameters as [`uninstall_package()`](#uninstall_package)*
-    
-    
+
+
 ### package_installed()
 
 Check whether a specified package is currently installed.
@@ -759,4 +761,48 @@ None
 # What do I look like in IP space?
 public_nodes = get_public_agents()
 print("Public IP addresses: " + public_nodes)
+```
+
+### partition_agent()
+
+Separates the agent from the cluster by adjusting IPTables with the following:
+
+```
+sudo iptables -F INPUT
+sudo iptables -I INPUT -p tcp --dport 22 -j ACCEPT
+sudo iptables -I INPUT -p icmp -j ACCEPT
+sudo iptables -I OUTPUT -p tcp --sport 5051  -j REJECT
+sudo iptables -A INPUT -j REJECT
+```
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+
+##### *example usage*
+
+```python
+# Partition all the public nodes
+public_nodes = get_public_agents()
+for public_node in public_nodes:
+    partition_agent(public_node)
+```
+### reconnect_agent()
+
+Reconnects a previously partitioned agent by reversing the IPTable changes.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+
+##### *example usage*
+
+```python
+# Reconnect the public agents
+for public_node in public_nodes:
+    reconnect_agent(public_node)
 ```

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ ! -e iptables.rules ] ; then sudo iptables -L > /dev/null && sudo iptables-save > iptables.rules ; fi
+sudo iptables -F INPUT
+sudo iptables -I INPUT -p tcp --dport 22 -j ACCEPT
+sudo iptables -I INPUT -p icmp -j ACCEPT
+sudo iptables -I OUTPUT -p tcp --sport 5051  -j REJECT
+sudo iptables -A INPUT -j REJECT

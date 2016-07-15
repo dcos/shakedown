@@ -73,6 +73,37 @@ def reconnect_agent(
     copy_file_to_agent(hostname, "{}/reconnect_cmd".format(shakedown_dcos_dir()))
     run_command_on_agent(hostname, "sh reconnect_cmd")
 
+def restart_agent(
+    hostname
+):
+    """ Restarts an agent process at the host
+
+    :param hostname: host or IP of the machine to restart the agent process.
+    """
+
+    run_command_on_agent(hostname, "sudo systemctl restart dcos-mesos-slave")
+
+def stop_agent(
+    hostname
+):
+    """ Stops an agent process at the host
+
+    :param hostname: host or IP of the machine to stop the agent process.
+    """
+
+    run_command_on_agent(hostname, "sudo systemctl stop dcos-mesos-slave")
+
+
+def start_agent(
+    hostname
+):
+    """ Starts an agent process at the host
+
+    :param hostname: host or IP of the machine to start the agent process.
+    """
+
+    run_command_on_agent(hostname, "sudo systemctl start dcos-mesos-slave")
+
 def shakedown_dcos_dir():
     """Gets the path to the shakedown dcos directory"""
     return os.path.dirname(os.path.realpath(__file__))

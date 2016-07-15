@@ -160,7 +160,6 @@ def get_service_ips(
 
     return ips
 
-
 def service_healthy(service_name, app_id=None):
     """ Check whether a named service is healthy
 
@@ -186,5 +185,29 @@ def service_healthy(service_name, app_id=None):
             and (not app['tasksStaged']) \
             and (not app['tasksUnhealthy']):
                 return True
+
+    return False
+
+def wait_for_service_endpt(service,timeout_sec=120):
+    """Checks the service url returns HTTP 200 within a timeout if available it returns true on expiration it returns false"""
+
+    url = dcos_service_url(service)
+
+    now = time.time()
+    future = now + timeout_sec
+    time.sleep(5)
+
+    while now < future:
+        response = None
+        try:
+            response = http.get(url)
+        except Exception as e:
+            pass
+
+        if response is None:
+            time.sleep(5)
+            now = time.time()
+        elif response.status_code == 200:
+            return True
 
     return False

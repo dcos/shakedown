@@ -789,6 +789,7 @@ public_nodes = get_public_agents()
 for public_node in public_nodes:
     partition_agent(public_node)
 ```
+
 ### reconnect_agent()
 
 Reconnects a previously partitioned agent by reversing the IPTable changes.
@@ -805,4 +806,23 @@ hostname | the hostname or IP of the node | str
 # Reconnect the public agents
 for public_node in public_nodes:
     reconnect_agent(public_node)
+```
+
+### kill_process_at_host()
+
+Kill the process(es) matching pattern at ip.  This will potentially kill infrastructure processes.
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+pattern  | A regular expression matching the name of the process to
+kill | str
+
+##### *example usage*
+
+```python
+# kill java on the public agents
+for public_node in public_nodes:
+    kill_process_at_host(public_node, "java")
 ```

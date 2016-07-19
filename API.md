@@ -54,7 +54,10 @@
       * [get_public_agents()](#get_public_agents)
       * [partition_agent()](#partition_agent)
       * [reconnect_agent()](#reconnect_agent)
-
+      * [restart_agent()](#restart_agent)
+      * [stop_agent()](#stop_agent)
+      * [start_agent()](#start_agent)
+      * [kill_process_at_host()](#kill_process_at_host)
 
 ## Usage
 
@@ -806,6 +809,60 @@ hostname | the hostname or IP of the node | str
 # Reconnect the public agents
 for public_node in public_nodes:
     reconnect_agent(public_node)
+```
+
+### restart_agent()
+
+Restarts an agent process at the host.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+
+##### *example usage*
+
+```python
+# Reconnect the public agents
+for public_node in public_nodes:
+    restart_agent(public_node)
+```
+
+### stop_agent()
+
+Stops an agent process at the host.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+
+##### *example usage*
+
+```python
+# Reconnect the public agents
+for public_node in public_nodes:
+    stop_agent(public_node)
+```
+
+### start_agent()
+
+Start an agent process at the host.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+
+##### *example usage*
+
+```python
+# Reconnect the public agents
+for public_node in public_nodes:
+    start_agent(public_node)
 ```
 
 ### kill_process_at_host()

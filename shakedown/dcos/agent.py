@@ -92,6 +92,37 @@ def kill_process_at_host(
         result = cmd.run_agent_cmd(ip, "sudo kill -9 {}".format(pid))
         print("Killed pid: {} exit code: {}".format(pid, result.exit_code))
 
+def restart_agent(
+    hostname
+):
+    """ Restarts an agent process at the host
+
+    :param hostname: host or IP of the machine to restart the agent process.
+    """
+
+    run_command_on_agent(hostname, "sudo systemctl restart dcos-mesos-slave")
+
+def stop_agent(
+    hostname
+):
+    """ Stops an agent process at the host
+
+    :param hostname: host or IP of the machine to stop the agent process.
+    """
+
+    run_command_on_agent(hostname, "sudo systemctl stop dcos-mesos-slave")
+
+
+def start_agent(
+    hostname
+):
+    """ Starts an agent process at the host
+
+    :param hostname: host or IP of the machine to start the agent process.
+    """
+
+    run_command_on_agent(hostname, "sudo systemctl start dcos-mesos-slave")
+
 def shakedown_dcos_dir():
     """Gets the path to the shakedown dcos directory"""
     return os.path.dirname(os.path.realpath(__file__))

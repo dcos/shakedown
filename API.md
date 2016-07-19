@@ -41,6 +41,7 @@
       * [get_marathon_task()](#get_marathon_task)
       * [get_marathon_tasks()](#get_marathon_tasks)
       * [service_healthy()](#service_healthy)
+      * [wait_for_service_endpoint()](#wait_for_service_endpoint)
     * Tasks
       * [get_task()](#get_task)
       * [get_tasks()](#get_tasks)
@@ -610,7 +611,6 @@ service_ips = get_service_ips('marathon', 'chronos')
 print('service_ips: ' + str(service_ips))
 ```
 
-
 ### service_healthy()
 
 Check whether a specified service is currently healthy.
@@ -629,6 +629,23 @@ if service_healthy('jenkins'):
     print('Jenkins is healthy!')
 ```
 
+### wait_for_service_endpoint()
+
+Checks the service url returns HTTP 200 within a timeout if available it returns true on expiration it returns false.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**service_name** | the name of the service | str
+timeout_sec | how long in seconds to wait before timing out | int | `120`
+
+##### *example usage*
+
+```python
+# will wait
+wait_for_service_endpoint("marathon-user")
+```
 
 ### get_task()
 

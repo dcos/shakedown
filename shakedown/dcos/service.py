@@ -188,7 +188,7 @@ def service_healthy(service_name, app_id=None):
 
     return False
 
-def wait_for_service_endpt(service,timeout_sec=120):
+def wait_for_service_endpoint(service,timeout_sec=120):
     """Checks the service url returns HTTP 200 within a timeout if available it returns true on expiration it returns false"""
 
     url = dcos_service_url(service)

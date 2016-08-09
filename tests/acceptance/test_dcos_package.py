@@ -4,23 +4,23 @@ from shakedown import *
 
 
 def test_install_package_and_wait():
-    assert not package_installed('marathon-lb')
-    install_package_and_wait('marathon-lb')
-    assert package_installed('marathon-lb')
+    assert not package_installed('chronos')
+    install_package_and_wait('chronos')
+    assert package_installed('chronos')
 
 def test_uninstall_package_and_wait():
-    assert package_installed('marathon-lb')
-    uninstall_package_and_wait('marathon-lb')
-    assert package_installed('marathon-lb') == False
+    assert package_installed('chronos')
+    uninstall_package_and_wait('chronos')
+    assert package_installed('chronos') == False
 
 def test_install_package_with_subcommand():
-    install_package_and_wait('spark')
-    result, err = run_dcos_command('spark --version')
-    assert result.startswith('dcos-spark version')
+    install_package_and_wait('riak')
+    result, err = run_dcos_command('riak --version')
+    assert result.startswith('0')
 
 def test_uninstall_package_with_subcommand():
-    uninstall_package_and_wait('spark')
-    result, err = run_dcos_command('spark --version')
+    uninstall_package_and_wait('riak')
+    result, err = run_dcos_command('riak --version')
     assert err.endswith("is not a dcos command.\n")
 
 def test_add_package_repo():

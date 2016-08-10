@@ -9,4 +9,4 @@ from shakedown.dcos.task import *
 from shakedown.dcos.zookeeper import *
 from shakedown.dcos.agent import *
 
-VERSION='1.0.1'
+VERSION='1.1.0'

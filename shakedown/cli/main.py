@@ -15,6 +15,7 @@ from shakedown.cli.helpers import *
 @click.option('--no-banner', is_flag=True, help='Suppress the product banner.')
 @click.option('--quiet', is_flag=True, help='Suppress all superfluous output.')
 @click.option('--report', type=click.Choice(['json', 'junit']), help='Return a report in the specified format.')
+@click.option('--ssl-no-verify', is_flag=True, help='Suppress SSL certificate verification')
 @click.option('--stdout', type=click.Choice(['pass', 'fail', 'skip', 'all', 'none']), help='Print the standard output of tests with the specified result. (default: fail)')
 @click.option('--stdout-inline', is_flag=True, help='Display output inline rather than after test phase completion.')
 @click.version_option(version=shakedown.VERSION)
@@ -64,6 +65,9 @@ def cli(**args):
             sys.exit(1)
 
         echo(getattr(imported[req], requirements[req]))
+
+    if args['ssl_no_verify']:
+        imported['dcos'].config.set_val('core.ssl_verify', 'False')
 
     echo('Checking for DC/OS cluster...', d='step-min', n=False)
 

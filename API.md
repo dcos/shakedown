@@ -57,7 +57,7 @@
       * [restart_agent()](#restart_agent)
       * [stop_agent()](#stop_agent)
       * [start_agent()](#start_agent)
-      * [kill_process_at_host()](#kill_process_at_host)
+      * [kill_process_on_host()](#kill_process_on_host)
 
 ## Usage
 
@@ -865,7 +865,7 @@ for public_node in public_nodes:
     start_agent(public_node)
 ```
 
-### kill_process_at_host()
+### kill_process_on_host()
 
 Kill the process(es) matching pattern at ip.  This will potentially kill infrastructure processes.
 ##### *parameters*
@@ -881,5 +881,5 @@ kill | str
 ```python
 # kill java on the public agents
 for public_node in public_nodes:
-    kill_process_at_host(public_node, "java")
+    kill_process_on_host(public_node, "java")
 ```

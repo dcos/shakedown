@@ -73,24 +73,41 @@ def reconnect_agent(
     copy_file_to_agent(hostname, "{}/reconnect_cmd".format(shakedown_dcos_dir()))
     run_command_on_agent(hostname, "sh reconnect_cmd")
 
-def kill_process_at_host(
+def kill_process_on_host(
     hostname,
     pattern
 ):
-    """Kill the process matching pattern at ip
-    :param hostname: The hostname or ip address of the host on which the process will be killed
-    :param pattern: A regular expression matching the name of the process to
-    kill (ALL processes matching this expression will be killed)
+    """ Kill the process matching pattern at ip
+
+        :param hostname: the hostname or ip address of the host on which the process will be killed
+        :param pattern: a regular expression matching the name of the process to kill
     """
-    print("Killing processes that match pattern: {} on ip: {}".format(pattern,
-                                                                      ip))
-    result = cmd.run_agent_cmd(ip,
-                                "proc_id=$(ps ax | grep '" + pattern + "' | awk '{{ print $1 }}') && echo $proc_id")
+
+    print("\n{}killing processes matching pattern {} on host {}\n".format(
+        shakedown.cli.helpers.fchr('>>'),
+        pattern,
+        ip
+    ))
+
+    result = cmd.run_agent_cmd(
+        ip, "proc_id=$(ps ax | grep '" + pattern + "' | awk '{{ print $1 }}') && echo $proc_id"
+    )
     pids = str(result).split()
-    print("Pattern: {} matched following pids: {}".format(pattern, pids))
+
+    print("\n{}pattern {} matched following PIDs: {}\n".format(
+        shakedown.cli.helpers.fchr('>>'),
+        pattern,
+        pids
+    ))
+
     for pid in pids:
         result = cmd.run_agent_cmd(ip, "sudo kill -9 {}".format(pid))
-        print("Killed pid: {} exit code: {}".format(pid, result.exit_code))
+
+        print("\n{}killed PID {}, exit code {}\n".format(
+            shakedown.cli.helpers.fchr('>>'),
+            pid,
+            result.exit_code
+        ))
 
 def restart_agent(
     hostname

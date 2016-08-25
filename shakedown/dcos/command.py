@@ -51,7 +51,7 @@ def run_command(
 
         try_close(channel)
         try_close(transport)
-        
+
         return exit_code == 0
     else:
         print('error: unable to authenticate ' + username + '@' + host + ' with key ' + key_path)

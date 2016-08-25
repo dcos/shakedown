@@ -41,7 +41,7 @@ def run_command(
 
         channel = transport.open_session()
         channel.exec_command(command)
-        channel.recv_exit_status()
+        exit_code = channel.recv_exit_status()
 
         while channel.recv_ready():
             rl, wl, xl = select.select([channel], [], [], 0.0)
@@ -52,7 +52,7 @@ def run_command(
         try_close(channel)
         try_close(transport)
 
-        return True
+        return exit_code == 0
     else:
         print('error: unable to authenticate ' + username + '@' + host + ' with key ' + key_path)
         return False

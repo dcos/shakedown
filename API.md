@@ -656,13 +656,13 @@ Get information about a task.
 
 ### get_tasks()
 
-Get a list of tasks, optionally filtered by task name.
+Get a list of tasks, optionally filtered by task ID.
 
 ##### *parameters*
 
 parameter | description | type | default
 --------- | ----------- | ---- | -------
-task_name | the nameof the task | str
+task_id   | task ID     | str  |
 completed | include completed tasks? | `True`
 
 ##### *example usage*
@@ -683,7 +683,7 @@ Get a list of active tasks, optionally filtered by task name.
 
 parameter | description | type | default
 --------- | ----------- | ---- | -------
-task_name | the nameof the task | str
+task_id   | task ID     | str
 completed | include completed tasks? | `False`
 
 ##### *example usage*
@@ -704,7 +704,7 @@ Check whether a task has completed.
 
 parameter | description | type | default
 --------- | ----------- | ---- | -------
-task_name | the nameof the task | str
+task_id   | task ID     | str
 
 ##### *example usage*
 

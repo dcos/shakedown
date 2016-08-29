@@ -1,3 +1,0 @@
-#!/bin/bash
-
-if [ -e iptables-master.rules ]; then sudo iptables-restore < iptables-master.rules && rm iptables-master.rules ; fi

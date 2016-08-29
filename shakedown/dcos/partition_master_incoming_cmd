@@ -1,8 +1,0 @@
-#!/bin/bash
-
-if [ ! -e iptables-master.rules ] ; then sudo iptables -L > /dev/null && sudo iptables-save > iptables-master.rules ; fi
-sudo iptables -F INPUT
-sudo iptables --policy INPUT ACCEPT
-sudo iptables --policy OUTPUT ACCEPT
-sudo iptables --policy FORWARD ACCEPT
-sudo iptables -I INPUT -p tcp --dport 5050 -j REJECT

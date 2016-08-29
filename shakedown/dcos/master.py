@@ -4,24 +4,18 @@ from shakedown import *
 
 
 def partition_master(incoming=True, outgoing=True):
-    """ Partition Master's port alone. To keep DC/OS cluster running.
+    """ Partition master's port alone. To keep DC/OS cluster running.
     """
 
     print('Partitioning master. Incoming:{} | Outgoing:{}'
         .format(incoming, outgoing))
 
     if incoming and outgoing:
-        copy_file_to_master("{}/partition_master_cmd"
-            .format(shakedown_dcos_dir()))
-        run_command_on_master("sh partition_master_cmd")
+        run_command_on_master("if [ ! -e iptables-master.rules ] ; then sudo iptables -L > /dev/null && sudo iptables-save > iptables-master.rules ; fi; sudo iptables -F INPUT && sudo iptables --policy INPUT ACCEPT && sudo iptables --policy OUTPUT ACCEPT && sudo iptables --policy FORWARD ACCEPT && sudo iptables -I INPUT -p tcp --dport 5050 -j REJECT && sudo iptables -I OUTPUT -p tcp --sport 5050 -j REJECT")
     elif incoming:
-        copy_file_to_master("{}/partition_master_incoming_cmd"
-            .format(shakedown_dcos_dir()))
-        run_command_on_master("sh partition_master_incoming_cmd")
+        run_command_on_master("if [ ! -e iptables-master.rules ] ; then sudo iptables -L > /dev/null && sudo iptables-save > iptables-master.rules ; fi; sudo iptables -F INPUT && sudo iptables --policy INPUT ACCEPT && sudo iptables --policy OUTPUT ACCEPT && sudo iptables --policy FORWARD ACCEPT && sudo iptables -I INPUT -p tcp --dport 5050 -j REJECT")
     elif outgoing:
-        copy_file_to_master("{}/partition_master_outgoing_cmd"
-            .format(shakedown_dcos_dir()))
-        run_command_on_master("sh partition_master_outgoing_cmd")
+        run_command_on_master("if [ ! -e iptables-master.rules ] ; then sudo iptables -L > /dev/null && sudo iptables-save > iptables-master.rules ; fi; sudo iptables -F INPUT && sudo iptables --policy INPUT ACCEPT && sudo iptables --policy OUTPUT ACCEPT && sudo iptables --policy FORWARD ACCEPT && sudo iptables -I OUTPUT -p tcp --sport 5050 -j REJECT")
     else:
         pass
 
@@ -30,5 +24,4 @@ def reconnect_master():
     """ Reconnect a previously partitioned master to the network
     """
 
-    copy_file_to_master("{}/reconnect_master_cmd".format(shakedown_dcos_dir()))
-    run_command_on_master("sh reconnect_master_cmd")
+    run_command_on_master("if [ -e iptables-master.rules ]; then sudo iptables-restore < iptables-master.rules && rm iptables-master.rules ; fi")

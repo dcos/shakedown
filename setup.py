@@ -2,7 +2,7 @@ from codecs import open as codecs_open
 from setuptools import setup, find_packages
 
 
-setup(name='shakedown',
+setup(name='dcos-shakedown',
       version='1.1.0',
       description=u"DC/OS testing harness and library",
       long_description=u"A tool and library to abstract common DC/OS-related tasks.",

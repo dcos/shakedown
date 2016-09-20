@@ -6,7 +6,7 @@
   * [Usage](#usage)
   * [Methods](#methods)
     * General
-      * [authenticate()[(#authenticate)
+      * [authenticate()](#authenticate)
       * [dcos_url()](#dcos_url)
       * [dcos_service_url()](#dcos_service_url)
       * [dcos_state()](#dcos_state)

@@ -6,6 +6,7 @@
   * [Usage](#usage)
   * [Methods](#methods)
     * General
+      * [authenticate()[(#authenticate)
       * [dcos_url()](#dcos_url)
       * [dcos_service_url()](#dcos_service_url)
       * [dcos_state()](#dcos_state)
@@ -49,6 +50,9 @@
       * [task_completed()](#task_completed)
     * ZooKeeper
       * [delete_zk_node()](#delete_zk_node)
+    * Masters
+      * [partition_master()](#partition_master)
+      * [reconnect_master()](#reconnect_master)
     * Agents
       * [get_agents()](#get_agents)
       * [get_private_agents()](#get_private_agents)
@@ -66,6 +70,25 @@
 
 
 ## Methods
+
+### authenticate()
+
+Authenticate against an EE DC/OS cluster using a username and password.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**username** | the username used for DC/OS authentication | str
+**password** | the password used for DC/OS authentication | str
+
+##### *example usage*
+
+```python
+# Authenticate against DC/OS, receive an ACS token
+token = authenticate('root', 's3cret')
+```
+
 
 ### dcos_url()
 
@@ -731,6 +754,41 @@ node_name | the name of the node | str
 ```python
 # Delete a 'universe/marathon-user' ZooKeeper node
 delete_zk_node('universe/marathon-user')
+```
+
+
+### partition_master()
+
+Separates the master from the cluster by disabling inbound and/or outbound traffic.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+incoming | disable incoming traffic? | bool | `True`
+outgoing | disable outgoing traffic? | bool | `True`
+
+##### *example usage*
+
+```python
+# Disable incoming traffic ONLY to the DC/OS master.
+partition_master(True, False)
+```
+
+
+### reconnect_master()
+
+Reconnect a previously partitioned master to the network
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# Reconnect the master.
+reconnect_master()
 ```
 
 

@@ -9,20 +9,20 @@ from shakedown.cli.helpers import *
 
 @click.command('shakedown')
 @click.argument('path', type=click.Path(exists=True), nargs=-1)
-@click.option('--dcos-url', help='URL to a running DCOS cluster.')
-@click.option('--fail', type=click.Choice(['fast', 'never']), help='Sepcify whether to continue testing when encountering failures. (default: fast)')
-@click.option('--ssh-key-file', type=click.Path(), help='Path to the SSH keyfile to use for authentication')
+@click.option('-u', '--dcos-url', help='URL to a running DCOS cluster.')
+@click.option('-f', '--fail', type=click.Choice(['fast', 'never']), help='Sepcify whether to continue testing when encountering failures. (default: fast)')
+@click.option('-i', '--ssh-key-file', type=click.Path(), help='Path to the SSH keyfile to use for authentication.')
+@click.option('-q', '--quiet', is_flag=True, help='Suppress all superfluous output.')
+@click.option('-k', '--ssl-no-verify', is_flag=True, help='Suppress SSL certificate verification.')
+@click.option('-o', '--stdout', type=click.Choice(['pass', 'fail', 'skip', 'all', 'none']), help='Print the standard output of tests with the specified result. (default: fail)')
+@click.option('-s', '--stdout-inline', is_flag=True, help='Display output inline rather than after test phase completion.')
+@click.option('-p', '--pytest-option', multiple=True, help='Options flags to pass to pytest.')
 @click.option('--no-banner', is_flag=True, help='Suppress the product banner.')
-@click.option('--quiet', is_flag=True, help='Suppress all superfluous output.')
-@click.option('--report', type=click.Choice(['json', 'junit']), help='Return a report in the specified format.')
-@click.option('--ssl-no-verify', is_flag=True, help='Suppress SSL certificate verification')
-@click.option('--stdout', type=click.Choice(['pass', 'fail', 'skip', 'all', 'none']), help='Print the standard output of tests with the specified result. (default: fail)')
-@click.option('--stdout-inline', is_flag=True, help='Display output inline rather than after test phase completion.')
 @click.version_option(version=shakedown.VERSION)
 
 
 def cli(**args):
-    """ Main CLI entry-point; perform pre-flight and parse arguments
+    """ Shakedown is a DC/OS test-harness wrapper for the pytest tool.
     """
     import shakedown
 
@@ -279,17 +279,18 @@ def cli(**args):
                 for output in shakedown.stdout:
                     echo(output)
 
-            if args['report'] == 'json':
-                click.echo("\n" + json.dumps(shakedown.report_stats, sort_keys=True, indent=4, separators=(',', ': ')))
-
     opts = ['-q', '--tb=no']
 
     if args['fail'] == 'fast':
         opts.append('-x')
 
+    if args['pytest_option']:
+        for opt in args['pytest_option']:
+            opts.append(opt)
+
     if args['path']:
         opts.append(' '.join(args['path']))
 
-    exitstatus = imported['pytest'].main(' '.join(opts), plugins=[shakedown()])
+    exitstatus = imported['pytest'].main(opts, plugins=[shakedown()])
 
     sys.exit(exitstatus)

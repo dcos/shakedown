@@ -18,6 +18,7 @@ from shakedown.cli.helpers import *
 @click.option('--ssl-no-verify', is_flag=True, help='Suppress SSL certificate verification')
 @click.option('--stdout', type=click.Choice(['pass', 'fail', 'skip', 'all', 'none']), help='Print the standard output of tests with the specified result. (default: fail)')
 @click.option('--stdout-inline', is_flag=True, help='Display output inline rather than after test phase completion.')
+@click.option('-p', '--pytest-option', multiple=True, help='Options flags to pass to pytest')
 @click.version_option(version=shakedown.VERSION)
 
 
@@ -286,6 +287,10 @@ def cli(**args):
 
     if args['fail'] == 'fast':
         opts.append('-x')
+
+    if args['pytest_option']:
+        for opt in args['pytest_option']:
+            opts.append(opt)
 
     if args['path']:
         opts.append(' '.join(args['path']))

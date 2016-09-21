@@ -22,7 +22,7 @@ from shakedown.cli.helpers import *
 
 
 def cli(**args):
-    """ Main CLI entry-point; perform pre-flight and parse arguments
+    """ Shakedown is a DC/OS test-harness wrapper for the pytest tool.
     """
     import shakedown
 

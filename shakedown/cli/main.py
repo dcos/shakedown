@@ -12,12 +12,12 @@ from shakedown.cli.helpers import *
 @click.option('-u', '--dcos-url', help='URL to a running DCOS cluster.')
 @click.option('-f', '--fail', type=click.Choice(['fast', 'never']), help='Sepcify whether to continue testing when encountering failures. (default: fast)')
 @click.option('-k', '--ssh-key-file', type=click.Path(), help='Path to the SSH keyfile to use for authentication')
-@click.option('--no-banner', is_flag=True, help='Suppress the product banner.')
 @click.option('-q', '--quiet', is_flag=True, help='Suppress all superfluous output.')
 @click.option('-n', '--ssl-no-verify', is_flag=True, help='Suppress SSL certificate verification')
 @click.option('-o', '--stdout', type=click.Choice(['pass', 'fail', 'skip', 'all', 'none']), help='Print the standard output of tests with the specified result. (default: fail)')
 @click.option('-i', '--stdout-inline', is_flag=True, help='Display output inline rather than after test phase completion.')
 @click.option('-p', '--pytest-option', multiple=True, help='Options flags to pass to pytest')
+@click.option('--no-banner', is_flag=True, help='Suppress the product banner.')
 @click.version_option(version=shakedown.VERSION)
 
 

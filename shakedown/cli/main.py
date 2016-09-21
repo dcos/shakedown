@@ -290,6 +290,6 @@ def cli(**args):
     if args['path']:
         opts.append(' '.join(args['path']))
 
-    exitstatus = imported['pytest'].main(' '.join(opts), plugins=[shakedown()])
+    exitstatus = imported['pytest'].main(opts, plugins=[shakedown()])
 
     sys.exit(exitstatus)

@@ -1,3 +1,16 @@
+## 1.1.3 (2016-10-04)
+
+Features:
+
+  - bumped `dcosdcli` version to `0.4.13`
+  - modified CLI 'short' flags to match SSH/curl
+
+Fixes:
+
+  - removed superfluous `key not found` error message when SSH
+    key could not be located
+
+
 ## 1.1.2 (2016-09-21)
 
 Features:

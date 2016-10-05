@@ -25,6 +25,6 @@ setup(name='dcos-shakedown',
       entry_points="""
       [console_scripts]
       shakedown=shakedown.cli.main:cli
-      dcos-shakedown=shakedown.cli:cli
+      dcos-shakedown=shakedown.cli.main:cli
       """
       )

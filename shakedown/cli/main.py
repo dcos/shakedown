@@ -8,7 +8,7 @@ from shakedown.cli.helpers import *
 
 
 @click.command('shakedown')
-@click.argument('path', type=click.Path(exists=True), nargs=-1)
+@click.argument('tests', nargs=-1)
 @click.option('-u', '--dcos-url', help='URL to a running DCOS cluster.')
 @click.option('-f', '--fail', type=click.Choice(['fast', 'never']), help='Sepcify whether to continue testing when encountering failures. (default: fast)')
 @click.option('-i', '--ssh-key-file', type=click.Path(), help='Path to the SSH keyfile to use for authentication.')
@@ -288,8 +288,8 @@ def cli(**args):
         for opt in args['pytest_option']:
             opts.append(opt)
 
-    if args['path']:
-        opts.append(' '.join(args['path']))
+    if args['tests']:
+        opts.append(' '.join(args['tests']))
 
     exitstatus = imported['pytest'].main(opts, plugins=[shakedown()])
 

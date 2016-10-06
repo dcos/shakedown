@@ -62,6 +62,7 @@
       * [restart_agent()](#restart_agent)
       * [stop_agent()](#stop_agent)
       * [start_agent()](#start_agent)
+      * [delete_agent_log()](#delete_agent_log)
       * [kill_process_on_host()](#kill_process_on_host)
 
 ## Usage
@@ -938,6 +939,22 @@ hostname | the hostname or IP of the node | str
 # Reconnect the public agents
 for public_node in public_nodes:
     start_agent(public_node)
+```
+
+### delete_agent_log()
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+
+##### *example usage*
+
+```python
+# Delete agent logs on the public agents
+for public_node in public_nodes:
+    delete_agent_log(public_node)
 ```
 
 ### kill_process_on_host()

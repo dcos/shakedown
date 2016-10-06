@@ -140,6 +140,19 @@ def start_agent(
 
     run_command_on_agent(hostname, "sudo systemctl start dcos-mesos-slave")
 
+
+def delete_agent_log(
+    hostname
+):
+    """ Deletes the agent log at the host.  This is necessary if any changes
+    occurred to the agent resources and the agent is restarted.
+
+    :param hostname: host or IP of the machine to delete the agent log.
+    """
+
+    run_command_on_agent(hostname, "sudo rm -f /var/lib/mesos/slave/meta/slaves/latest")
+
+
 def shakedown_dcos_dir():
     """Gets the path to the shakedown dcos directory"""
     return os.path.dirname(os.path.realpath(__file__))

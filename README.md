@@ -26,6 +26,12 @@ Given a Python 3.4 + pip + git environment,
 - arguments can be stored in a `~/.shakedown` [TOML](https://github.com/toml-lang/toml) file (command-line takes precedence)
 - `shakedown --help` is your friend.
 
+## Example running all User Acceptance Tests
+
+Run against an AWS cluster, turning off SSL Strict Checking, displaying all OUTPUT and using the Acceptance tests that come with Shakedown.
+
+- 'shakedown --dcos-url=http://bobs-cluster-elasticl--106935644.us-north-1.elb.amazonaws.com -k -s -o all ./tests/acceptance'
+
 
 ## Helper methods
 

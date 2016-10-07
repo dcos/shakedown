@@ -1,3 +1,17 @@
+## 1.1.4 (2016-10-07)
+
+Features:
+
+  - allow a session to be authenticated using a supplied OAuth token
+    in `.shakedown` (`oauth_token = <token>`)
+  - new `delete_agent_log` method to delete logs on agents
+  - pytest-style single-test specification (`test_file.py::test_name`)
+
+Fixes:
+
+  - `dcos-shakedown` command now functions correctly from cmd
+
+
 ## 1.1.3 (2016-10-04)
 
 Features:

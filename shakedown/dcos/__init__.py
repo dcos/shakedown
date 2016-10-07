@@ -82,6 +82,24 @@ def authenticate(username, password):
         return None
 
 
+def authenticate_oauth(oauth_token):
+    """Authenticate by checking for a valid OAuth token.
+    return: ACS token
+    """
+    url = _gen_url('acs/api/v1/auth/login')
+
+    creds = {
+        'token': oauth_token
+    }
+
+    response = dcos.http.request('post', url, json=creds)
+
+    if response.status_code == 200:
+        return response.json()['token']
+    else:
+        return None
+
+
 def _gen_url(url_path):
     """Return an absolute URL by combining DC/OS URL and url_path.
 

@@ -80,11 +80,23 @@ def cli(**args):
         click.secho("error: cluster '" + args['dcos_url'] + "' is unreachable.", fg='red', bold=True)
         sys.exit(1)
 
-    if set(['username', 'password']).issubset(args):
-        echo('Authenticating with cluster...', d='step-maj')
+    echo('Authenticating with cluster...', d='step-maj')
 
+    if set(['oauth_token']).issubset(args):
+       try:
+            echo('Validating OAuth token...', d='step-min', n=False)
+            token = shakedown.authenticate_oauth(args['oauth_token'])
+
+            with stdchannel_redirected(sys.stderr, os.devnull):
+                imported['dcos'].config.set_val('core.dcos_acs_token', token)
+
+            echo('ok')
+       except:
+            click.secho("error: authentication failed.", fg='red', bold=True)
+            sys.exit(1)
+    elif set(['username', 'password']).issubset(args):
         try:
-            echo('Retrieving ACS token...', d='step-min', n=False)
+            echo('Validating username and password...', d='step-min', n=False)
             token = shakedown.authenticate(args['username'], args['password'])
 
             with stdchannel_redirected(sys.stderr, os.devnull):
@@ -94,7 +106,9 @@ def cli(**args):
         except:
             click.secho("error: authentication failed.", fg='red', bold=True)
             sys.exit(1)
-
+    else:
+        click.secho("error: no authentication credentials or token found.", fg='red', bold=True)
+        sys.exit(1)
 
     class shakedown:
         """ This encapsulates a PyTest wrapper plugin

@@ -4,7 +4,7 @@ from shakedown import *
 
 
 def test_get_service_framework_id():
-    framework_id = get_service_framework_id('jenkins')
+    framework_id = get_service_framework_id('marathon')
     print('framework_id: ' + framework_id)
     assert framework_id is not None
 

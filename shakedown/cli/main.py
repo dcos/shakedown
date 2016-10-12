@@ -81,8 +81,18 @@ def cli(**args):
         sys.exit(1)
 
     echo('Authenticating with cluster...', d='step-maj')
+    authenticated = False
+    token = imported['dcos'].config.get_config_val("core.dcos_acs_token")
+    if token is not None:
+        echo('Validating existing ACS token...', d='step-min', n=False)
+        try:
+            shakedown.dcos_leader()
 
-    if set(['oauth_token']).issubset(args):
+            echo('ok')
+            authenticated = True
+        except imported['dcos'].errors.DCOSException:
+            click.secho("error: authentication failed.", fg='red', bold=True)
+    if not authenticated and set(['oauth_token']).issubset(args):
        try:
             echo('Validating OAuth token...', d='step-min', n=False)
             token = shakedown.authenticate_oauth(args['oauth_token'])
@@ -90,11 +100,11 @@ def cli(**args):
             with stdchannel_redirected(sys.stderr, os.devnull):
                 imported['dcos'].config.set_val('core.dcos_acs_token', token)
 
+            authenticated = True
             echo('ok')
        except:
             click.secho("error: authentication failed.", fg='red', bold=True)
-            sys.exit(1)
-    elif set(['username', 'password']).issubset(args):
+    if not authenticated and set(['username', 'password']).issubset(args):
         try:
             echo('Validating username and password...', d='step-min', n=False)
             token = shakedown.authenticate(args['username'], args['password'])
@@ -102,11 +112,11 @@ def cli(**args):
             with stdchannel_redirected(sys.stderr, os.devnull):
                 imported['dcos'].config.set_val('core.dcos_acs_token', token)
 
+            authenticated = True
             echo('ok')
         except:
             click.secho("error: authentication failed.", fg='red', bold=True)
-            sys.exit(1)
-    else:
+    if not authenticated:
         click.secho("error: no authentication credentials or token found.", fg='red', bold=True)
         sys.exit(1)
 

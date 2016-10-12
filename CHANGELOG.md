@@ -1,3 +1,14 @@
+## 1.1.5 (2016-10-12)
+
+Fixes:
+
+  - cluster authentication attempts are sequenced (existing ACS token ->
+    OAuth token -> username/password combo)
+  - output from module setup and teardown is now printed to stdout
+  - multiple test files (or multiple tests) can be again be specified
+    (broken in `1.1.4`)
+
+
 ## 1.1.4 (2016-10-07)
 
 Features:

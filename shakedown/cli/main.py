@@ -303,7 +303,11 @@ def cli(**args):
             opts.append(opt)
 
     if args['tests']:
-        opts.append(' '.join(args['tests']))
+        tests_to_run = []
+        for test in args['tests']:
+            tests_to_run.extend(test.split())
+        for test in tests_to_run:
+            opts.append(test)
 
     exitstatus = imported['pytest'].main(opts, plugins=[shakedown()])
 

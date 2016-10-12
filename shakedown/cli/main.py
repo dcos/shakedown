@@ -242,7 +242,13 @@ def cli(**args):
                 if report.skipped:
                     state = 'skip'
 
-                if state and report.when == 'call':
+                if state and secname != 'Captured stdout call':
+                    if not 'setup' in shakedown.tests['test'][report.nodeid]:
+                        module = report.nodeid.split('::', 1)[0]
+                        cap_type = secname.split(' ')[-1]
+                        shakedown.tests['test'][report.nodeid]['setup'] = True
+                        shakedown.output(module + ' ' + cap_type, state, content, False)
+                elif state and report.when == 'call':
                     if 'tested' in shakedown.tests['test'][report.nodeid]:
                         shakedown.output(report.nodeid, state, content, False)
                     else:

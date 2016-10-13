@@ -57,7 +57,7 @@ This virtual environment can then be activated in new terminal sessions with:
 
 ## Helper methods
 
-`shakedown` is a testing tool as well as a library.  Many helper functions are available via `from shakedown import *` in your tests.  See the [API documentation](API.md) for more information.
+Shakedown is a testing tool as well as a library.  Many helper functions are available via `from shakedown import *` in your tests.  See the [API documentation](API.md) for more information.
 
 
 ## License
@@ -65,9 +65,10 @@ This virtual environment can then be activated in new terminal sessions with:
 Shakedown is licensed under the Apache License, Version 2.0.  For additional information, see the [LICENSE](LICENSE) file included at the root of this repository.
 
 
-## Reporting Issues
+## Reporting issues
 
-Please report issues and submit feature requests for Shakedown by [creating an issue in the DC/OS JIRA with the "shakedown" component](https://dcosjira.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=10001&issuetype=10003&components=10700).
+Please report issues and submit feature requests for Shakedown by [creating an issue in the DC/OS JIRA with the "Shakedown" component](https://dcosjira.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=10001&issuetype=10003&components=10700).
+
 
 ## Contributing
 

@@ -95,7 +95,7 @@ def cli(**args):
             authenticated = True
         except imported['dcos'].errors.DCOSException:
             click.secho("error: authentication failed.", fg='red', bold=True)
-    if not authenticated and set(['oauth_token']).issubset(args):
+    if not authenticated and args['oauth_token']:
        try:
             echo('Validating OAuth token...', d='step-min', n=False)
             token = shakedown.authenticate_oauth(args['oauth_token'])
@@ -107,7 +107,7 @@ def cli(**args):
             echo('ok')
        except:
             click.secho("error: authentication failed.", fg='red', bold=True)
-    if not authenticated and set(['username', 'password']).issubset(args):
+    if not authenticated and args['username'] and args['password']:
         try:
             echo('Validating username and password...', d='step-min', n=False)
             token = shakedown.authenticate(args['username'], args['password'])

@@ -12,9 +12,38 @@ or other craft and its crew before being declared operational.
 
 ## Installation
 
-Given a Python 3.4 + pip + git environment,
+Shakedown requires Python 3.4+.
 
-`git clone github.com:mesosphere/shakedown.git && cd shakedown && pip install -e .`
+### Installing from PyPI
+
+The recommended Shakedown installation method is via the PyPI Python Package Index repository at [https://pypi.python.org/pypi/dcos-shakedown](https://pypi.python.org/pypi/dcos-shakedown).  To install the latest version and all required modules:
+
+`pip install dcos-shakedown`
+
+### Bleeding edge
+
+To pull and install from our `master` branch on GitHub:
+
+```
+git clone github.com:mesosphere/shakedown.git
+cd shakedown
+pip install -e .
+```
+
+### Setting up a new Shakedown virtual environment
+
+If you'd like to isolate your Shakedown Python environment, you can do so using the [virtualenv](https://pypi.python.org/pypi/virtualenv) tool.  To create a new virtual environment in `$HOME/shakedown`:
+
+```
+pip install virtualenv
+virtualenv $HOME/shakedown
+source $HOME/shakedown/bin/activate
+pip install dcos-shakedown
+```
+
+This virtual environment can then be activated in new terminal sessions with:
+
+`source $HOME/shakedown/bin/activate`
 
 
 ## Usage

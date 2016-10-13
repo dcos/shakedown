@@ -82,7 +82,7 @@ def run_command_on_agent(
 
 
 def run_dcos_command(command):
-    """ Run a command via DCOS CLI
+    """ Run a command via DC/OS CLI
 
         :param command: the command to execute
         :type command: str

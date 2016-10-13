@@ -9,7 +9,7 @@ from shakedown.cli.helpers import *
 
 @click.command('shakedown')
 @click.argument('tests', nargs=-1)
-@click.option('-u', '--dcos-url', help='URL to a running DCOS cluster.')
+@click.option('-u', '--dcos-url', help='URL to a running DC/OS cluster.')
 @click.option('-f', '--fail', type=click.Choice(['fast', 'never']), help='Sepcify whether to continue testing when encountering failures. (default: fast)')
 @click.option('-i', '--ssh-key-file', type=click.Path(), help='Path to the SSH keyfile to use for authentication.')
 @click.option('-q', '--quiet', is_flag=True, help='Suppress all superfluous output.')

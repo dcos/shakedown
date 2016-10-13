@@ -13,7 +13,7 @@ def test_delete_zk_node():
             break
         time.sleep(1)
 
-    assert found, 'Service did not register with DCOS'
+    assert found, 'Service did not register with DC/OS'
 
     task_names = []
     for task in get_active_tasks():

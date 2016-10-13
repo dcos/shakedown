@@ -5,26 +5,26 @@ import shakedown
 
 
 def dcos_acs_token():
-    """Return the DCOS ACS token as configured in the DCOS library.
-    :return: DCOS ACS token as a string
+    """Return the DC/OS ACS token as configured in the DC/OS library.
+    :return: DC/OS ACS token as a string
     """
     return dcos.config.get_config().get('core.dcos_acs_token')
 
 
 def dcos_url():
-    """Return the DCOS URL as configured in the DCOS library. This is
+    """Return the DC/OS URL as configured in the DC/OS library. This is
     equivalent to the value of '--dcos_url' passed into Shakedown on the
     command line.
-    :return: DCOS cluster URL as a string
+    :return: DC/OS cluster URL as a string
     """
     return dcos.config.get_config().get('core.dcos_url')
 
 
 def dcos_service_url(service):
-    """Return the URL of a service running on DCOS, based on the value of
+    """Return the URL of a service running on DC/OS, based on the value of
     shakedown.dcos.dcos_url() and the service name.
-    :param service: the name of a registered DCOS service, as a string
-    :return: the full DCOS service URL, as a string
+    :param service: the name of a registered DC/OS service, as a string
+    :return: the full DC/OS service URL, as a string
     """
     return _gen_url("/service/{}".format(service))
 
@@ -57,8 +57,8 @@ def dcos_version():
 
 
 def master_ip():
-    """Returns the public IP address of the DCOS master.
-    return: DCOS IP address as a string
+    """Returns the public IP address of the DC/OS master.
+    return: DC/OS IP address as a string
     """
     return dcos.mesos.DCOSClient().metadata().get('PUBLIC_IPV4')
 

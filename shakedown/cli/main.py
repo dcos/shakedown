@@ -17,6 +17,9 @@ from shakedown.cli.helpers import *
 @click.option('-o', '--stdout', type=click.Choice(['pass', 'fail', 'skip', 'all', 'none']), help='Print the standard output of tests with the specified result. (default: fail)')
 @click.option('-s', '--stdout-inline', is_flag=True, help='Display output inline rather than after test phase completion.')
 @click.option('-p', '--pytest-option', multiple=True, help='Options flags to pass to pytest.')
+@click.option('-t', '--oauth-token', help='OAuth token to use for DC/OS authentication.')
+@click.option('-n', '--username', help='Username to use for DC/OS authentication.')
+@click.option('-w', '--password', hide_input=True, help='Password to use for DC/OS authentication.')
 @click.option('--no-banner', is_flag=True, help='Suppress the product banner.')
 @click.version_option(version=shakedown.VERSION)
 

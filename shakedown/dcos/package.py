@@ -43,7 +43,7 @@ def install_package(
         wait_for_completion=False,
         timeout_sec=600
 ):
-    """ Install a package via the DCOS library
+    """ Install a package via the DC/OS library
 
         :param package_name: name of the package
         :type package_name: str
@@ -110,7 +110,7 @@ def install_package_and_wait(
         wait_for_completion=True,
         timeout_sec=600
 ):
-    """ Install a package via the DCOS library and wait for completion
+    """ Install a package via the DC/OS library and wait for completion
     """
 
     return install_package(
@@ -146,7 +146,7 @@ def uninstall_package(
         wait_for_completion=False,
         timeout_sec=600
 ):
-    """ Uninstall a package using the DCOS library.
+    """ Uninstall a package using the DC/OS library.
 
         :param package_name: name of the package
         :type package_name: str
@@ -199,7 +199,7 @@ def uninstall_package_and_wait(
         wait_for_completion=True,
         timeout_sec=600
 ):
-    """ Install a package via the DCOS library and wait for completion
+    """ Install a package via the DC/OS library and wait for completion
     """
 
     return uninstall_package(

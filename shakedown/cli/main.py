@@ -9,7 +9,7 @@ from shakedown.cli.helpers import *
 
 @click.command('shakedown')
 @click.argument('tests', nargs=-1)
-@click.option('-u', '--dcos-url', help='URL to a running DCOS cluster.')
+@click.option('-u', '--dcos-url', help='URL to a running DC/OS cluster.')
 @click.option('-f', '--fail', type=click.Choice(['fast', 'never']), help='Sepcify whether to continue testing when encountering failures. (default: fast)')
 @click.option('-i', '--ssh-key-file', type=click.Path(), help='Path to the SSH keyfile to use for authentication.')
 @click.option('-q', '--quiet', is_flag=True, help='Suppress all superfluous output.')
@@ -17,6 +17,9 @@ from shakedown.cli.helpers import *
 @click.option('-o', '--stdout', type=click.Choice(['pass', 'fail', 'skip', 'all', 'none']), help='Print the standard output of tests with the specified result. (default: fail)')
 @click.option('-s', '--stdout-inline', is_flag=True, help='Display output inline rather than after test phase completion.')
 @click.option('-p', '--pytest-option', multiple=True, help='Options flags to pass to pytest.')
+@click.option('-t', '--oauth-token', help='OAuth token to use for DC/OS authentication.')
+@click.option('-n', '--username', help='Username to use for DC/OS authentication.')
+@click.option('-w', '--password', hide_input=True, help='Password to use for DC/OS authentication.')
 @click.option('--no-banner', is_flag=True, help='Suppress the product banner.')
 @click.version_option(version=shakedown.VERSION)
 
@@ -92,7 +95,7 @@ def cli(**args):
             authenticated = True
         except imported['dcos'].errors.DCOSException:
             click.secho("error: authentication failed.", fg='red', bold=True)
-    if not authenticated and set(['oauth_token']).issubset(args):
+    if not authenticated and args['oauth_token']:
        try:
             echo('Validating OAuth token...', d='step-min', n=False)
             token = shakedown.authenticate_oauth(args['oauth_token'])
@@ -104,7 +107,7 @@ def cli(**args):
             echo('ok')
        except:
             click.secho("error: authentication failed.", fg='red', bold=True)
-    if not authenticated and set(['username', 'password']).issubset(args):
+    if not authenticated and args['username'] and args['password']:
         try:
             echo('Validating username and password...', d='step-min', n=False)
             token = shakedown.authenticate(args['username'], args['password'])

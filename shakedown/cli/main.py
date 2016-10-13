@@ -279,26 +279,6 @@ def cli(**args):
                     shakedown.output(report.nodeid, 'fail', 'error: ' + str(longreport.reprcrash))
 
 
-        def pytest_runtest_makereport(self, item, call, __multicall__):
-            """ Store "simple" (pass, fail, skip) test results
-            """
-
-            report = __multicall__.execute()
-
-            # Put job run report data into shakedown.report_status hash
-            if report.passed:
-                shakedown.report_stats['passed'].append(report.nodeid + '.' + report.when)
-                shakedown.report_stats['total_passed'] += 1
-            if report.failed:
-                shakedown.report_stats['failed'].append(report.nodeid + '.' + report.when)
-                shakedown.report_stats['total_failed'] += 1
-            if report.skipped:
-                shakedown.report_stats['skipped'].append(report.nodeid + '.' + report.when)
-                shakedown.report_stats['total_skipped'] += 1
-
-            return report
-
-
         def pytest_sessionfinish(self, session, exitstatus):
             """ Testing phase is complete; print extra reports (stdout/stderr, JSON) as requested
             """

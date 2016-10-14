@@ -1,3 +1,18 @@
+## 1.1.6 (2016-10-14)
+
+Features:
+
+  - `--username`, `--password`, and `--oauth-token` can now be
+    specified via the command line
+  - updated documentation on installing via PyPI or with virtualenv
+
+Fixes:
+
+  - authentication methods (OAuth, user/pass) are only attempted
+    when the related options are defined
+  - removed `pytest_runtest_makereport` method which was unused and
+    causing pytest warning messages on every run
+
 ## 1.1.5 (2016-10-12)
 
 Fixes:

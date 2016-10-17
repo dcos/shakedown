@@ -14,13 +14,13 @@ def test_uninstall_package_and_wait():
     assert package_installed('chronos') == False
 
 def test_install_package_with_subcommand():
-    install_package_and_wait('riak')
-    result, err = run_dcos_command('riak --version')
+    install_package_and_wait('spark')
+    result, err = run_dcos_command('spark --version')
     assert result.startswith('0')
 
 def test_uninstall_package_with_subcommand():
-    uninstall_package_and_wait('riak')
-    result, err = run_dcos_command('riak --version')
+    uninstall_package_and_wait('spark')
+    result, err = run_dcos_command('spark --version')
     assert err.endswith("is not a dcos command.\n")
 
 def test_add_package_repo():

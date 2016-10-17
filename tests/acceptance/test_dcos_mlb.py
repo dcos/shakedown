@@ -3,7 +3,7 @@ import requests
 from shakedown import *
 
 MLB_PACKAGE_NAME = 'marathon-lb'
-EXTERNAL_LB = 'thomas-kr-publicsl-2qzq6zn0gq3l-460803782.us-east-1.elb.amazonaws.com'
+EXTERNAL_LB = ''
 # EXTERNAL_LB is for environments where another LB sits in front of MLB such as an AWS Public ELB
 # Format is 'thomas-kr-publicsl-2qzq6zn0gq3l-460803782.us-east-1.elb.amazonaws.com'
 # Leave EXTERNAL_LB ='' in environments where the Public IP of Public Agent is exposed externally and can be reached by maching running the test.

@@ -83,31 +83,16 @@ def kill_process_on_host(
         :param pattern: a regular expression matching the name of the process to kill
     """
 
-    print("\n{}killing processes matching pattern {} on host {}\n".format(
-        shakedown.cli.helpers.fchr('>>'),
-        pattern,
-        ip
-    ))
-
-    result = cmd.run_agent_cmd(
-        ip, "proc_id=$(ps ax | grep '" + pattern + "' | awk '{{ print $1 }}') && echo $proc_id"
-    )
-    pids = str(result).split()
-
-    print("\n{}pattern {} matched following PIDs: {}\n".format(
-        shakedown.cli.helpers.fchr('>>'),
-        pattern,
-        pids
-    ))
-
+    print("Killing processes that match pattern: {} on hostname: {}".format(pattern,
+                                                                      hostname))
+    status, stdout = run_command_on_agent(hostname,
+                                "proc_id=$(ps ax | grep '" + pattern + "' | awk '{{ print $1 }}') && echo $proc_id")
+    pids = str(stdout).split()
+    print("Pattern: {} matched following pids: {}".format(pattern, pids))
     for pid in pids:
-        result = cmd.run_agent_cmd(ip, "sudo kill -9 {}".format(pid))
+        status, stdout = run_command_on_agent(hostname, "sudo kill -9 {}".format(pid))
+        print("Killed pid: {} exit status: {}".format(pid, status))
 
-        print("\n{}killed PID {}, exit code {}\n".format(
-            shakedown.cli.helpers.fchr('>>'),
-            pid,
-            result.exit_code
-        ))
 
 def restart_agent(
     hostname

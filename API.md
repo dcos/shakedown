@@ -347,7 +347,7 @@ key_path | the path to the SSH keyfile used for authentication | str | `None`
 
 ```python
 # I wonder what /etc/motd contains on the Mesos master?
-run_command(master_ip(), 'cat /etc/motd')
+exit_status, output = run_command(master_ip(), 'cat /etc/motd')
 ```
 
 
@@ -367,7 +367,7 @@ key_path | the path to the SSH keyfile used for authentication | str | `None`
 
 ```python
 # What kernel is our Mesos master running?
-run_command_on_master('uname -a')
+exit_status, output = run_command_on_master('uname -a')
 ```
 
 

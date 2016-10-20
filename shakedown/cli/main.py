@@ -158,21 +158,31 @@ def cli(**args):
                 :param status: whether to output a status marker
                 :type status: bool
             """
+            if state == 'fail':
+                schr = fchr('FF')
+            elif state == 'pass':
+                schr = fchr('PP')
+
             if status:
-                if state == 'fail':
-                    echo(fchr('FF'), d='fail')
-                elif state == 'pass':
-                    echo(fchr('PP'), d='pass')
+                if not args['stdout_inline']:
+                    if state == 'fail':
+                        echo(schr, d='fail')
+                    elif state == 'pass':
+                        echo(schr, d='pass')
+                else:
+                    if not text:
+                        if state == 'fail':
+                            echo(schr, d='fail')
+                        elif state == 'pass':
+                            echo(schr, d='pass')
 
             if text and args['stdout'] in [state, 'all']:
-                o = decorate('Output during ', 'quote-head-' + state)
+                o = decorate(schr + ': ', 'quote-head-' + state)
                 o += click.style(decorate(title, style=state), bold=True) + "\n"
                 o += decorate(str(text).strip(), style='quote-' + state)
 
                 if args['stdout_inline']:
                     echo(o)
-                    if state == 'pass':
-                        echo('')
                 else:
                     shakedown.stdout.append(o)
 
@@ -226,9 +236,13 @@ def cli(**args):
 
             if not report_file in shakedown.tests['file']:
                 shakedown.tests['file'][report_file] = 1
+                if args['stdout_inline']:
+                    echo('')
                 echo(report_file, d='item-maj')
             if not report.nodeid in shakedown.tests['test']:
                 shakedown.tests['test'][report.nodeid] = {}
+                if args['stdout_inline']:
+                    echo('')
                 echo(report_test, d='item-min', n=False)
 
             if report.failed:

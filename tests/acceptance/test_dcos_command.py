@@ -4,16 +4,22 @@ from shakedown import *
 
 
 def test_run_command():
-    assert run_command(master_ip(), 'cat /etc/motd')
+    exit_status, output = run_command(master_ip(), 'cat /etc/motd')
+    assert exit_status
+    assert output.startswith('Core')
 
 def test_run_command_on_master():
-    assert run_command_on_master('uname -a')
+    exit_status, output = run_command_on_master('uname -a')
+    assert exit_status
+    assert output.startswith('Linux')
 
 def test_run_command_on_agent():
     # Get all IPs associated with the 'jenkins' task running in the 'marathon' service
     service_ips = get_service_ips('marathon', 'jenkins')
     for host in service_ips:
-        assert run_command_on_agent(host, 'ps -eaf | grep -i docker | grep -i jenkins')
+        exit_status, output = run_command_on_agent(host, 'ps -eaf | grep -i docker | grep -i jenkins')
+        assert exit_status
+        assert output.startswith('root')
 
 def test_run_dcos_command():
     result, error = run_dcos_command('package search jenkins --json')

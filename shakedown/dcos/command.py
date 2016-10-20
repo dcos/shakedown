@@ -26,6 +26,8 @@ def run_command(
 
         :return: True if successful, False otherwise
         :rtype: bool
+        :return: Output of command
+        :rtype: string
     """
 
     if not key_path:
@@ -39,23 +41,26 @@ def run_command(
     if transport.is_authenticated():
         print("\n{}{} $ {}\n".format(shakedown.cli.helpers.fchr('>>'), host, command))
 
+        output = ''
+
         channel = transport.open_session()
         channel.exec_command(command)
-        exit_code = channel.recv_exit_status()
+        exit_status = channel.recv_exit_status()
 
         while channel.recv_ready():
             rl, wl, xl = select.select([channel], [], [], 0.0)
             if len(rl) > 0:
                 recv = str(channel.recv(1024), "utf-8")
                 print(recv, end='', flush=True)
+                output += recv
 
         try_close(channel)
         try_close(transport)
 
-        return exit_code == 0
+        return exit_status == 0, output
     else:
         print('error: unable to authenticate ' + username + '@' + host + ' with key ' + key_path)
-        return False
+        return False, ''
 
 
 def run_command_on_master(

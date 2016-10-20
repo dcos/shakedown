@@ -83,15 +83,14 @@ def kill_process_on_host(
         :param pattern: a regular expression matching the name of the process to kill
     """
 
-    print("Killing processes that match pattern: {} on hostname: {}".format(pattern,
-                                                                      hostname))
     status, stdout = run_command_on_agent(hostname,
                                 "proc_id=$(ps ax | grep '" + pattern + "' | awk '{{ print $1 }}') && echo $proc_id")
     pids = str(stdout).split()
-    print("Pattern: {} matched following pids: {}".format(pattern, pids))
+    print("On host: {} pattern: {} matched following pids: {}".format(hostname, pattern, pids))
     for pid in pids:
         status, stdout = run_command_on_agent(hostname, "sudo kill -9 {}".format(pid))
-        print("Killed pid: {} exit status: {}".format(pid, status))
+        if not status:
+            print("Unable to killed pid: {}".format(pid))
 
 
 def restart_agent(

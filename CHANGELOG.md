@@ -1,3 +1,18 @@
+## 1.1.7 (2016-10-20)
+
+Features:
+
+  - `--fail` now defaults to `never`
+  - the `run_command` and associated agent/master methods now return
+    both the exit status and captured output
+
+Fixes:
+
+  - `kill_process_on_host` method now working, better output
+  - improved `--stdout-inline` readability
+  - fixed bug where output from teardown methods did not display if
+    module only had a single test
+
 ## 1.1.6 (2016-10-14)
 
 Features:

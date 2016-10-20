@@ -83,7 +83,7 @@ def kill_process_on_host(
         :param pattern: a regular expression matching the name of the process to kill
     """
 
-    status, stdout = run_command_on_agent(hostname, "ps aux | grep -v grep | grep '" + pattern + "'")
+    status, stdout = run_command_on_agent(hostname, "ps aux | grep -v grep | grep '{}'".format(pattern))
     pids = [p.strip().split()[1] for p in stdout.splitlines()]
 
     for pid in pids:

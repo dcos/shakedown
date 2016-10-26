@@ -809,9 +809,9 @@ nodes = get_agents()
 print("Node IP addresses: " + nodes)
 ```
 
-### get_agents()
+### get_private_agents()
 
-Retrieve a list of all agent node IP addresses.
+Retrieve a list of all private agent node IP addresses.
 
 ##### *parameters*
 

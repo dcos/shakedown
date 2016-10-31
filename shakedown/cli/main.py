@@ -5,6 +5,7 @@ import os
 import sys
 
 from shakedown.cli.helpers import *
+from shakedown.dcos import dcos_url
 
 
 @click.command('shakedown')
@@ -37,6 +38,9 @@ def cli(**args):
 
     if args['quiet']:
         shakedown.cli.quiet = True
+
+    if not args['dcos_url']:
+        args['dcos_url'] = dcos_url()
 
     if not args['dcos_url']:
         click.secho('error: --dcos-url is a required option; see --help for more information.', fg='red', bold=True)

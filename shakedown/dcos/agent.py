@@ -44,6 +44,7 @@ def get_agents():
 
     return agent_list
 
+
 def __get_all_agents():
     """Provides all agent json in the cluster which can be used for filtering"""
 
@@ -51,27 +52,40 @@ def __get_all_agents():
     agents = client.get_state_summary()['slaves']
     return agents
 
-def partition_agent(
-    hostname
-):
+
+def partition_agent(host):
     """ Partition a node from all network traffic except for SSH and loopback
 
         :param hostname: host or IP of the machine to partition from the cluster
     """
 
-    copy_file_to_agent(hostname, "{}/partition_cmd".format(shakedown_dcos_dir()))
-    run_command_on_agent(hostname, "sh partition_cmd")
+    save_iptables(host)
+    flush_all_rules(host)
+    allow_all_traffic(host)
 
-def reconnect_agent(
-    hostname
-):
+    copy_file_to_agent(host, "{}/partition_cmd".format(shakedown_dcos_dir()))
+    run_command_on_agent(host, "sh partition_cmd")
+
+
+def reconnect_agent(host):
     """ Reconnect a previously partitioned node to the network
 
         :param hostname: host or IP of the machine to partition from the cluster
     """
 
-    copy_file_to_agent(hostname, "{}/reconnect_cmd".format(shakedown_dcos_dir()))
-    run_command_on_agent(hostname, "sh reconnect_cmd")
+    restore_iptables(host)
+
+
+@contextlib.contextmanager
+def disconnected_agent(host):
+
+    partition_agent(host)
+    try:
+        yield
+    finally:
+        # return config to previous state
+        reconnect_agent(host)
+
 
 def kill_process_on_host(
     hostname,

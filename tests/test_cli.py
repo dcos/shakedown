@@ -6,10 +6,16 @@ from dcos import config
 
 def test_cli_require_dcos_uri():
     runner = CliRunner()
+    result = runner.invoke(cli.main.cli)
+    # with preconfigured dcos cli dcos url isn't required
+    assert '--dcos-url is a required option' not in result.output
+    # oddly results -1
+    assert result.exit_code == -1
+
     with dcos_config():
         config.unset('core.dcos_url')
         result = runner.invoke(cli.main.cli)
-        print(dcos_url())
+        assert '--dcos-url is a required option' in result.output
         assert result.exit_code == 1
 
 

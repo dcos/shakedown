@@ -38,10 +38,11 @@ def dcos_state():
     else:
         return None
 
-
 def dcos_leader():
-    return dcos.mesos.MesosDNSClient().hosts('leader.mesos.')
+    return dcos_dns_lookup('leader.mesos.')
 
+def dcos_dns_lookup(name):
+    return dcos.mesos.MesosDNSClient().hosts(name)
 
 def dcos_version():
     """Return the version of the running cluster.

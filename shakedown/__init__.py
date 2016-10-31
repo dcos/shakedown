@@ -1,6 +1,7 @@
 from shakedown.cli import *
 from shakedown.cli.helpers import *
 from shakedown.dcos import *
+from shakedown.dcos.config import *
 from shakedown.dcos.command import *
 from shakedown.dcos.file import *
 from shakedown.dcos.package import *

@@ -1,12 +1,17 @@
 from click.testing import CliRunner
 
 from shakedown import *
+from dcos import config
 
 
 def test_cli_require_dcos_uri():
     runner = CliRunner()
-    result = runner.invoke(cli.main.cli)
-    assert result.exit_code == 1
+    with dcos_config():
+        config.unset('core.dcos_url')
+        result = runner.invoke(cli.main.cli)
+        print(dcos_url())
+        assert result.exit_code == 1
+
 
 def test_cli_version():
     runner = CliRunner()

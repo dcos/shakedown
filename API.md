@@ -215,7 +215,8 @@ parameter | description | type | default
 **package_name** | the name of the package to install | str
 package_version | the version of the package to install | str | *latest*
 app_id | custom app ID | str | `None`
-options_file | ? | ? | `None`
+options_file | a file containing options in JSON format | str | `None`
+options_json | a dict containing options in JSON format | dict | `None`
 wait_for_completion | wait for service to become healthy before completing? | bool | `False`
 timeout_sec | how long in seconds to wait before timing out | int | `600`
 

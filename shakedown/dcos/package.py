@@ -40,6 +40,7 @@ def install_package(
         package_version=None,
         app_id=None,
         options_file=None,
+        options_json=None,
         wait_for_completion=False,
         timeout_sec=600
 ):
@@ -53,6 +54,8 @@ def install_package(
         :type app_id: str
         :param options_file: filename that has options to use and is JSON format
         :type options_file: str
+        :param options_json: dict that has options to use and is JSON format
+        :type options_json: dict
         :param wait_for_completion: whether or not to wait for task completion before returning
         :type wait_for_completion: bool
         :param timeout_sec: number of seconds to wait for task completion
@@ -62,7 +65,13 @@ def install_package(
         :rtype: bool
     """
 
-    options = _get_options(options_file)
+    if options_file:
+        options = _get_options(options_file)
+    elif options_json:
+        options = options_json
+    else:
+        options = {}
+
     cosmos = _get_cosmos()
     pkg = cosmos.get_package_version(package_name, package_version)
 
@@ -107,6 +116,7 @@ def install_package_and_wait(
         package_version=None,
         app_id=None,
         options_file=None,
+        options_json=None,
         wait_for_completion=True,
         timeout_sec=600
 ):
@@ -118,6 +128,7 @@ def install_package_and_wait(
         package_version,
         app_id,
         options_file,
+        options_json,
         wait_for_completion,
         timeout_sec
     )

@@ -1,3 +1,19 @@
+## 1.1.8 (2016-11-01)
+
+Features:
+
+  - `--dcos-url` now defaults to pre-configured dcos-cli value
+  - `dcos_dns_lookup` method for resolving Mesos-DNS queries
+  - reworked network paritioning methods, including new utility
+    methods for `disconnected_agent`, `disconnected_master`,
+    `save_iptables`, `flush_all_rules`, `allow_all_traffic`, and
+    `iptable_rules`
+  - added `tox.ini` configuration file
+
+Fixes:
+
+  - fixed documentation for `get_private_agents()`
+
 ## 1.1.7 (2016-10-20)
 
 Features:

@@ -53,6 +53,7 @@
     * Masters
       * [partition_master()](#partition_master)
       * [reconnect_master()](#reconnect_master)
+      * [disconnected_master()](#disconnected_master)
     * Agents
       * [get_agents()](#get_agents)
       * [get_private_agents()](#get_private_agents)
@@ -64,6 +65,13 @@
       * [start_agent()](#start_agent)
       * [delete_agent_log()](#delete_agent_log)
       * [kill_process_on_host()](#kill_process_on_host)
+      * [disconnected_agent()](#disconnected_agent)
+    * Network
+      * [restore_iptables()](#restore_iptables)
+      * [save_iptables()](#save_iptables)
+      * [flush_all_rules()](#flush_all_rules)
+      * [allow_all_traffic()](#allow_all_traffic)
+      * [iptable_rules()](#iptable_rules)
 
 ## Usage
 
@@ -974,4 +982,141 @@ kill | str
 # kill java on the public agents
 for public_node in public_nodes:
     kill_process_on_host(public_node, "java")
+```
+
+
+### disconnected_agent()
+
+Managed context which will disconnect an agent for the duration of the context then restore the agent
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+
+##### *example usage*
+
+```python
+# disconnects agent
+with disconnected_agent(host):
+        service_delay()
+
+# agent is reconnected
+wait_for_service_url(PACKAGE_APP_ID)
+```
+
+### disconnected_master()
+
+Managed context which will disconnect the master for the duration of the context then restore the master
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+# disconnects agent
+with disconnected_master(host):
+        service_delay()
+
+# master is reconnected
+wait_for_service_url(PACKAGE_APP_ID)
+```
+
+### iptable_rules()
+
+Managed context which will save the firewall rules then restore them at the end of the context for the host.
+It calls `save_iptables` before the context and `restore_iptables` and the end of the context.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+
+
+##### *example usage*
+
+```python
+# disconnects agent
+with iptable_rules(shakedown.master_ip()):
+    block_port(host, port)
+    time.sleep(7)
+
+# firewalls restored
+wait_for_service_url(PACKAGE_APP_ID)
+```
+
+### restore_iptables()
+
+Reverses and restores saved iptable rules.  It works with `save_iptables`.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+
+
+##### *example usage*
+
+```python
+# disconnects agent
+restore_iptables(host)
+```
+
+### save_iptables()
+
+Saves the current iptables to a file on the host.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+
+
+##### *example usage*
+
+```python
+# disconnects agent
+save_iptables(host)
+```
+
+
+### flush_all_rules()
+
+Flushes the iptables rules for the host.  `sudo iptables -F INPUT`.   Consider using `save_iptables` prior to use.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+
+
+##### *example usage*
+
+```python
+# disconnects agent
+flush_all_rules(host)
+```
+
+### allow_all_traffic()
+
+Removes iptable rules allow full access.  Consider using `save_iptables` prior to using.
+sudo iptables --policy INPUT ACCEPT && sudo iptables --policy OUTPUT ACCEPT && sudo iptables --policy FORWARD ACCEPT'
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+
+
+##### *example usage*
+
+```python
+# disconnects agent
+allow_all_traffic(host)
 ```

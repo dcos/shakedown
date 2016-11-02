@@ -13,6 +13,11 @@ def test_uninstall_package_and_wait():
     uninstall_package_and_wait('chronos')
     assert package_installed('chronos') == False
 
+def test_install_package_with_json_options():
+    install_package_and_wait('chronos', None, 'big-chronos', None, {"chronos": {"cpus": 2}})
+    assert get_service_task('marathon', 'big-chronos')['resources']['cpus'] == 2
+    uninstall_package_and_wait('chronos')
+
 def test_install_package_with_subcommand():
     install_package_and_wait('riak')
     result, err = run_dcos_command('riak --version')

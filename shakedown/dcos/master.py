@@ -37,6 +37,19 @@ def reconnect_master():
     reconnect_node(shakedown.master_ip())
 
 
+def restart_master_node():
+    """ Restarts the master node
+    """
+
+    run_command_on_master("sudo /sbin/shutdown -r now")
+
+
+def systemctl_master(command='restart'):
+    """ Used to start, stop or restart the master process
+    """
+    run_command_on_master('sudo systemctl {} dcos-mesos-master'.format(command))
+
+
 @contextlib.contextmanager
 def disconnected_master(incoming=True, outgoing=True):
 

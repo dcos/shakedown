@@ -4,6 +4,7 @@ from shakedown import *
 import os
 from dcos import (marathon, mesos)
 
+
 def get_public_agents():
     """Provides a list of hostnames / IPs that are public agents in the cluster"""
     agent_list = []
@@ -14,6 +15,7 @@ def get_public_agents():
                 agent_list.append(agent["hostname"])
 
     return agent_list
+
 
 def get_private_agents():
     """Provides a list of hostnames / IPs that are private agents in the cluster"""
@@ -33,6 +35,7 @@ def get_private_agents():
                 agent_list.append(agent["hostname"])
 
     return agent_list
+
 
 def get_agents():
     """Provides a list of hostnames / IPs of all agents in the cluster"""
@@ -118,6 +121,7 @@ def restart_agent(
 
     run_command_on_agent(hostname, "sudo systemctl restart dcos-mesos-slave")
 
+
 def stop_agent(
     hostname
 ):
@@ -138,6 +142,13 @@ def start_agent(
     """
 
     run_command_on_agent(hostname, "sudo systemctl start dcos-mesos-slave")
+
+
+def restart_agent_node(hostname):
+    """ Restarts the agent node
+    """
+
+    run_command_on_agent(hostname, "sudo /sbin/shutdown -r now")
 
 
 def delete_agent_log(

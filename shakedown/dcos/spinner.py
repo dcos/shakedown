@@ -35,6 +35,8 @@ def time_wait(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions
 
 
 def elapse_time(start, end=None, precision=3):
+    """ Simple time calculation utility.   Given a start time, it will provide an elapse time.
+    """
     if end is None:
         end = time_module.time()
     return round(end-start, precision)

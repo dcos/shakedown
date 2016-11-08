@@ -1,5 +1,5 @@
 from dcos import (marathon, mesos)
-
+from shakedown.dcos.spinner import *
 
 def get_service(
         service_name,
@@ -187,26 +187,37 @@ def service_healthy(service_name, app_id=None):
 
     return False
 
-def wait_for_service_endpoint(service,timeout_sec=120):
-    """Checks the service url returns HTTP 200 within a timeout if available it returns true on expiration it returns false"""
 
-    url = dcos_service_url(service)
+def service_available_predicate(service_name):
+    url = dcos_service_url(service_name)
+    try:
+        response = http.get(url)
+    except Exception as e:
+        pass
 
-    now = time.time()
-    future = now + timeout_sec
-    time.sleep(5)
+    if response is not None and response.status_code == 200:
+        return True
 
-    while now < future:
-        response = None
-        try:
-            response = http.get(url)
-        except Exception as e:
-            pass
 
-        if response is None:
-            time.sleep(5)
-            now = time.time()
-        elif response.status_code == 200:
+def service_unavailable_predicate(service_name):
+    url = dcos_service_url(service_name)
+    try:
+        response = http.get(url)
+    except DCOSHTTPException as e:
+        if e.response.status_code == 500:
             return True
+    else:
+        return False
 
-    return False
+def wait_for_service_endpoint(service_name, timeout_sec=120):
+    """Checks the service url if available it returns true, on expiration
+    it returns false"""
+
+    return time_wait(lambda: service_available_predicate(service_name), timeout_seconds=timeout_sec)
+
+
+def wait_for_service_endpoint_removal(service_name, timeout_sec=120):
+    """Checks the service url if it is removed it returns true, on expiration
+    it returns false"""
+
+    return time_wait(lambda: service_unavailable_predicate(service_name))

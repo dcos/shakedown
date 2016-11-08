@@ -1,6 +1,8 @@
 from dcos import mesos
 
 from shakedown.dcos.helpers import *
+from shakedown.dcos.spinner import *
+from shakedown.dcos import *
 
 import shakedown
 import time
@@ -72,3 +74,29 @@ def wait_for_task_completion(task_id):
     """
     while not task_completed(task_id):
         time.sleep(1)
+
+
+def task_predicate(service, task):
+    try:
+        response = get_service_task(service, task)
+    except Exception as e:
+        pass
+
+    if response is not None and response['state'] == 'TASK_RUNNING':
+        return True
+    else:
+        return False
+
+
+def wait_for_task(service, task, timeout_sec=120):
+    """Waits for a task which was launched to be launched"""
+    return time_wait(lambda: task_predicate(service, task), timeout_seconds=timeout_sec)
+
+
+def dns_predicate(name):
+    dns = dcos_dns_lookup(name)
+    return True if dns[0].get('ip') else False
+
+
+def wait_for_dns(name, timeout_sec=120):
+    return time_wait(lambda: dns_predicate(name), timeout_seconds=timeout_sec)

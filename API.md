@@ -43,13 +43,24 @@
       * [get_marathon_tasks()](#get_marathon_tasks)
       * [service_healthy()](#service_healthy)
       * [wait_for_service_endpoint()](#wait_for_service_endpoint)
+      * [wait_for_service_endpoint_removal()](#wait_for_service_endpoint_removal)
+    * Spinner
+      * [wait_for()](#wait_for)
+      * [time_wait()](#time_wait)
+      * [elapse_time()](#elapse_time)
     * Tasks
       * [get_task()](#get_task)
       * [get_tasks()](#get_tasks)
       * [get_active_tasks()](#get_active_tasks)
       * [task_completed()](#task_completed)
+      * [wait_for_task()](#wait_for_task)
+      * [wait_for_dns()](#wait_for_dns)
     * ZooKeeper
       * [delete_zk_node()](#delete_zk_node)
+    * Marathon
+      * [deployment_wait()](#deployment_wait)
+      * [delete_all_apps()](#delete_all_apps)      
+      * [delete_all_apps_wait()](#delete_all_apps_wait)      
     * Masters
       * [partition_master()](#partition_master)
       * [reconnect_master()](#reconnect_master)
@@ -661,7 +672,7 @@ parameter | description | type | default
 if service_healthy('jenkins'):
     print('Jenkins is healthy!')
 ```
-
+wait_for_service_endpoint_removal
 ### wait_for_service_endpoint()
 
 Checks the service url returns HTTP 200 within a timeout if available it returns true on expiration it returns false.
@@ -678,6 +689,105 @@ timeout_sec | how long in seconds to wait before timing out | int | `120`
 ```python
 # will wait
 wait_for_service_endpoint("marathon-user")
+```
+
+### wait_for_service_endpoint_removal()
+
+Checks the service url returns HTTP 500 within a timeout if available it returns true on expiration it returns time to remove.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**service_name** | the name of the service | str
+timeout_sec | how long in seconds to wait before timing out | int | `120`
+
+##### *example usage*
+
+```python
+# will wait
+wait_for_service_endpoint_removal("marathon-user")
+```
+
+### wait_for()
+
+Waits for a function to return true or times out.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**predicate** | the predicate function| fn
+timeout_seconds | how long in seconds to wait before timing out | int | `120`
+sleep_seconds | time to sleep between multiple calls to predicate | int | `1`
+ignore_exceptions | ignore exceptions thrown by predicate | bool | True
+inverse_predicate | if True look for False from predicate | bool | False
+
+##### *example usage*
+
+```python
+# simple predicate
+def deployment_predicate(client=None):
+  ...
+
+wait_for(deployment_predicate, timeout)
+
+# predicate with a parameter
+def service_available_predicate(service_name):
+  ...
+
+wait_for(lambda: service_available_predicate(service_name), timeout_seconds=timeout_sec)
+
+```
+
+### time_wait()
+
+Waits for a function to return true or times out.  Returns the elapsed time of wait.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**predicate** | the predicate function| fn
+timeout_seconds | how long in seconds to wait before timing out | int | `120`
+sleep_seconds | time to sleep between multiple calls to predicate | int | `1`
+ignore_exceptions | ignore exceptions thrown by predicate | bool | True
+inverse_predicate | if True look for False from predicate | bool | False
+
+##### *example usage*
+
+```python
+# simple predicate
+def deployment_predicate(client=None):
+  ...
+
+time_wait(deployment_predicate, timeout)
+
+# predicate with a parameter
+def service_available_predicate(service_name):
+  ...
+
+time_wait(lambda: service_available_predicate(service_name), timeout_seconds=timeout_sec)
+
+```
+
+### elapse_time()
+
+returns the time difference with a given precision.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**start** | the start time | time
+end | end time, if not provided current time is used | time | None
+precision | the number decimal places to maintain | int | `3`
+
+##### *example usage*
+
+```python
+# will wait
+elapse_time("marathon-user")
 ```
 
 ### get_task()
@@ -728,7 +838,6 @@ for task in tasks:
     print("{} has state {}".format(task['id'], task['state']))
 ```
 
-
 ### task_completed()
 
 Check whether a task has completed.
@@ -748,6 +857,41 @@ while not task_completed('driver-20160517222552-0072'):
     time.sleep(5)
 ```
 
+### wait_for_task()
+
+Wait for a task to be reported running by Mesos.  Returns the elapsed time of wait.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+service   | framework service name    | str
+task      | task name | str
+timeout_sec | timeout | int | `120`
+
+
+##### *example usage*
+
+```python
+wait_for_task('marathon', 'marathon-user')
+```
+
+### wait_for_dns()
+
+Wait for a task dns.  Returns the elapsed time of wait.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+name      | dns name    | str
+timeout_sec | timeout | int | `120`
+
+##### *example usage*
+
+```python
+wait_for_dns('marathon-user.marathon.mesos')
+```
 
 ### delete_zk_node()
 
@@ -766,6 +910,50 @@ node_name | the name of the node | str
 delete_zk_node('universe/marathon-user')
 ```
 
+### deployment_wait()
+
+Waits for Marathon Deployment to complete or times out.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+timeout | max time to wait for deployment | int | 120
+
+##### *example usage*
+
+```python
+# assuming a client.add_app() or similar
+deployment_wait()
+```
+
+### delete_all_apps()
+
+Deletes all apps running on Marathon.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+delete_all_apps()
+```
+
+### delete_all_apps_wait()
+
+Deletes all apps running on Marathon and waits for deployment to finish.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+delete_all_apps_wait()
+```
 
 ### partition_master()
 

@@ -1,6 +1,7 @@
 from dcos import mesos
 
 from shakedown.dcos.helpers import *
+from shakedown.dcos.service import *
 from shakedown.dcos.spinner import *
 from shakedown.dcos import *
 
@@ -76,18 +77,36 @@ def wait_for_task_completion(task_id):
         time.sleep(1)
 
 
-def task_predicate(service, task):
+def task_property_value_predicate(service, task, prop, value):
     try:
         response = get_service_task(service, task)
     except Exception as e:
         pass
 
-    return (response is not None) and (response['state'] == 'TASK_RUNNING')
+    return (response is not None) and (response[prop] == value)
+
+def task_predicate(service, task):
+    return task_property_value_predicate(service, task, 'state', 'TASK_RUNNING')
+
+def task_property_present_predicate(service, task, prop):
+    """ True if the json_element passed is present for the task specified.
+    """
+    try:
+        response = get_service_task(service, task)
+    except Exception as e:
+        pass
+
+    return (response is not None) and (prop in response)
 
 
 def wait_for_task(service, task, timeout_sec=120):
     """Waits for a task which was launched to be launched"""
     return time_wait(lambda: task_predicate(service, task), timeout_seconds=timeout_sec)
+
+
+def wait_for_task_property(service, task, prop, timeout_sec=120):
+    """Waits for a task which was launched to be launched"""
+    return time_wait(lambda: task_property_present_predicate(service, task, prop), timeout_seconds=timeout_sec)
 
 
 def dns_predicate(name):

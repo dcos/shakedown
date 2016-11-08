@@ -8,13 +8,13 @@ def wait_for(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions=
 
     """
 
-    timeout = create_deadline(timeout_seconds)
+    timeout = Deadline.create_deadline(timeout_seconds)
     while True:
         try:
             result = predicate()
         except Exception as e:
             if not ignore_exceptions:
-                raise e        
+                raise e
         else:
             if (not inverse_predicate and result) or (inverse_predicate and not result):
                 return
@@ -39,6 +39,12 @@ class Deadline(object):
 
     def is_expired(self):
         raise NotImplementedError()
+
+    @staticmethod
+    def create_deadline(seconds):
+        if seconds is None:
+            return Forever()
+        return Within(seconds)
 
 
 class Within(Deadline):
@@ -68,9 +74,3 @@ class TimeoutExpired(Exception):
         return "{0}: {1}".format(type(self).__name__, self)
     def __unicode__(self):
         return u"Timeout of {0} seconds expired waiting for {1}".format(self._timeout_seconds, self._what)
-
-
-def create_deadline(seconds):
-    if seconds is None:
-        return Forever()
-    return Within(seconds)

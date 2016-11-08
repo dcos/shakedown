@@ -1,3 +1,9 @@
+## 1.1.10 (2016-11-08)
+
+Fixes:
+
+  - fixing broken PyPI 1.1.9 release
+
 ## 1.1.9 (2016-11-08)
 
 Features:

@@ -65,6 +65,7 @@ def task_completed(task_id):
 
     return False
 
+
 def wait_for_task_completion(task_id):
     """ Block until the task completes
 
@@ -85,8 +86,10 @@ def task_property_value_predicate(service, task, prop, value):
 
     return (response is not None) and (response[prop] == value)
 
+
 def task_predicate(service, task):
     return task_property_value_predicate(service, task, 'state', 'TASK_RUNNING')
+
 
 def task_property_present_predicate(service, task, prop):
     """ True if the json_element passed is present for the task specified.
@@ -112,9 +115,10 @@ def wait_for_task_property(service, task, prop, timeout_sec=120):
 def wait_for_task_property_value(service, task, prop, value, timeout_sec=120):
     return time_wait(lambda: task_property_value_predicate(service, task, prop, value), timeout_seconds=timeout_sec)
 
+
 def dns_predicate(name):
     dns = dcos_dns_lookup(name)
-    return dns[0].get('ip') != None
+    return dns[0].get('ip') is not None
 
 
 def wait_for_dns(name, timeout_sec=120):

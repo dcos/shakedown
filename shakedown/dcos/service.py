@@ -1,6 +1,7 @@
 from dcos import (marathon, mesos)
 from shakedown.dcos.spinner import *
 
+
 def get_service(
         service_name,
         inactive=False,
@@ -159,6 +160,7 @@ def get_service_ips(
 
     return ips
 
+
 def service_healthy(service_name, app_id=None):
     """ Check whether a named service is healthy
 
@@ -206,6 +208,7 @@ def service_unavailable_predicate(service_name):
             return True
     else:
         return False
+
 
 def wait_for_service_endpoint(service_name, timeout_sec=120):
     """Checks the service url if available it returns true, on expiration

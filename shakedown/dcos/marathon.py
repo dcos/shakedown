@@ -2,9 +2,8 @@ from dcos import marathon
 from shakedown.dcos.spinner import *
 
 
-def deployment_predicate(client=None):
-    if client is None:
-        client = marathon.create_client()
+def deployment_predicate():
+    client = marathon.create_client()
     return len(client.get_deployments()) == 0
 
 

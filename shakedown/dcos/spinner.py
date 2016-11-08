@@ -12,9 +12,9 @@ def wait_for(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions=
     while True:
         try:
             result = predicate()
-        except:
+        except Exception as e:
             if not ignore_exceptions:
-                raise
+                raise e        
         else:
             if (not inverse_predicate and result) or (inverse_predicate and not result):
                 return

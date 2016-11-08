@@ -82,10 +82,7 @@ def task_predicate(service, task):
     except Exception as e:
         pass
 
-    if response is not None and response['state'] == 'TASK_RUNNING':
-        return True
-    else:
-        return False
+    return (response is not None) and (response['state'] == 'TASK_RUNNING')
 
 
 def wait_for_task(service, task, timeout_sec=120):
@@ -95,7 +92,7 @@ def wait_for_task(service, task, timeout_sec=120):
 
 def dns_predicate(name):
     dns = dcos_dns_lookup(name)
-    return True if dns[0].get('ip') else False
+    return dns[0].get('ip') != None
 
 
 def wait_for_dns(name, timeout_sec=120):

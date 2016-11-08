@@ -192,8 +192,7 @@ def service_available_predicate(service_name):
     url = dcos_service_url(service_name)
     try:
         response = http.get(url)
-        if response.status_code == 200:
-            return True
+        return response.status_code == 200
     except Exception as e:
         return False
 

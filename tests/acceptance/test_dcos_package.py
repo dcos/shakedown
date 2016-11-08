@@ -13,9 +13,18 @@ def test_uninstall_package_and_wait():
     uninstall_package_and_wait('chronos')
     assert package_installed('chronos') == False
 
+def task_cpu_predicate(service, task):
+        try:
+            response = get_service_task(service, task)
+        except Exception as e:
+            pass
+
+        return (response is not None) and ('resources' in response) and ('cpus' in response['resources'])
+
+
 def test_install_package_with_json_options():
     install_package_and_wait('chronos', None, 'big-chronos', None, {"chronos": {"cpus": 2}})
-    wait_for_task_property('marathon', 'big-chronos', 'resources')
+    wait_for(lambda: task_cpu_predicate('marathon', 'big-chronos'))
     assert get_service_task('marathon', 'big-chronos')['resources']['cpus'] == 2
     uninstall_package_and_wait('chronos')
 

@@ -109,6 +109,9 @@ def wait_for_task_property(service, task, prop, timeout_sec=120):
     return time_wait(lambda: task_property_present_predicate(service, task, prop), timeout_seconds=timeout_sec)
 
 
+def wait_for_task_property_value(service, task, prop, value, timeout_sec=120):
+    return time_wait(lambda: task_property_value_predicate(service, task, prop, value), timeout_seconds=timeout_sec)
+
 def dns_predicate(name):
     dns = dcos_dns_lookup(name)
     return dns[0].get('ip') != None

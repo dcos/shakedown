@@ -54,6 +54,8 @@
       * [get_active_tasks()](#get_active_tasks)
       * [task_completed()](#task_completed)
       * [wait_for_task()](#wait_for_task)
+      * [wait_for_task_property()](#wait_for_task_property)
+      * [wait_for_task_property_value()](#wait_for_task_property_value)
       * [wait_for_dns()](#wait_for_dns)
     * ZooKeeper
       * [delete_zk_node()](#delete_zk_node)
@@ -874,6 +876,47 @@ timeout_sec | timeout | int | `120`
 
 ```python
 wait_for_task('marathon', 'marathon-user')
+```
+
+### wait_for_task_property()
+
+Wait for a task to be report having a specific property.   Returns the elapsed time of wait.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+service   | framework service name    | str
+task      | task name | str
+prop      | property name | str
+timeout_sec | timeout | int | `120`
+
+
+##### *example usage*
+
+```python
+wait_for_task_property('marathon', 'chronos', 'resources')
+```
+
+### wait_for_task_property_value()
+
+Wait for a task to be reported having a property with a specific value.  Returns the elapsed time of wait.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+service   | framework service name    | str
+task      | task name | str
+prop      | property name | str
+value      | value of property | str
+timeout_sec | timeout | int | `120`
+
+
+##### *example usage*
+
+```python
+wait_for_task_property_value('marathon', 'marathon-user', 'state', 'TASK_RUNNING')
 ```
 
 ### wait_for_dns()

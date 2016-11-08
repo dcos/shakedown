@@ -672,7 +672,7 @@ parameter | description | type | default
 if service_healthy('jenkins'):
     print('Jenkins is healthy!')
 ```
-wait_for_service_endpoint_removal
+
 ### wait_for_service_endpoint()
 
 Checks the service url returns HTTP 200 within a timeout if available it returns true on expiration it returns false.

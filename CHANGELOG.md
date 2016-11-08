@@ -1,3 +1,19 @@
+## 1.1.9 (2016-11-08)
+
+Features:
+
+  - 'wait' functions and predicates, including `wait_for_task`,
+    `wait_for_task_property`, `wait_for_dns`, and `deployment_wait`
+  - new marathon methods for `deployment_wait`, `delete_all_apps`,
+    and `delete_all_apps_wait`
+  - support for passing a dict object containing JSON options to
+    `install_package` methods
+  - bumped `dcosdcli` version to `0.4.14`
+
+Fixes:
+
+  - pep8-compliance
+
 ## 1.1.8 (2016-11-01)
 
 Features:

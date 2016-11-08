@@ -24,6 +24,11 @@ def wait_for(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions=
 
 
 def time_wait(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions=True, inverse_predicate=False):
+    """ waits or spins for a predicate and returns the time of the wait.
+        An exception in the function will be returned.
+        A timeout will throw a TimeoutExpired Exception.
+
+    """
     start = time_module.time()
     wait_for(predicate, timeout_seconds, sleep_seconds, ignore_exceptions, inverse_predicate)
     return elapse_time(start)

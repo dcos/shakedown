@@ -38,7 +38,7 @@ def _get_cosmos():
 def install_package(
         package_name,
         package_version=None,
-        app_id=None,
+        service_name=None,
         options_file=None,
         options_json=None,
         wait_for_completion=False,
@@ -50,8 +50,8 @@ def install_package(
         :type package_name: str
         :param package_version: version of the package (defaults to latest)
         :type package_version: str
-        :param app_id: unique app_id for the package
-        :type app_id: str
+        :param service_name: unique service name for the package
+        :type service_name: str
         :param options_file: filename that has options to use and is JSON format
         :type options_file: str
         :param options_json: dict that has options to use and is JSON format
@@ -74,20 +74,28 @@ def install_package(
 
     cosmos = _get_cosmos()
     pkg = cosmos.get_package_version(package_name, package_version)
+    if service_name is None:
+        labels = pkg.marathon_json(options).get('labels')
+        if 'DCOS_SERVICE_NAME' in labels:
+            service_name = labels['DCOS_SERVICE_NAME']
+        else:
+            service_name = package_name
 
     # Install subcommands (if defined)
     if pkg.has_cli_definition():
         print("\n{}installing CLI commands for package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
         subcommand.install(pkg)
 
-    print("\n{}installing package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
+    print("\n{}installing package '{}' with service name '{}'\n".format(
+        shakedown.cli.helpers.fchr('>>'), package_name, service_name)
+    )
 
     # Print pre-install notes to console log
     pre_install_notes = pkg.package_json().get('preInstallNotes')
     if pre_install_notes:
         print(pre_install_notes)
 
-    cosmos.install_app(pkg, options, app_id)
+    cosmos.install_app(pkg, options, service_name)
 
     # Print post-install notes to console log
     post_install_notes = pkg.package_json().get('postInstallNotes')
@@ -100,7 +108,7 @@ def install_package(
         future = now + timeout_sec
 
         while now < future:
-            if shakedown.get_service(package_name):
+            if shakedown.get_service(service_name):
                 return True
 
             time.sleep(1)
@@ -114,7 +122,7 @@ def install_package(
 def install_package_and_wait(
         package_name,
         package_version=None,
-        app_id=None,
+        service_name=None,
         options_file=None,
         options_json=None,
         wait_for_completion=True,
@@ -126,7 +134,7 @@ def install_package_and_wait(
     return install_package(
         package_name,
         package_version,
-        app_id,
+        service_name,
         options_file,
         options_json,
         wait_for_completion,
@@ -134,25 +142,25 @@ def install_package_and_wait(
     )
 
 
-def package_installed(package_name, app_id=None):
+def package_installed(package_name, service_name=None):
     """ Check whether thea package package_name is currently installed.
 
         :param package_name: package name
         :type package_name: str
-        :param app_id: app_id
-        :type app_id: str
+        :param service_name: service_name
+        :type service_name: str
 
         :return: True if installed, False otherwise
         :rtype: bool
     """
 
     cosmos = _get_cosmos()
-    return len(cosmos.installed_apps(package_name, app_id)) > 0
+    return len(cosmos.installed_apps(package_name, service_name)) > 0
 
 
 def uninstall_package(
         package_name,
-        app_id=None,
+        service_name=None,
         all_instances=False,
         wait_for_completion=False,
         timeout_sec=600
@@ -161,8 +169,8 @@ def uninstall_package(
 
         :param package_name: name of the package
         :type package_name: str
-        :param app_id: unique app_id for the package
-        :type app_id: str
+        :param service_name: unique service name for the package
+        :type service_name: str
         :param all_instances: uninstall all instances of package
         :type all_instances: bool
         :param wait_for_completion: whether or not to wait for task completion before returning
@@ -174,17 +182,25 @@ def uninstall_package(
         :rtype: bool
     """
 
-    print("\n{}uninstalling package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
-
     cosmos = _get_cosmos()
     pkg = cosmos.get_package_version(package_name, None)
+    if service_name is None:
+        labels = pkg.marathon_json({}).get('labels')
+        if 'DCOS_SERVICE_NAME' in labels:
+            service_name = labels['DCOS_SERVICE_NAME']
+        else:
+            service_name = package_name
 
     # Uninstall subcommands (if defined)
     if pkg.has_cli_definition():
         print("\n{}uninstalling CLI commands for package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
         subcommand.uninstall(package_name)
 
-    cosmos.uninstall_app(package_name, all_instances, app_id)
+    print("\n{}uninstalling package '{}' with service name '{}'\n".format(
+        shakedown.cli.helpers.fchr('>>'), package_name, service_name)
+    )
+
+    cosmos.uninstall_app(package_name, all_instances, service_name)
 
     # Optionally wait for the service to unregister as a framework
     if wait_for_completion:
@@ -192,7 +208,7 @@ def uninstall_package(
         future = now + timeout_sec
 
         while now < future:
-            if not shakedown.get_service(package_name):
+            if not shakedown.get_service(service_name):
                 return True
 
             time.sleep(1)
@@ -205,7 +221,7 @@ def uninstall_package(
 
 def uninstall_package_and_wait(
         package_name,
-        app_id=None,
+        service_name=None,
         all_instances=False,
         wait_for_completion=True,
         timeout_sec=600
@@ -215,7 +231,7 @@ def uninstall_package_and_wait(
 
     return uninstall_package(
         package_name,
-        app_id,
+        service_name,
         all_instances,
         wait_for_completion,
         timeout_sec

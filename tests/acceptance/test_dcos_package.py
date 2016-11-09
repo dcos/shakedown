@@ -26,7 +26,7 @@ def test_install_package_with_json_options():
     install_package_and_wait('chronos', None, 'big-chronos', None, {"chronos": {"cpus": 2}})
     wait_for(lambda: task_cpu_predicate('marathon', 'big-chronos'))
     assert get_service_task('marathon', 'big-chronos')['resources']['cpus'] == 2
-    uninstall_package_and_wait('chronos')
+    uninstall_package_and_wait('chronos', 'big-chronos')
 
 def test_install_package_with_subcommand():
     install_package_and_wait('riak')

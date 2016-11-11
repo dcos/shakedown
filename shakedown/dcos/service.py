@@ -1,6 +1,7 @@
-from dcos import (marathon, mesos)
+from dcos import (marathon, mesos, http)
 from shakedown.dcos.spinner import *
-
+from shakedown.dcos import dcos_service_url
+from dcos.errors import DCOSException, DCOSHTTPException
 
 def get_service(
         service_name,

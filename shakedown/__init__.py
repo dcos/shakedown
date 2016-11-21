@@ -13,5 +13,6 @@ from shakedown.dcos.task import *
 from shakedown.dcos.zookeeper import *
 from shakedown.dcos.agent import *
 from shakedown.dcos.master import *
+from shakedown.dcos.jobs import *
 
 VERSION='1.1.10'

@@ -20,6 +20,7 @@ setup(name='dcos-shakedown',
           'dcoscli==0.4.14',
           'paramiko',
           'pytest',
+          'pytest-timeout',
           'scp'
       ],
       entry_points="""

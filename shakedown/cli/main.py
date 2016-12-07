@@ -12,6 +12,7 @@ from shakedown.dcos import dcos_url
 @click.argument('tests', nargs=-1)
 @click.option('-u', '--dcos-url', help='URL to a running DC/OS cluster.')
 @click.option('-f', '--fail', type=click.Choice(['fast', 'never']), default='never', help='Sepcify whether to continue testing when encountering failures. (default: never)')
+@click.option('-m', '--timeout', default=1800, help='Seconds after which to terminate a running test')
 @click.option('-i', '--ssh-key-file', type=click.Path(), help='Path to the SSH keyfile to use for authentication.')
 @click.option('-q', '--quiet', is_flag=True, help='Suppress all superfluous output.')
 @click.option('-k', '--ssl-no-verify', is_flag=True, help='Suppress SSL certificate verification.')
@@ -313,7 +314,7 @@ def cli(**args):
                 for output in shakedown.stdout:
                     echo(output)
 
-    opts = ['-q', '--tb=no']
+    opts = ['-q', '--tb=no', "--timeout={}".format(args['timeout'])]
 
     if args['fail'] == 'fast':
         opts.append('-x')

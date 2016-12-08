@@ -4,6 +4,7 @@ import scp
 
 from dcos import http
 
+import itertools
 import shakedown
 
 
@@ -53,14 +54,11 @@ def start_transport(transport, username, key):
 
     transport.start_client()
 
-    if key:
-        transport.auth_publickey(username, key)
-        return transport
-
     agent = paramiko.agent.Agent()
-    for key in agent.get_keys():
+    keys = itertools.chain((key,) if key else (), agent.get_keys())
+    for test_key in keys:
         try:
-            transport.auth_publickey(username, key)
+            transport.auth_publickey(username, test_key)
             break
         except paramiko.AuthenticationException as e:
             pass

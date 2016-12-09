@@ -1,4 +1,5 @@
 import json
+import pytest
 
 from shakedown import *
 
@@ -21,7 +22,7 @@ def task_cpu_predicate(service, task):
 
         return (response is not None) and ('resources' in response) and ('cpus' in response['resources'])
 
-
+@pytest.mark.xfail(reason='Flaky test')
 def test_install_package_with_json_options():
     install_package_and_wait('chronos', None, 'big-chronos', None, {"chronos": {"cpus": 2}})
     wait_for(lambda: task_cpu_predicate('marathon', 'big-chronos'))

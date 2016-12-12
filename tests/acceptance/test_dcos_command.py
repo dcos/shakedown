@@ -22,6 +22,6 @@ def test_run_command_on_agent():
         assert output.startswith('root')
 
 def test_run_dcos_command():
-    result, error = run_dcos_command('package search jenkins --json')
-    result_json = json.loads(result)
+    stdout, stderr, return_code = run_dcos_command('package search jenkins --json')
+    result_json = json.loads(stdout)
     assert result_json['packages'][0]['name'] == 'jenkins'

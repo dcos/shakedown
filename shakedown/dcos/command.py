@@ -87,12 +87,12 @@ def run_command_on_agent(
 
 
 def run_dcos_command(command):
-    """ Run a command via DC/OS CLI
+    """ Run `dcos {command}` via DC/OS CLI
 
         :param command: the command to execute
         :type command: str
 
-        :return: stdout and stderr of the command execution
+        :return: (stdout, stderr, return_code)
         :rtype: tuple
     """
 
@@ -101,10 +101,12 @@ def run_dcos_command(command):
 
     print("\n{}{}\n".format(shakedown.cli.helpers.fchr('>>'), ' '.join(call)))
 
-    output, error = subprocess.Popen(call, stdout = subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    output = output.decode('utf-8')
-    error = error.decode('utf-8')
+    proc = subprocess.Popen(call, stdout = subprocess.PIPE, stderr=subprocess.PIPE)
+    output, error = proc.communicate()
+    return_code = proc.wait()
+    stdout = output.decode('utf-8')
+    stderr = error.decode('utf-8')
 
-    print(output, error)
+    print(stdout, stderr, return_code)
 
-    return output, error
+    return stdout, stderr, return_code

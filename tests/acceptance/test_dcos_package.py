@@ -30,13 +30,13 @@ def test_install_package_with_json_options():
 
 def test_install_package_with_subcommand():
     install_package_and_wait('riak')
-    result, err = run_dcos_command('riak --version')
-    assert result.startswith('0')
+    stdout, stderr, return_code = run_dcos_command('riak --version')
+    assert stdout.startswith('0')
 
 def test_uninstall_package_with_subcommand():
     uninstall_package_and_wait('riak')
-    result, err = run_dcos_command('riak --version')
-    assert err.endswith("is not a dcos command.\n")
+    stdout, stderr, return_code = run_dcos_command('riak --version')
+    assert stderr.endswith("is not a dcos command.\n")
 
 def test_add_package_repo():
     assert add_package_repo('Multiverse', 'https://github.com/mesosphere/multiverse/archive/version-2.x.zip', 0)

@@ -1,3 +1,18 @@
+## 1.1.11 (2016-12-13)
+
+Features:
+
+  - test timeouts as defined by `--timeout` (or `timeout` in
+    `.shakedown` config) or `@pytest.mark.timeout(n)` for
+    individual tests
+
+Fixes:
+
+  - exit code is now returned for `run_dcos_command` calls
+  - fallbaack to `ssh-agent` if `.ssh/id_rsa` key fails
+  - `wait` predicate fixed from `1.1.9`
+  - use `service_name` rather than former ambiguous `app_id`
+
 ## 1.1.10 (2016-11-08)
 
 Fixes:

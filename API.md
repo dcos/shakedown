@@ -58,11 +58,12 @@
       * [wait_for_task_property_value()](#wait_for_task_property_value)
       * [wait_for_dns()](#wait_for_dns)
     * ZooKeeper
+      * [get_zk_node_data()](#get_zk_node_data)
       * [delete_zk_node()](#delete_zk_node)
     * Marathon
       * [deployment_wait()](#deployment_wait)
-      * [delete_all_apps()](#delete_all_apps)      
-      * [delete_all_apps_wait()](#delete_all_apps_wait)      
+      * [delete_all_apps()](#delete_all_apps)
+      * [delete_all_apps_wait()](#delete_all_apps_wait)
     * Masters
       * [partition_master()](#partition_master)
       * [reconnect_master()](#reconnect_master)
@@ -952,6 +953,24 @@ node_name | the name of the node | str
 # Delete a 'universe/marathon-user' ZooKeeper node
 delete_zk_node('universe/marathon-user')
 ```
+
+### get_zk_node_data()
+
+Get data for a Zookeeper node.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+node_name | the name of the node | str
+
+##### *example usage*
+
+```python
+# Get data for a 'universe/marathon-user' ZooKeeper node
+get_zk_node_data('universe/marathon-user')
+```
+
 
 ### deployment_wait()
 

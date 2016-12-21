@@ -24,3 +24,8 @@ def test_delete_zk_node():
     uninstall_package_and_wait('marathon')
 
     assert delete_zk_node('universe/marathon-user')
+
+
+def get_zk_node_data():
+    install_package_and_wait('marathon')
+    get_zk_node_data('universe/marathon-user')

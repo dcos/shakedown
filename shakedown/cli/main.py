@@ -13,6 +13,7 @@ from shakedown.dcos import dcos_url
 @click.option('-u', '--dcos-url', help='URL to a running DC/OS cluster.')
 @click.option('-f', '--fail', type=click.Choice(['fast', 'never']), default='never', help='Sepcify whether to continue testing when encountering failures. (default: never)')
 @click.option('-m', '--timeout', default=1800, help='Seconds after which to terminate a running test')
+@click.option('--ssh-user', help='Username for cluster ssh authentication')
 @click.option('-i', '--ssh-key-file', type=click.Path(), help='Path to the SSH keyfile to use for authentication.')
 @click.option('-q', '--quiet', is_flag=True, help='Suppress all superfluous output.')
 @click.option('-k', '--ssl-no-verify', is_flag=True, help='Suppress SSL certificate verification.')
@@ -49,6 +50,9 @@ def cli(**args):
 
     if args['ssh_key_file']:
         shakedown.cli.ssh_key_file = args['ssh_key_file']
+
+    if args['ssh_user']:
+        shakedown.cli.ssh_user = args['ssh_user']
 
     if not args['no_banner']:
         echo(banner(), n=False)

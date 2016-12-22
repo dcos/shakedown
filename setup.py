@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='dcos-shakedown',
-      version='1.1.11',
+      version='1.1.12',
       description=u"DC/OS testing harness and library",
       long_description=u"A tool and library to abstract common DC/OS-related tasks.",
       classifiers=[],

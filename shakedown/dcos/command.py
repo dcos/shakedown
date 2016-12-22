@@ -10,7 +10,7 @@ import shakedown
 def run_command(
         host,
         command,
-        username='core',
+        username=None,
         key_path=None
 ):
     """ Run a command via SSH, proxied through the mesos master
@@ -29,6 +29,9 @@ def run_command(
         :return: Output of command
         :rtype: string
     """
+
+    if not username:
+        username = shakedown.cli.ssh_user
 
     if not key_path:
         key_path = shakedown.cli.ssh_key_file
@@ -65,7 +68,7 @@ def run_command(
 
 def run_command_on_master(
         command,
-        username='core',
+        username=None,
         key_path=None
 ):
     """ Run a command on the Mesos master
@@ -77,7 +80,7 @@ def run_command_on_master(
 def run_command_on_agent(
         host,
         command,
-        username='core',
+        username=None,
         key_path=None
 ):
     """ Run a command on a Mesos agent, proxied through the master

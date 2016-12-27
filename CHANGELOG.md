@@ -1,3 +1,16 @@
+## 1.1.12 (2016-12-27)
+
+Features:
+
+  - SSH user (default `core`) can be specified on the command line
+    with `--ssh-user`
+  - new ZooKeeper `get_zk_node_data` function`
+
+Fixes:
+
+  - `test_install_package_with_json_options` test is set to `xfail`
+    while it is being diagnosed
+
 ## 1.1.11 (2016-12-13)
 
 Features:

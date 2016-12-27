@@ -11,7 +11,7 @@ def copy_file(
         host,
         file_path,
         remote_path='.',
-        username='core',
+        username=None,
         key_path=None,
         action='put'
 ):
@@ -31,6 +31,9 @@ def copy_file(
         :return: True if successful, False otherwise
         :rtype: bool
     """
+
+    if not username:
+        username = shakedown.cli.ssh_user
 
     if not key_path:
         key_path = shakedown.cli.ssh_key_file
@@ -66,7 +69,7 @@ def copy_file(
 def copy_file_to_master(
         file_path,
         remote_path='.',
-        username='core',
+        username=None,
         key_path=None
 ):
     """ Copy a file to the Mesos master
@@ -79,7 +82,7 @@ def copy_file_to_agent(
         host,
         file_path,
         remote_path='.',
-        username='core',
+        username=None,
         key_path=None
 ):
     """ Copy a file to a Mesos agent, proxied through the master
@@ -91,7 +94,7 @@ def copy_file_to_agent(
 def copy_file_from_master(
         remote_path,
         file_path='.',
-        username='core',
+        username=None,
         key_path=None
 ):
     """ Copy a file to the Mesos master
@@ -104,7 +107,7 @@ def copy_file_from_agent(
         host,
         remote_path,
         file_path='.',
-        username='core',
+        username=None,
         key_path=None
 ):
     """ Copy a file to a Mesos agent, proxied through the master

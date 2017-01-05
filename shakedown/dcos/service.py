@@ -222,4 +222,4 @@ def wait_for_service_endpoint_removal(service_name, timeout_sec=120):
     """Checks the service url if it is removed it returns true, on expiration
     it returns false"""
 
-    return time_wait(lambda: service_unavailable_predicate(service_name))
+    return time_wait(lambda: service_unavailable_predicate(service_name), timeout_seconds=timeout_sec)

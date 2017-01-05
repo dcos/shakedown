@@ -1,8 +1,7 @@
 import json
 import time
 
-from dcos import (packagemanager, subcommand)
-from dcoscli.package.main import get_cosmos_url
+from dcos import (cosmos, packagemanager, subcommand)
 
 import shakedown
 
@@ -25,14 +24,14 @@ def _get_options(options_file=None):
     return options
 
 
-def _get_cosmos():
+def _get_package_manager():
     """ Get an instance of Cosmos with the correct URL.
 
         :return: Cosmos instance
-        :rtype: packagemanager.Cosmos
+        :rtype: packagemanager.PackageManager
     """
 
-    return packagemanager.Cosmos(get_cosmos_url())
+    return packagemanager.PackageManager(cosmos.get_cosmos_url())
 
 
 def install_package(
@@ -72,8 +71,8 @@ def install_package(
     else:
         options = {}
 
-    cosmos = _get_cosmos()
-    pkg = cosmos.get_package_version(package_name, package_version)
+    package_manager = _get_package_manager()
+    pkg = package_manager.get_package_version(package_name, package_version)
     if service_name is None:
         labels = pkg.marathon_json(options).get('labels')
         if 'DCOS_SERVICE_NAME' in labels:
@@ -95,7 +94,7 @@ def install_package(
     if pre_install_notes:
         print(pre_install_notes)
 
-    cosmos.install_app(pkg, options, service_name)
+    package_manager.install_app(pkg, options, service_name)
 
     # Print post-install notes to console log
     post_install_notes = pkg.package_json().get('postInstallNotes')
@@ -154,8 +153,8 @@ def package_installed(package_name, service_name=None):
         :rtype: bool
     """
 
-    cosmos = _get_cosmos()
-    return len(cosmos.installed_apps(package_name, service_name)) > 0
+    package_manager = _get_package_manager()
+    return len(package_manager.installed_apps(package_name, service_name)) > 0
 
 
 def uninstall_package(
@@ -182,8 +181,8 @@ def uninstall_package(
         :rtype: bool
     """
 
-    cosmos = _get_cosmos()
-    pkg = cosmos.get_package_version(package_name, None)
+    package_manager = _get_package_manager()
+    pkg = package_manager.get_package_version(package_name, None)
     if service_name is None:
         labels = pkg.marathon_json({}).get('labels')
         if 'DCOS_SERVICE_NAME' in labels:
@@ -200,7 +199,7 @@ def uninstall_package(
         shakedown.cli.helpers.fchr('>>'), package_name, service_name)
     )
 
-    cosmos.uninstall_app(package_name, all_instances, service_name)
+    package_manager.uninstall_app(package_name, all_instances, service_name)
 
     # Optionally wait for the service to unregister as a framework
     if wait_for_completion:
@@ -243,8 +242,8 @@ def get_package_repos(
     """ Return a list of configured package repositories
     """
 
-    cosmos = _get_cosmos()
-    return cosmos.get_repos()
+    package_manager = _get_package_manager()
+    return package_manager.get_repos()
 
 
 def add_package_repo(
@@ -265,8 +264,8 @@ def add_package_repo(
         :rtype: bool
     """
 
-    cosmos = _get_cosmos()
-    return cosmos.add_repo(repo_name, repo_url, index)
+    package_manager = _get_package_manager()
+    return package_manager.add_repo(repo_name, repo_url, index)
 
 
 def remove_package_repo(
@@ -281,5 +280,5 @@ def remove_package_repo(
         :rtype: bool
     """
 
-    cosmos = _get_cosmos()
-    return cosmos.remove_repo(repo_name)
+    package_manager = _get_package_manager()
+    return package_manager.remove_repo(repo_name)

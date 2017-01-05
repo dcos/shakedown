@@ -14,4 +14,4 @@ from shakedown.dcos.zookeeper import *
 from shakedown.dcos.agent import *
 from shakedown.dcos.master import *
 
-VERSION='1.1.12'
+VERSION='1.1.13'

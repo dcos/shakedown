@@ -1,3 +1,13 @@
+## 1.1.13 (2016-01-05)
+
+Features:
+
+  - bumped `dcosdcli` version to `0.4.15`
+
+Fixes:
+
+  - `timeout_sec` passed through to `time_wait()` method
+
 ## 1.1.12 (2016-12-27)
 
 Features:

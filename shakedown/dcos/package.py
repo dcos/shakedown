@@ -1,7 +1,7 @@
 import json
 import time
 
-from dcos import (cosmospackage, subcommand)
+from dcos import (packagemanager, subcommand)
 from dcoscli.package.main import get_cosmos_url
 
 import shakedown
@@ -29,10 +29,10 @@ def _get_cosmos():
     """ Get an instance of Cosmos with the correct URL.
 
         :return: Cosmos instance
-        :rtype: cosmospackage.Cosmos
+        :rtype: packagemanager.Cosmos
     """
 
-    return cosmospackage.Cosmos(get_cosmos_url())
+    return packagemanager.Cosmos(get_cosmos_url())
 
 
 def install_package(

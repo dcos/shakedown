@@ -19,12 +19,18 @@ The recommended Shakedown installation method is via the PyPI Python Package Ind
 
 `pip install dcos-shakedown`
 
+dcos-shakedown has a number of dependencies which need to be available.  One of those dependencies, the cryptography module requires a number of OS level libraries in order to install correctly which include: `build-essential libssl-dev libffi-dev python-dev`.  For environments other than linux please read [Stackoverflow](http://stackoverflow.com/questions/22073516/failed-to-install-python-cryptography-package-with-pip-and-setup-py). On a new ubuntu environment the following should install dcos-shakedown.
+
+* `apt-get update`
+* `apt-get install python3 python3-pip build-essential libssl-dev libffi-dev python-dev`
+* `pip3 install dcos-shakedown`
+
 ### Bleeding edge
 
 To pull and install from our `master` branch on GitHub:
 
 ```
-git clone github.com:mesosphere/shakedown.git
+git clone https://github.com/dcos/shakedown.git
 cd shakedown
 pip install -e .
 ```

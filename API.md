@@ -22,6 +22,13 @@
       * [get_package_repos()](#get_package_repos)
       * [add_package_repo()](#add_package_repo)
       * [remove_package_repo()](#remove_package_repo)
+    * Cluster
+      * [get_resources()](#get_resources)
+      * [resources_needed()](#resources_needed)
+      * [get_used_resources()](#get_used_resources)
+      * [get_unreserved_resources()](#get_unreserved_resources)
+      * [get_reserved_resources()](#get_reserved_resources)
+      * [available_resources()](#available_resources)
     * Command execution
       * [run_command()](#run_command)
       * [run_command_on_master()](#run_command_on_master)
@@ -350,6 +357,119 @@ None
 # Which repository am I searching through first?
 repos = get_package_repos()
 print("First searching " + repos['repositories'][0]['name'])
+```
+
+
+### get_resources()
+
+Gets a Resource object which includes the current cpu and memory of the cluster
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+
+resources = get_resources()
+
+if resources.cpus > 2:
+  # do stuff
+```
+
+
+### get_used_resources()
+
+Gets a Resource object which includes the amount of cpu and memory being used in the cluster.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+
+resources = get_used_resources()
+
+if resources.cpus > 2:
+  # do stuff
+```
+
+
+### get_unreserved_resources()
+
+Gets a Resource object which includes the amount of cpu and memory that is not currently reserved.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+
+resources = get_unreserved_resources()
+
+if resources.cpus > 2:
+  # do stuff
+```
+
+
+### get_reserved_resources()
+
+Gets a Resource object which includes the amount of cpu and memory that is  currently reserved.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+
+resources = get_reserved_resources()
+
+if resources.cpus > 2:
+  # do stuff
+```
+
+
+### available_resources()
+
+Gets a Resource object which includes the amount of cpu and memory that is  currently available.  This equates to (get_resources() - get_used_resources()).
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+
+resources = available_resources()
+
+if resources.cpus > 2:
+  # do stuff
+```
+
+### resources_needed()
+
+Run a command on a remote host via SSH.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+total_tasks | number of tasks | int | 1
+per_task_cpu | cpu per task requirement | float | 0.01
+per_task_mem | the username used for SSH authentication | float | 1
+
+##### *example usage*
+
+```python
+
 ```
 
 

@@ -105,19 +105,8 @@ def install_package(
     if wait_for_completion:
         app_id = pkg.marathon_json(options).get('id')
         shakedown.wait_for(
-            lambda: shakedown.app_healthy(app_id),
+            lambda: shakedown.is_app_healthy(app_id),
             timeout_seconds=timeout_sec)
-        # now = time.time()
-        # future = now + timeout_sec
-
-        # while now < future:
-        #     if shakedown.get_service(service_name):
-        #         return True
-
-        #     time.sleep(1)
-        #     now = time.time()
-
-        # return False
 
     return True
 

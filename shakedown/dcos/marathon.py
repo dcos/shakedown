@@ -21,7 +21,7 @@ def delete_all_apps_wait():
     deployment_wait()
 
 
-def app_healthy(app_id):
+def is_app_healthy(app_id):
     client = marathon.create_client()
     app = client.get_app(app_id)
 

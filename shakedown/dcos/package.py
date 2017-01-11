@@ -104,7 +104,9 @@ def install_package(
     # Optionally wait for the service to register as a framework
     if wait_for_completion:
         app_id = pkg.marathon_json(options).get('id')
-        shakedown.wait_for(lambda: service_healthy(app_id))
+        shakedown.wait_for(
+            lambda: shakedown.app_healthy(app_id),
+            timeout_seconds=timeout_sec)
         # now = time.time()
         # future = now + timeout_sec
 

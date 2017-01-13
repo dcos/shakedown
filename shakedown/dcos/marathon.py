@@ -2,13 +2,14 @@ from dcos import marathon
 from shakedown.dcos.spinner import *
 
 
-def deployment_predicate():
+def deployment_predicate(app_id=None):
     client = marathon.create_client()
     return len(client.get_deployments()) == 0
 
 
-def deployment_wait(timeout=120):
-    time_wait(deployment_predicate, timeout)
+def deployment_wait(timeout=120, app_id=None):
+    time_wait(lambda: deployment_predicate(app_id),
+              timeout)
 
 
 def delete_all_apps():

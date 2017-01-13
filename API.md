@@ -982,6 +982,8 @@ Waits for Marathon Deployment to complete or times out.
 parameter | description | type | default
 --------- | ----------- | ---- | -------
 timeout | max time to wait for deployment | int | 120
+app_id | wait for deployments on this app | string | None
+
 
 ##### *example usage*
 

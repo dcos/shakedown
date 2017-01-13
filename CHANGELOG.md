@@ -1,4 +1,12 @@
-## 1.1.13 (2016-01-05)
+## 1.1.14 (2017-01-13)
+
+Features:
+
+  - new cluster functions `get_resources`, `resources_needed`,
+    `get_used_resources`, `get_unreserved_resources`,
+    `get_reserved_resources`, and `available_resources`
+
+## 1.1.13 (2017-01-05)
 
 Features:
 

@@ -25,14 +25,20 @@ dcos-shakedown has a number of dependencies which need to be available.  One of 
 * `apt-get install python3 python3-pip build-essential libssl-dev libffi-dev python-dev`
 * `pip3 install dcos-shakedown`
 
-### Bleeding edge
+### Development and bleeding edge
 
 To pull and install from our `master` branch on GitHub:
 
 ```
 git clone https://github.com/dcos/shakedown.git
 cd shakedown
-pip install -e .
+pip install -r requirements.txt
+```
+
+Or if you do not wish to pin to a version of `dcos-cli`:
+
+```
+pip install -r requirements-edge.txt
 ```
 
 ### Setting up a new Shakedown virtual environment

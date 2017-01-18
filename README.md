@@ -32,13 +32,13 @@ To pull and install from our `master` branch on GitHub:
 ```
 git clone https://github.com/dcos/shakedown.git
 cd shakedown
-pip install -r requirements.txt
+pip install -r requirements.txt && pip install -e .
 ```
 
 Or if you do not wish to pin to a version of `dcos-cli`:
 
 ```
-pip install -r requirements-edge.txt
+pip install -r requirements-edge.txt && pip install -e .
 ```
 
 ### Setting up a new Shakedown virtual environment

@@ -29,3 +29,16 @@ def test_delete_zk_node():
 def get_zk_node_data():
     install_package_and_wait('marathon')
     get_zk_node_data('universe/marathon-user')
+
+
+def teardown_module(module):
+    clean_marathon()
+
+
+def clean_marathon():
+    try:
+        uninstall_package_and_wait('marathon')
+    except:
+        pass
+
+    delete_zk_node('universe/marathon-user')

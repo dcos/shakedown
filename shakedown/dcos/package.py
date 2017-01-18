@@ -55,7 +55,7 @@ def install_package(
         :type options_file: str
         :param options_json: dict that has options to use and is JSON format
         :type options_json: dict
-        :param wait_for_completion: whether or not to wait for task completion before returning
+        :param wait_for_completion: whether or not to wait for the app's deployment to complete
         :type wait_for_completion: bool
         :param timeout_sec: number of seconds to wait for task completion
         :type timeout_sec: int
@@ -101,19 +101,10 @@ def install_package(
     if post_install_notes:
         print(post_install_notes)
 
-    # Optionally wait for the service to register as a framework
+    # Optionally wait for the app's deployment to finish
     if wait_for_completion:
-        now = time.time()
-        future = now + timeout_sec
-
-        while now < future:
-            if shakedown.get_service(service_name):
-                return True
-
-            time.sleep(1)
-            now = time.time()
-
-        return False
+        app_id = pkg.marathon_json(options).get('id')
+        shakedown.deployment_wait(timeout_sec, app_id)
 
     return True
 

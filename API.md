@@ -71,6 +71,7 @@
       * [deployment_wait()](#deployment_wait)
       * [delete_all_apps()](#delete_all_apps)
       * [delete_all_apps_wait()](#delete_all_apps_wait)
+      * [is_app_healthy()](#is_app_healthy)
     * Masters
       * [partition_master()](#partition_master)
       * [reconnect_master()](#reconnect_master)
@@ -1101,6 +1102,8 @@ Waits for Marathon Deployment to complete or times out.
 parameter | description | type | default
 --------- | ----------- | ---- | -------
 timeout | max time to wait for deployment | int | 120
+app_id | wait for deployments on this app | string | None
+
 
 ##### *example usage*
 
@@ -1135,6 +1138,22 @@ None.
 
 ```python
 delete_all_apps_wait()
+```
+
+### is_app_healthy
+
+Returns True if the given app is healthy.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+app_id | marathon app ID | String |
+
+##### *example usage*
+
+```python
+is_app_healthy(app_id)
 ```
 
 ### partition_master()

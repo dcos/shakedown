@@ -89,6 +89,12 @@ def get_marathon_tasks(
     return get_service_tasks('marathon', inactive, completed)
 
 
+def get_mesos_tasks():
+    """ Get a list of mesos tasks
+    """
+    return mesos.get_master().tasks()
+
+
 def get_service_task(
         service_name,
         task_name,
@@ -128,6 +134,18 @@ def get_marathon_task(
     """
 
     return get_service_task('marathon', task_name, inactive, completed)
+
+
+def get_mesos_task(task_name):
+    """ Get a mesos task with a specific task name
+    """
+    tasks = get_mesos_tasks()
+
+    if tasks is not None:
+        for task in tasks:
+            if task['name'] == task_name:
+                return task
+    return None
 
 
 def get_service_ips(
@@ -189,6 +207,22 @@ def service_healthy(service_name, app_id=None):
                 return True
 
     return False
+
+
+def mesos_task_present_predicate(task_name):
+    return get_mesos_task(task_name) is not None
+
+
+def mesos_task_not_present_predicate(task_name):
+    return get_mesos_task(task_name) is None
+
+
+def wait_for_mesos_task(task_name, timeout_sec=120):
+        return time_wait(lambda: mesos_task_present_predicate(task_name), timeout_seconds=timeout_sec)
+
+
+def wait_for_mesos_task_removal(task_name, timeout_sec=120):
+        return time_wait(lambda: mesos_task_not_present_predicate(task_name), timeout_seconds=timeout_sec)
 
 
 def service_available_predicate(service_name):

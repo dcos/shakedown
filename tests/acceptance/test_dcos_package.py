@@ -14,11 +14,18 @@ def test_install_package_and_wait():
     install_package_and_wait('chronos')
     assert package_installed('chronos')
 
+
 @pytest.mark.usefixtures("chronos_cleanup")
 def test_uninstall_package_and_wait():
+    if not package_installed('chronos'):
+        install_package_and_wait('chronos')
+
     assert package_installed('chronos')
     uninstall_package_and_wait('chronos')
+    delete_zk_node('chronos')
     assert package_installed('chronos') == False
+    # this should only pass if we can install after the wait
+    install_package_and_wait('chronos')
 
 def task_cpu_predicate(service, task):
         try:

@@ -218,11 +218,11 @@ def mesos_task_not_present_predicate(task_name):
 
 
 def wait_for_mesos_task(task_name, timeout_sec=120):
-        return time_wait(lambda: mesos_task_present_predicate(task_name), timeout_seconds=timeout_sec)
+    return time_wait(lambda: mesos_task_present_predicate(task_name), timeout_seconds=timeout_sec)
 
 
 def wait_for_mesos_task_removal(task_name, timeout_sec=120):
-        return time_wait(lambda: mesos_task_not_present_predicate(task_name), timeout_seconds=timeout_sec)
+    return time_wait(lambda: mesos_task_not_present_predicate(task_name), timeout_seconds=timeout_sec)
 
 
 def service_available_predicate(service_name):

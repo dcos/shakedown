@@ -2,6 +2,7 @@ import json
 import time
 
 from dcos import (cosmos, packagemanager, subcommand)
+from shakedown.dcos.service import *
 
 import shakedown
 
@@ -194,17 +195,7 @@ def uninstall_package(
 
     # Optionally wait for the service to unregister as a framework
     if wait_for_completion:
-        now = time.time()
-        future = now + timeout_sec
-
-        while now < future:
-            if not shakedown.get_service(service_name):
-                return True
-
-            time.sleep(1)
-            now = time.time()
-
-        return False
+        wait_for_mesos_task_removal(service_name)
 
     return True
 

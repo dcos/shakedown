@@ -39,7 +39,12 @@ def run_command(
     key = validate_key(key_path)
 
     transport = get_transport(host, username, key)
-    transport = start_transport(transport, username, key)
+
+    if transport:
+        transport = start_transport(transport, username, key)
+    else:
+        print('error: unable to connect to ' + host)
+        return False, ''
 
     if transport.is_authenticated():
         print("\n{}{} $ {}\n".format(shakedown.cli.helpers.fchr('>>'), host, command))

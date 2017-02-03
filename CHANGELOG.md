@@ -1,3 +1,17 @@
+## 1.1.15 (2017-02-03)
+
+Features:
+
+  - split `requirements.txt` and `requirements-edge.txt` for
+    building against `dcoscli:master`
+
+Fixes:
+
+  - `_wait()` functions now wait on deployment, not health
+  - uninstalls now wait for Mesos task removal
+  - tests fixed for package installation and waiting
+  - improved error messaging when unable to connect to a host
+
 ## 1.1.14 (2017-01-13)
 
 Features:

@@ -29,10 +29,15 @@ def get_transport(host, username, key):
         transport_master = start_transport(transport_master, username, key)
 
         if not transport_master.is_authenticated():
-           print('error: unable to authenticate ' + username + '@' + shakedown.master_ip() + ' with key ' + key_path)
-           return False
+            print("error: unable to authenticate {}@{} with key {}".format(username, shakedown.master_ip(), key_path))
+            return False
 
-        channel = transport_master.open_channel('direct-tcpip', (host, 22), ('127.0.0.1', 0))
+        try:
+            channel = transport_master.open_channel('direct-tcpip', (host, 22), ('127.0.0.1', 0))
+        except paramiko.SSHException:
+            print("error: unable to connect to {}".format(host))
+            return False
+
         transport = paramiko.Transport(channel)
 
     return transport

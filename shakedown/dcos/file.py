@@ -55,14 +55,14 @@ def copy_file(
             print("\n{}scp {} {}:{}\n".format(shakedown.cli.helpers.fchr('>>'), file_path, host, remote_path))
             channel.put(file_path, remote_path)
 
-        print(str(os.path.getsize(file_path)) + ' bytes copied in ' + str(round(time.time() - start, 2))  + ' seconds.')
+        print("{} bytes copied in {} seconds.".format(str(os.path.getsize(file_path)), str(round(time.time() - start, 2))))
 
         try_close(channel)
         try_close(transport)
 
         return True
     else:
-        print('error: unable to authenticate ' + username + '@' + host + ' with key ' + key_path)
+        print("error: unable to authenticate {}@{} with key {}".format(username, host, key_path))
         return False
 
 

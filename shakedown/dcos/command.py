@@ -39,7 +39,12 @@ def run_command(
     key = validate_key(key_path)
 
     transport = get_transport(host, username, key)
-    transport = start_transport(transport, username, key)
+
+    if transport:
+        transport = start_transport(transport, username, key)
+    else:
+        print("error: unable to connect to {}".format(host))
+        return False, ''
 
     if transport.is_authenticated():
         print("\n{}{} $ {}\n".format(shakedown.cli.helpers.fchr('>>'), host, command))
@@ -62,7 +67,7 @@ def run_command(
 
         return exit_status == 0, output
     else:
-        print('error: unable to authenticate ' + username + '@' + host + ' with key ' + key_path)
+        print("error: unable to authenticate {}@{} with key {}".format(username, host, key_path))
         return False, ''
 
 

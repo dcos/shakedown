@@ -43,7 +43,7 @@ def run_command(
     if transport:
         transport = start_transport(transport, username, key)
     else:
-        print('error: unable to connect to ' + host)
+        print("error: unable to connect to {}".format(host))
         return False, ''
 
     if transport.is_authenticated():
@@ -67,7 +67,7 @@ def run_command(
 
         return exit_status == 0, output
     else:
-        print('error: unable to authenticate ' + username + '@' + host + ' with key ' + key_path)
+        print("error: unable to authenticate {}@{} with key {}".format(username, host, key_path))
         return False, ''
 
 

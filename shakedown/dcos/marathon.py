@@ -3,8 +3,7 @@ from shakedown.dcos.spinner import *
 
 
 def deployment_predicate(app_id=None):
-    client = marathon.create_client()
-    return len(client.get_deployments()) == 0
+    return len(marathon.create_client().get_deployments(app_id)) == 0
 
 
 def deployment_wait(timeout=120, app_id=None):
@@ -12,20 +11,26 @@ def deployment_wait(timeout=120, app_id=None):
               timeout)
 
 
-def delete_all_apps():
-    client = marathon.create_client()
-    client.remove_group("/")
+def delete_app(app_id, force=False):
+    marathon.create_client().remove_app(app_id, force=force)
 
 
-def delete_all_apps_wait():
-    delete_all_apps()
+def delete_app_wait(app_id, force=False):
+    delete_app(app_id, force)
+    deployment_wait(app_id=app_id)
+
+
+def delete_all_apps(force=False):
+    marathon.create_client().remove_group("/", force=force)
+
+
+def delete_all_apps_wait(force=False):
+    delete_all_apps(force=force)
     deployment_wait()
 
 
 def is_app_healthy(app_id):
-    client = marathon.create_client()
-    app = client.get_app(app_id)
-
+    app = marathon.create_client().get_app(app_id)
     if app["healthChecks"]:
         return app["tasksHealthy"] == app["instances"]
     else:

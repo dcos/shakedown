@@ -1,36 +1,49 @@
 import time as time_module
+import traceback
+
+import shakedown
 
 
-def wait_for(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions=True, inverse_predicate=False):
-    """ waits or spins for a predicate.  Predicate is in function that returns a True or False.
+def wait_for(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions=True, inverse_predicate=False, noisy=True):
+    """ waits or spins for a predicate, returning the result.
+        Predicate is a function that returns a truthy or falsy value.
         An exception in the function will be returned.
         A timeout will throw a TimeoutExpired Exception.
 
     """
 
+    start_time = time_module.time()
     timeout = Deadline.create_deadline(timeout_seconds)
     while True:
         try:
             result = predicate()
         except Exception as e:
-            if not ignore_exceptions:
-                raise e
+            if ignore_exceptions:
+                if noisy:
+                    traceback.print_exc()
+            else:
+                raise # preserve original stack
         else:
             if (not inverse_predicate and result) or (inverse_predicate and not result):
-                return
+                return result
             if timeout.is_expired():
                 raise TimeoutExpired(timeout_seconds, str(predicate))
+        if noisy:
+            print('{}[{}/{}] spinning...'.format(
+                shakedown.cli.helpers.fchr('>>'),
+                pretty_duration(time_module.time() - start_time),
+                pretty_duration(timeout_seconds)))
         time_module.sleep(sleep_seconds)
 
 
-def time_wait(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions=True, inverse_predicate=False):
+def time_wait(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions=True, inverse_predicate=False, noisy=True):
     """ waits or spins for a predicate and returns the time of the wait.
         An exception in the function will be returned.
         A timeout will throw a TimeoutExpired Exception.
 
     """
     start = time_module.time()
-    wait_for(predicate, timeout_seconds, sleep_seconds, ignore_exceptions, inverse_predicate)
+    wait_for(predicate, timeout_seconds, sleep_seconds, ignore_exceptions, inverse_predicate, noisy)
     return elapse_time(start)
 
 
@@ -40,6 +53,25 @@ def elapse_time(start, end=None, precision=3):
     if end is None:
         end = time_module.time()
     return round(end-start, precision)
+
+
+def pretty_duration(seconds):
+    """ Returns a user-friendly representation of the provided duration in seconds.
+    For example: 62.8 => "1m2.8s", or 129837.8 => "2d12h4m57.8s"
+    """
+    ret = ''
+    if seconds >= 86400:
+        ret += '{:.0f}d'.format(int(seconds / 86400))
+        seconds = seconds % 86400
+    if seconds >= 3600:
+        ret += '{:.0f}h'.format(int(seconds / 3600))
+        seconds = seconds % 3600
+    if seconds >= 60:
+        ret += '{:.0f}m'.format(int(seconds / 60))
+        seconds = seconds % 60
+    if seconds > 0:
+        ret += '{:.1f}s'.format(seconds)
+    return ret
 
 
 class Deadline(object):
@@ -77,10 +109,10 @@ class TimeoutExpired(Exception):
         self._what = what
 
     def __str__(self):
-        return "Timeout of {0} seconds expired waiting for {1}".format(self._timeout_seconds, self._what)
+        return "Timeout of {0} expired waiting for {1}".format(pretty_duration(self._timeout_seconds), self._what)
 
     def __repr__(self):
         return "{0}: {1}".format(type(self).__name__, self)
 
     def __unicode__(self):
-        return u"Timeout of {0} seconds expired waiting for {1}".format(self._timeout_seconds, self._what)
+        return u"Timeout of {0} expired waiting for {1}".format(pretty_duration(self._timeout_seconds), self._what)

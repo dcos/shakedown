@@ -1,4 +1,5 @@
 from dcos import (marathon, mesos, http)
+from shakedown.dcos.command import *
 from shakedown.dcos.spinner import *
 from shakedown.dcos import dcos_service_url
 from dcos.errors import DCOSException, DCOSHTTPException
@@ -59,7 +60,7 @@ def get_service_tasks(
         inactive=False,
         completed=False
 ):
-    """ Get a list of task IDs associated with a service
+    """ Get a list of tasks associated with a service
         :param service_name: the service name
         :type service_name: str
         :param inactive: whether to include inactive services
@@ -67,8 +68,8 @@ def get_service_tasks(
         :param completed: whether to include completed services
         :type completed: bool
 
-        :return: a list of services
-        :rtye: list, or None
+        :return: a list of task objects
+        :rtye: [dict], or None
     """
 
     service = get_service(service_name, inactive, completed)
@@ -79,9 +80,35 @@ def get_service_tasks(
     return []
 
 
+def get_service_task_ids(
+        service_name,
+        task_predicate=None,
+        inactive=False,
+        completed=False
+):
+    """ Get a list of task IDs associated with a service
+        :param service_name: the service name
+        :type service_name: str
+        :param task_predicate: filter function which accepts a task object and returns a boolean
+        :type task_predicate: function, or None
+        :param inactive: whether to include inactive services
+        :type inactive: bool
+        :param completed: whether to include completed services
+        :type completed: bool
+
+        :return: a list of task ids
+        :rtye: [str], or None
+    """
+    tasks = get_service_tasks(service_name, inactive, completed)
+    if task_predicate:
+        return [t['id'] for t in tasks if task_predicate(t)]
+    else:
+        return [t['id'] for t in tasks]
+
+
 def get_marathon_tasks(
-    inactive=False,
-    completed=False
+        inactive=False,
+        completed=False
 ):
     """ Get a list of marathon tasks
     """
@@ -126,9 +153,9 @@ def get_service_task(
 
 
 def get_marathon_task(
-    task_name,
-    inactive=False,
-    completed=False
+        task_name,
+        inactive=False,
+        completed=False
 ):
     """ Get a dictionary describing a named marathon task
     """
@@ -165,7 +192,7 @@ def get_service_ips(
         :type completed: bool
 
         :return: a list of IP addresses
-        :rtype: list
+        :rtype: [str]
     """
 
     service_tasks = get_service_tasks(service_name, inactive, completed)
@@ -225,6 +252,28 @@ def wait_for_mesos_task_removal(task_name, timeout_sec=120):
     return time_wait(lambda: mesos_task_not_present_predicate(task_name), timeout_seconds=timeout_sec)
 
 
+def delete_persistent_data(role, principal, zk_node):
+    """ Deletes any persistent data associated with the specified role, principal, and zk node.
+
+        :param role: the mesos role to delete, or None to omit this
+        :type role: str
+        :param principal: the mesos principal for the data to delete, or None to omit this
+        :type principal: str
+        :param zk_node: the zookeeper node to be deleted, or None to skip this deletion
+        :type zk_node: str
+    """
+    janitor_cmd = ['docker run mesosphere/janitor /janitor.py']
+    if role:
+        janitor_cmd.append('-r {}'.format(role))
+    if principal:
+        janitor_cmd.append('-p {}'.format(principal))
+    if zk_node:
+        janitor_cmd.append('-z {}'.format(zk_node))
+    janitor_cmd.append('--auth_token={}'.format(
+        run_dcos_command('config show core.dcos_acs_token', print_output=False)[0].strip()))
+    run_command_on_master(' '.join(janitor_cmd))
+
+
 def service_available_predicate(service_name):
     url = dcos_service_url(service_name)
     try:
@@ -257,3 +306,170 @@ def wait_for_service_endpoint_removal(service_name, timeout_sec=120):
     it returns false"""
 
     return time_wait(lambda: service_unavailable_predicate(service_name), timeout_seconds=timeout_sec)
+
+
+def task_states_predicate(service_name, expected_task_count, expected_task_states):
+    try:
+        tasks = get_service_tasks(service_name)
+    except DCOSHTTPException:
+        tasks = []
+    matching_tasks = []
+    other_tasks = []
+    for t in tasks:
+        name = t.get('name', 'UNKNOWN_NAME')
+        state = t.get('state', None)
+        if state and state in expected_task_states:
+            matching_tasks.append(name)
+        else:
+            other_tasks.append('{}={}'.format(name, state))
+    print('expected {} tasks in {}:\n- {} in expected {}: {}\n- {} in other states: {}'.format(
+        expected_task_count, ', '.join(expected_task_states),
+        len(matching_tasks), ', '.join(expected_task_states), ', '.join(matching_tasks),
+        len(other_tasks), ', '.join(other_tasks)))
+    return len(matching_tasks) >= expected_task_count
+
+
+def wait_for_service_tasks_state(
+        service_name,
+        expected_task_count,
+        expected_task_states,
+        timeout_sec=120
+):
+    """ Returns once the service has at least N tasks in one of the specified state(s)
+
+        :param service_name: the service name
+        :type service_name: str
+        :param expected_task_count: the expected number of tasks in the specified state(s)
+        :type expected_task_count: int
+        :param expected_task_states: the expected state(s) for tasks to be in, e.g. 'TASK_RUNNING'
+        :type expected_task_states: [str]
+        :param timeout_sec: duration to wait
+        :type timeout_sec: int
+    """
+    return time_wait(
+        lambda: task_states_predicate(service_name, expected_task_count, expected_task_states),
+        timeout_seconds=timeout_sec)
+
+
+def wait_for_service_tasks_running(
+        service_name,
+        expected_task_count,
+        timeout_sec=120
+):
+    """ Returns once the service has at least N running tasks
+
+        :param service_name: the service name
+        :type service_name: str
+        :param expected_task_count: the expected number of running tasks
+        :type expected_task_count: int
+        :param timeout_sec: duration to wait
+        :type timeout_sec: int
+    """
+    return wait_for_service_tasks_state(service_name, expected_task_count, ['TASK_RUNNING'], timeout_sec)
+
+
+def tasks_all_replaced_predicate(
+        service_name,
+        old_task_ids,
+        task_predicate=None
+):
+    """ Returns whether ALL of old_task_ids have been replaced with new tasks
+
+        :param service_name: the service name
+        :type service_name: str
+        :param old_task_ids: list of original task ids as returned by get_service_task_ids
+        :type old_task_ids: [str]
+        :param task_predicate: filter to use when searching for tasks
+        :type task_predicate: func
+    """
+    try:
+        task_ids = get_service_task_ids(service_name, task_predicate)
+    except DCOSHTTPException:
+        print('failed to get task ids for service {}'.format(service_name))
+        task_ids = []
+
+    print('waiting for all task ids in "{}" to change:\n- old tasks: {}\n- current tasks: {}'.format(
+        service_name, old_task_ids, task_ids))
+    for id in task_ids:
+        if id in old_task_ids:
+            return False # old task still present
+    if len(task_ids) < len(old_task_ids): # new tasks haven't fully replaced old tasks
+        return False
+    return True
+
+
+def tasks_missing_predicate(
+        service_name,
+        old_task_ids,
+        task_predicate=None
+):
+    """ Returns whether any of old_task_ids are no longer present
+
+        :param service_name: the service name
+        :type service_name: str
+        :param old_task_ids: list of original task ids as returned by get_service_task_ids
+        :type old_task_ids: [str]
+        :param task_predicate: filter to use when searching for tasks
+        :type task_predicate: func
+    """
+    try:
+        task_ids = get_service_task_ids(service_name, task_predicate)
+    except DCOSHTTPException:
+        print('failed to get task ids for service {}'.format(service_name))
+        task_ids = []
+
+    print('checking whether old tasks in "{}" are missing:\n- old tasks: {}\n- current tasks: {}'.format(
+        service_name, old_task_ids, task_ids))
+    for id in old_task_ids:
+        if id not in task_ids:
+            return True # an old task was not present
+    return False
+
+
+def wait_for_service_tasks_all_changed(
+        service_name,
+        old_task_ids,
+        task_predicate=None,
+        timeout_sec=120
+):
+    """ Returns once ALL of old_task_ids have been replaced with new tasks
+
+        :param service_name: the service name
+        :type service_name: str
+        :param old_task_ids: list of original task ids as returned by get_service_task_ids
+        :type old_task_ids: [str]
+        :param task_predicate: filter to use when searching for tasks
+        :type task_predicate: func
+        :param timeout_sec: duration to wait
+        :type timeout_sec: int
+    """
+    return time_wait(
+        lambda: tasks_all_replaced_predicate(service_name, old_task_ids, task_predicate),
+        timeout_seconds=timeout_sec)
+
+
+def wait_for_service_tasks_all_unchanged(
+        service_name,
+        old_task_ids,
+        task_predicate=None,
+        timeout_sec=30
+):
+    """ Returns after verifying that NONE of old_task_ids have been removed or replaced from the service
+
+        :param service_name: the service name
+        :type service_name: str
+        :param old_task_ids: list of original task ids as returned by get_service_task_ids
+        :type old_task_ids: [str]
+        :param task_predicate: filter to use when searching for tasks
+        :type task_predicate: func
+        :param timeout_sec: duration to wait until assuming tasks are unchanged
+        :type timeout_sec: int
+    """
+    try:
+        time_wait(
+            lambda: tasks_missing_predicate(service_name, old_task_ids, task_predicate),
+            timeout_seconds=timeout_sec)
+        # shouldn't have exited successfully: raise below
+    except TimeoutExpired:
+        return timeout_sec # no changes occurred within timeout, as expected
+    raise DCOSException("One or more of the following tasks were no longer found: {}".format(old_task_ids))

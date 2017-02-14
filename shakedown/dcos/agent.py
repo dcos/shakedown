@@ -2,6 +2,7 @@
 
 from shakedown import *
 import os
+import pytest
 from dcos import (marathon, mesos)
 
 
@@ -166,3 +167,37 @@ def delete_agent_log(
 def shakedown_dcos_dir():
     """Gets the path to the shakedown dcos directory"""
     return os.path.dirname(os.path.realpath(__file__))
+
+
+def required_private_agents(count):
+    """ Returns True if the number of private agents is equal to or greater than
+    the count.  This is useful in using pytest skipif such as:
+    `pytest.mark.skipif('required_private_agents(2)')` which will skip the test if
+    the number of agents is not 2 or more.
+
+    :param count: the number of required private agents.
+    """
+    agent_count = len(get_private_agents())
+    # reverse logic (skip if less than count)
+    # returns True if less than count
+    return agent_count < count
+
+
+def required_public_agents(count):
+    """ Returns True if the number of public agents is equal to or greater than
+    the count.  This is useful in using pytest skipif such as:
+    `pytest.mark.skipif('required_public_agents(2)')` which will skip the test if
+    the number of agents is not 2 or more.
+
+    :param count: the number of required public agents.
+    """
+    agent_count = len(get_public_agents())
+    # reverse logic (skip if less than count)
+    return agent_count < count
+
+
+private_agent_1 = pytest.mark.skipif('required_private_agents(1)')
+private_agent_2 = pytest.mark.skipif('required_private_agents(2)')
+private_agent_5 = pytest.mark.skipif('required_private_agents(5)')
+
+public_agent_1 = pytest.mark.skipif('required_public_agents(1)')

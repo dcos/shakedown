@@ -11,20 +11,20 @@ def deployment_wait(timeout=120, app_id=None):
               timeout)
 
 
-def delete_app(app_id, force=False):
+def delete_app(app_id, force=True):
     marathon.create_client().remove_app(app_id, force=force)
 
 
-def delete_app_wait(app_id, force=False):
+def delete_app_wait(app_id, force=True):
     delete_app(app_id, force)
     deployment_wait(app_id=app_id)
 
 
-def delete_all_apps(force=False):
+def delete_all_apps(force=True):
     marathon.create_client().remove_group("/", force=force)
 
 
-def delete_all_apps_wait(force=False):
+def delete_all_apps_wait(force=True):
     delete_all_apps(force=force)
     deployment_wait()
 

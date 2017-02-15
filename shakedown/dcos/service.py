@@ -309,6 +309,20 @@ def wait_for_service_endpoint_removal(service_name, timeout_sec=120):
 
 
 def task_states_predicate(service_name, expected_task_count, expected_task_states):
+    """ Returns whether the provided service_names's tasks have expected_task_count tasks
+        in any of expected_task_states. For example, if service 'foo' has 5 tasks which are
+        TASK_STAGING or TASK_RUNNING.
+
+        :param service_name: the service name
+        :type service_name: str
+        :param expected_task_count: the number of tasks which should have an expected state
+        :type expected_task_count: int
+        :param expected_task_states: the list states to search for among the service's tasks
+        :type expected_task_states: [str]
+
+        :return: True if expected_task_count tasks have any of expected_task_states, False otherwise
+        :rtype: bool
+    """
     try:
         tasks = get_service_tasks(service_name)
     except DCOSHTTPException:
@@ -345,6 +359,9 @@ def wait_for_service_tasks_state(
         :type expected_task_states: [str]
         :param timeout_sec: duration to wait
         :type timeout_sec: int
+
+        :return: the duration waited in seconds
+        :rtype: int
     """
     return time_wait(
         lambda: task_states_predicate(service_name, expected_task_count, expected_task_states),
@@ -364,6 +381,9 @@ def wait_for_service_tasks_running(
         :type expected_task_count: int
         :param timeout_sec: duration to wait
         :type timeout_sec: int
+
+        :return: the duration waited in seconds
+        :rtype: int
     """
     return wait_for_service_tasks_state(service_name, expected_task_count, ['TASK_RUNNING'], timeout_sec)
 
@@ -381,6 +401,9 @@ def tasks_all_replaced_predicate(
         :type old_task_ids: [str]
         :param task_predicate: filter to use when searching for tasks
         :type task_predicate: func
+
+        :return: True if none of old_task_ids are still present in the service
+        :rtype: bool
     """
     try:
         task_ids = get_service_task_ids(service_name, task_predicate)
@@ -411,6 +434,9 @@ def tasks_missing_predicate(
         :type old_task_ids: [str]
         :param task_predicate: filter to use when searching for tasks
         :type task_predicate: func
+
+        :return: True if any of old_task_ids are no longer present in the service
+        :rtype: bool
     """
     try:
         task_ids = get_service_task_ids(service_name, task_predicate)
@@ -442,6 +468,9 @@ def wait_for_service_tasks_all_changed(
         :type task_predicate: func
         :param timeout_sec: duration to wait
         :type timeout_sec: int
+
+        :return: the duration waited in seconds
+        :rtype: int
     """
     return time_wait(
         lambda: tasks_all_replaced_predicate(service_name, old_task_ids, task_predicate),
@@ -464,6 +493,9 @@ def wait_for_service_tasks_all_unchanged(
         :type task_predicate: func
         :param timeout_sec: duration to wait until assuming tasks are unchanged
         :type timeout_sec: int
+
+        :return: the duration waited in seconds (the timeout value)
+        :rtype: int
     """
     try:
         time_wait(

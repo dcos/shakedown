@@ -10,7 +10,7 @@ import time
 
 
 def get_tasks(task_id='', completed=True):
-    """ Get a list of tasks, optionally filtered by task name.
+    """ Get a list of tasks, optionally filtered by task id.
 
         :param task_id: task ID
         :type task_id: str
@@ -108,7 +108,7 @@ def wait_for_task(service, task, timeout_sec=120):
 
 
 def wait_for_task_property(service, task, prop, timeout_sec=120):
-    """Waits for a task which was launched to be launched"""
+    """Waits for a task to have the specified property"""
     return time_wait(lambda: task_property_present_predicate(service, task, prop), timeout_seconds=timeout_sec)
 
 

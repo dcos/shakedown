@@ -3,6 +3,7 @@ import shlex
 import subprocess
 
 from shakedown.dcos.helpers import *
+from dcos.errors import DCOSException
 
 import shakedown
 
@@ -94,11 +95,15 @@ def run_command_on_agent(
     return run_command(host, command, username, key_path)
 
 
-def run_dcos_command(command):
+def run_dcos_command(command, raise_on_error=False, print_output=True):
     """ Run `dcos {command}` via DC/OS CLI
 
         :param command: the command to execute
         :type command: str
+        :param raise_on_error: whether to raise a DCOSException if the return code is nonzero
+        :type raise_on_error: bool
+        :param print_output: whether to print the resulting stdout/stderr from running the command
+        :type print_output: bool
 
         :return: (stdout, stderr, return_code)
         :rtype: tuple
@@ -109,12 +114,18 @@ def run_dcos_command(command):
 
     print("\n{}{}\n".format(shakedown.cli.helpers.fchr('>>'), ' '.join(call)))
 
-    proc = subprocess.Popen(call, stdout = subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(call, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, error = proc.communicate()
     return_code = proc.wait()
     stdout = output.decode('utf-8')
     stderr = error.decode('utf-8')
 
-    print(stdout, stderr, return_code)
+    if print_output:
+        print(stdout, stderr, return_code)
+
+    if return_code != 0 and raise_on_error:
+        raise DCOSException(
+            'Got error code {} when running command "dcos {}":\nstdout: "{}"\nstderr: "{}"'.format(
+            return_code, command, stdout, stderr))
 
     return stdout, stderr, return_code

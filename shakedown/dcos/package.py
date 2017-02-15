@@ -1,7 +1,7 @@
 import json
 import time
 
-from dcos import (cosmos, packagemanager, subcommand)
+from dcos import (cosmos, errors, packagemanager, subcommand)
 from shakedown.dcos.service import *
 
 import shakedown
@@ -25,6 +25,14 @@ def _get_options(options_file=None):
     return options
 
 
+def _get_service_name(package_name, pkg):
+    labels = pkg.marathon_json({}).get('labels')
+    if 'DCOS_SERVICE_NAME' in labels:
+        service_name = labels['DCOS_SERVICE_NAME']
+    else:
+        service_name = package_name
+
+
 def _get_package_manager():
     """ Get an instance of Cosmos with the correct URL.
 
@@ -42,7 +50,8 @@ def install_package(
         options_file=None,
         options_json=None,
         wait_for_completion=False,
-        timeout_sec=600
+        timeout_sec=600,
+        expected_running_tasks=0
 ):
     """ Install a package via the DC/OS library
 
@@ -60,10 +69,14 @@ def install_package(
         :type wait_for_completion: bool
         :param timeout_sec: number of seconds to wait for task completion
         :type timeout_sec: int
+        :param expected_running_tasks: number of service tasks to check for, or zero to disable
+        :type expected_task_count: int
 
         :return: True if installation was successful, False otherwise
         :rtype: bool
     """
+
+    start = time.time()
 
     if options_file:
         options = _get_options(options_file)
@@ -81,12 +94,16 @@ def install_package(
         else:
             service_name = package_name
 
+    print('\n{}installing {} with service={} options={} version={}'.format(
+        shakedown.cli.helpers.fchr('>>'), package_name, service_name, options, package_version))
+
     # Install subcommands (if defined)
     if pkg.has_cli_definition():
-        print("\n{}installing CLI commands for package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
+        print("{}installing CLI commands for package '{}'".format(
+            shakedown.cli.helpers.fchr('>>'), package_name))
         subcommand.install(pkg)
 
-    print("\n{}installing package '{}' with service name '{}'\n".format(
+    print("{}installing package '{}' with service name '{}'\n".format(
         shakedown.cli.helpers.fchr('>>'), package_name, service_name)
     )
 
@@ -104,8 +121,18 @@ def install_package(
 
     # Optionally wait for the app's deployment to finish
     if wait_for_completion:
+        print("\n{}waiting for {} deployment to complete...\n".format(
+            shakedown.cli.helpers.fchr('>>'), service_name))
+        if expected_running_tasks > 0:
+            wait_for_service_tasks_running(service_name, expected_running_tasks, timeout_sec)
+
         app_id = pkg.marathon_json(options).get('id')
         shakedown.deployment_wait(timeout_sec, app_id)
+        print('\n{}install completed after {}\n'.format(
+            shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() - start)))
+    else:
+        print('\n{}install started after {}\n'.format(
+            shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() - start)))
 
     return True
 
@@ -117,7 +144,8 @@ def install_package_and_wait(
         options_file=None,
         options_json=None,
         wait_for_completion=True,
-        timeout_sec=600
+        timeout_sec=600,
+        expected_running_tasks=0
 ):
     """ Install a package via the DC/OS library and wait for completion
     """
@@ -129,7 +157,8 @@ def install_package_and_wait(
         options_file,
         options_json,
         wait_for_completion,
-        timeout_sec
+        timeout_sec,
+        expected_running_tasks
     )
 
 
@@ -176,20 +205,16 @@ def uninstall_package(
     package_manager = _get_package_manager()
     pkg = package_manager.get_package_version(package_name, None)
     if service_name is None:
-        labels = pkg.marathon_json({}).get('labels')
-        if 'DCOS_SERVICE_NAME' in labels:
-            service_name = labels['DCOS_SERVICE_NAME']
-        else:
-            service_name = package_name
+        service_name = _get_service_name(package_name, pkg)
 
     # Uninstall subcommands (if defined)
     if pkg.has_cli_definition():
-        print("\n{}uninstalling CLI commands for package '{}'\n".format(shakedown.cli.helpers.fchr('>>'), package_name))
+        print("{}uninstalling CLI commands for package '{}'".format(
+            shakedown.cli.helpers.fchr('>>'), package_name))
         subcommand.uninstall(package_name)
 
-    print("\n{}uninstalling package '{}' with service name '{}'\n".format(
-        shakedown.cli.helpers.fchr('>>'), package_name, service_name)
-    )
+    print("{}uninstalling package '{}' with service name '{}'\n".format(
+        shakedown.cli.helpers.fchr('>>'), package_name, service_name))
 
     package_manager.uninstall_app(package_name, all_instances, service_name)
 
@@ -207,7 +232,21 @@ def uninstall_package_and_wait(
         wait_for_completion=True,
         timeout_sec=600
 ):
-    """ Install a package via the DC/OS library and wait for completion
+    """ Uninstall a package via the DC/OS library and wait for completion
+
+        :param package_name: name of the package
+        :type package_name: str
+        :param service_name: unique service name for the package
+        :type service_name: str
+        :param all_instances: uninstall all instances of package
+        :type all_instances: bool
+        :param wait_for_completion: whether or not to wait for task completion before returning
+        :type wait_for_completion: bool
+        :param timeout_sec: number of seconds to wait for task completion
+        :type timeout_sec: int
+
+        :return: True if uninstall was successful, False otherwise
+        :rtype: bool
     """
 
     return uninstall_package(
@@ -219,8 +258,7 @@ def uninstall_package_and_wait(
     )
 
 
-def get_package_repos(
-):
+def get_package_repos():
     """ Return a list of configured package repositories
     """
 
@@ -228,11 +266,18 @@ def get_package_repos(
     return package_manager.get_repos()
 
 
+def package_version_changed_predicate(package_manager, package_name, prev_version):
+    """ Returns whether the provided package has a version other than prev_version
+    """
+    return package_manager.get_package_version(package_name, None) != prev_version
+
+
 def add_package_repo(
         repo_name,
         repo_url,
-        index=None
-):
+        index=None,
+        wait_for_package=None,
+        expect_prev_version=None):
     """ Add a repository to the list of package sources
 
         :param repo_name: name of the repository to add
@@ -241,26 +286,61 @@ def add_package_repo(
         :type repo_url: str
         :param index: index (precedence) for this repository
         :type index: int
+        :param wait_for_package: the package whose version should change after the repo is added
+        :type wait_for_package: str, or None
 
         :return: True if successful, False otherwise
         :rtype: bool
     """
 
     package_manager = _get_package_manager()
-    return package_manager.add_repo(repo_name, repo_url, index)
+    if wait_for_package:
+        prev_version = package_manager.get_package_version(wait_for_package, None)
+    if not package_manager.add_repo(repo_name, repo_url, index):
+        return False
+    if wait_for_package:
+        try:
+            spinner.time_wait(lambda: package_version_changed_predicate(package_manager, wait_for_package, prev_version))
+        except TimeoutExpired:
+            return False
+    return True
 
 
-def remove_package_repo(
-        repo_name
-):
+def remove_package_repo(repo_name, wait_for_package=None):
     """ Remove a repository from the list of package sources
 
         :param repo_name: name of the repository to remove
         :type repo_name: str
+        :param wait_for_package: the package whose version should change after the repo is removed
+        :type wait_for_package: str, or None
 
         :returns: True if successful, False otherwise
         :rtype: bool
     """
 
     package_manager = _get_package_manager()
-    return package_manager.remove_repo(repo_name)
+    if wait_for_package:
+        prev_version = package_manager.get_package_version(wait_for_package, None)
+    if not package_manager.remove_repo(repo_name):
+        return False
+    if wait_for_package:
+        try:
+            spinner.time_wait(lambda: package_version_changed_predicate(package_manager, wait_for_package, prev_version))
+        except TimeoutExpired:
+            return False
+    return True
+
+
+
+def remove_package_repo_and_wait(repo_name, wait_for_package):
+    """ Remove a repository from the list of package sources, then wait for the removal to complete
+
+        :param repo_name: name of the repository to remove
+        :type repo_name: str
+        :param wait_for_package: the package whose version should change after the repo is removed
+        :type wait_for_package: str
+
+        :returns: True if successful, False otherwise
+        :rtype: bool
+    """
+    return remove_package_repo(repo_name, wait_for_package)

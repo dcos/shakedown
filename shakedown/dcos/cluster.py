@@ -1,6 +1,57 @@
 from dcos.mesos import DCOSClient
+from distutils.version import LooseVersion
 
+import pytest
 import shakedown
+
+
+dcos_1_10 = pytest.mark.skipif('dcos_version_less_than("1.10")')
+dcos_1_9 = pytest.mark.skipif('dcos_version_less_than("1.9")')
+dcos_1_8 = pytest.mark.skipif('dcos_version_less_than("1.8")')
+dcos_1_7 = pytest.mark.skipif('dcos_version_less_than("1.7")')
+
+
+def dcos_canonical_version():
+    return __canonical_version(shakedown.dcos_version())
+
+
+def __canonical_version(version):
+    index = version.rfind("-dev")
+    if index != -1:
+        version = version[:index]
+    return LooseVersion(version)
+
+
+def dcos_version_less_than(version):
+    return dcos_canonical_version() < LooseVersion(version)
+
+
+def required_cpus(cpus):
+    """ Returns True if the number of available cpus is equal to or greater than
+    the cpus.  This is useful in using pytest skipif such as:
+    `pytest.mark.skipif('required_cpus(2)')` which will skip the test if
+    the number of cpus is not 2 or more.
+
+    :param cpus: the number of required cpus.
+    """
+    resources = available_resources()
+    # reverse logic (skip if less than count)
+    # returns True if less than count
+    return resources.cpus < cpus
+
+
+def required_mem(mem):
+    """ Returns True if the number of available memory is equal to or greater than
+    the mem.  This is useful in using pytest skipif such as:
+    `pytest.mark.skipif('required_mem(2)')` which will skip the test if
+    the number of mem is not 2m or more.
+
+    :param mem: the amount of required mem in meg.
+    """
+    resources = available_resources()
+    # reverse logic (skip if less than count)
+    # returns True if less than count
+    return resources.mem < mem
 
 
 def get_resources():

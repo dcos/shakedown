@@ -29,6 +29,14 @@
       * [get_unreserved_resources()](#get_unreserved_resources)
       * [get_reserved_resources()](#get_reserved_resources)
       * [available_resources()](#available_resources)
+      * [dcos_canonical_version()](#dcos_canonical_version)
+      * [dcos_version_less_than()](#dcos_version_less_than)
+      * [required_cpus()](#required_cpus)
+      * [required_mem()](#required_mem)
+      * [dcos_1_7](#dcos_1_7)
+      * [dcos_1_8](#dcos_1_8)
+      * [dcos_1_9](#dcos_1_9)
+      * [dcos_1_10](#dcos_1_10)      
     * Command execution
       * [run_command()](#run_command)
       * [run_command_on_master()](#run_command_on_master)
@@ -72,6 +80,11 @@
       * [delete_all_apps()](#delete_all_apps)
       * [delete_all_apps_wait()](#delete_all_apps_wait)
       * [is_app_healthy()](#is_app_healthy)
+      * [marathon_version()](#marathon_version)
+      * [marthon_version_less_than()](#marthon_version_less_than)
+      * [marathon_1_3](#marathon_1_3)
+      * [marathon_1_4](#marathon_1_4)
+      * [marathon_1_5](#marathon_1_5)
     * Masters
       * [partition_master()](#partition_master)
       * [reconnect_master()](#reconnect_master)
@@ -88,6 +101,12 @@
       * [delete_agent_log()](#delete_agent_log)
       * [kill_process_on_host()](#kill_process_on_host)
       * [disconnected_agent()](#disconnected_agent)
+      * [required_private_agents()](#required_private_agents)
+      * [required_public_agents()](#required_public_agents)
+      * [private_agent_1](#private_agent_1)
+      * [private_agent_2](#private_agent_2)
+      * [private_agent_5](#private_agent_5)
+      * [public_agent_1](#public_agent_1)
     * Network
       * [restore_iptables()](#restore_iptables)
       * [save_iptables()](#save_iptables)
@@ -471,6 +490,160 @@ per_task_mem | the username used for SSH authentication | float | 1
 
 ```python
 
+```
+
+
+### dcos_canonical_version()
+
+Provides a canonical version number.  `dcos_version` returns a version string with a
+few variations such as `1.9-dev`.  `dcos_canonical_version` returns a distutils.version.LooseVersion
+and will strip `-dev` if present.  It can be used to determine if the dcos cluster version
+is correct for the test or if it should be skipped.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+@pytest.mark.skipif('dcos_canonical_version() < LooseVersion("1.9")')
+def test_1_9_specific_test():
+```
+
+
+### dcos_version_less_than()
+
+Returns True if the dcos version is less than the provided version, otherwise
+returns False.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+version | version string "1.9.0" | str
+
+
+##### *example usage*
+
+```python
+@pytest.mark.skipif('dcos_version_less_than("1.9")')
+def test_1_9_specific_test():
+```
+
+
+### dcos_1_7
+
+Preconfigured annotation which requires DCOS 1.7+
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the dcos cluster version 1.6 the test will be skipped
+@dcos_1_7
+def test_1_7_plus_feature():
+```
+
+
+### dcos_1_8
+
+Preconfigured annotation which requires DCOS 1.8+
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the dcos cluster version 1.7 the test will be skipped
+@dcos_1_8
+def test_1_8_plus_feature():
+```
+
+
+### dcos_1_9
+
+Preconfigured annotation which requires DCOS 1.9+
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the dcos cluster version 1.8 the test will be skipped
+@dcos_1_9
+def test_1_9_plus_feature():
+```
+
+
+### dcos_1_10
+
+Preconfigured annotation which requires DCOS 1.10+
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the dcos cluster version 1.9 the test will be skipped
+@dcos_1_10
+def test_1_10_plus_feature():
+```
+
+
+### required_cpus()
+
+Returns True if the cluster resources are less than the specified number of cores,
+otherwise returns False.  This is based on available resources.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+cpus | number of cpus | int
+
+
+##### *example usage*
+
+```python
+# skips test if there is only 1 core left in the cluster.
+@pytest.mark.skipif('required_cpus(2)')
+def test_requires_2_cores():
+```
+
+
+### required_mem()
+
+Returns True if the cluster resources are less than the specified amount of memory,
+otherwise returns False.  This is based on available resources.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+mem | amount of mem in M | int
+
+
+##### *example usage*
+
+```python
+
+requires_2_cores = pytest.mark.skipif('required_cpus(2)')
+
+@dcos_1_9
+@requires_2_cores
+@pytest.mark.skipif('required_mem(512)')
+def test_requires_512m_memory():
+# requires dcos 1.9, 2 cores and 512M 
 ```
 
 
@@ -1140,6 +1313,7 @@ None.
 delete_all_apps_wait()
 ```
 
+
 ### is_app_healthy
 
 Returns True if the given app is healthy.
@@ -1155,6 +1329,93 @@ app_id | marathon app ID | String |
 ```python
 is_app_healthy(app_id)
 ```
+
+
+### marathon_version
+
+Returns the distutils.version.LooseVersion version of marathon.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+@pytest.mark.skipif('marathon_version() < LooseVersion("1.4")')
+def test_requires_marathon_1_4():
+```
+
+
+### marthon_version_less_than
+
+Returns True if the marathon version is less than the version specified, otherwise
+returns False.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+version | version str "1.4" | String |
+
+##### *example usage*
+
+```python
+@pytest.mark.skipif('marthon_version_less_than("1.4")')
+def test_requires_marathon_1_4():
+```
+
+
+### marathon_1_3
+
+Preconfigured annotation which requires marathon 1.3+
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# skips test if marathon 1.2 otherwise runs
+@marathon_1_3
+def test_requires_marathon_1_3():
+```
+
+
+### marathon_1_4
+
+Preconfigured annotation which requires marathon 1.4+
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# skips test if marathon 1.3 otherwise runs
+@marathon_1_4
+def test_requires_marathon_1_4():
+```
+
+
+### marathon_1_5
+
+Preconfigured annotation which requires marathon 1.5+
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# skips test if marathon 1.4 otherwise runs
+@marathon_1_5
+def test_requires_marathon_1_5():
+```
+
 
 ### partition_master()
 
@@ -1394,6 +1655,120 @@ with disconnected_agent(host):
 # agent is reconnected
 wait_for_service_url(PACKAGE_APP_ID)
 ```
+
+
+### required_private_agents()
+
+Function which returns True if the number of required agents is NOT present, otherwise
+returns False.  The purpose of this function is to be used to determine if a test
+would be skipped or not.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+count | required number of agents | int
+
+##### *example usage*
+
+```python
+# if the dcos cluster has less than 2 private agents it will be skipped
+# it will run with 2 or more agents.
+@pytest.mark.skipif('required_private_agents(2)')
+def test_fancy_multi_agent_check():
+```
+
+
+### required_public_agents()
+
+Function which returns True if the number of required agents is NOT present, otherwise
+returns False.  The purpose of this function is to be used to determine if a test
+would be skipped or not.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+count | required number of agents | int
+
+##### *example usage*
+
+```python
+# if the dcos cluster has less than 2 public agents it will be skipped
+# it will run with 2 or more agents.
+@pytest.mark.skipif('required_public_agents(2)')
+def test_fancy_multi_agent_check():
+
+```
+
+
+### private_agent_1
+
+Preconfigured annotation which requires 1 private agent.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the dcos cluster has less than 1 private agents it will be skipped
+@private_agent_1
+def test_fancy_multi_agent_check():
+```
+
+
+### private_agent_2
+
+Preconfigured annotation which requires 2 private agent.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the dcos cluster has less than 2 private agents it will be skipped
+@private_agent_2
+def test_fancy_multi_agent_check():
+```
+
+
+### private_agent_5
+
+Preconfigured annotation which requires 5 private agent.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the dcos cluster has less than 5 private agents it will be skipped
+@private_agent_5
+def test_fancy_multi_agent_check():
+```
+
+
+### public_agent_1
+
+Preconfigured annotation which requires 1 public agent.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the dcos cluster has less than 1 public agents it will be skipped
+@public_agent_1
+def test_fancy_multi_agent_check():
+```
+
 
 ### disconnected_master()
 

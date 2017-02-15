@@ -1,5 +1,4 @@
-from codecs import open as codecs_open
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 
 setup(name='dcos-shakedown',

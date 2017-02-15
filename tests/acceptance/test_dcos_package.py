@@ -43,13 +43,13 @@ def test_install_package_with_json_options():
     uninstall_package_and_wait('chronos', 'big-chronos')
 
 def test_install_package_with_subcommand():
-    install_package_and_wait('riak')
-    stdout, stderr, return_code = run_dcos_command('riak --version')
-    assert stdout.startswith('0')
+    install_package_and_wait('hello-world')
+    stdout, stderr, return_code = run_dcos_command('hello-world --info')
+    assert stdout.startswith('Example')
 
 def test_uninstall_package_with_subcommand():
-    uninstall_package_and_wait('riak')
-    stdout, stderr, return_code = run_dcos_command('riak --version')
+    uninstall_package_and_wait('hello-world')
+    stdout, stderr, return_code = run_dcos_command('hello-world --info')
     assert stderr.endswith("is not a dcos command.\n")
 
 def test_add_package_repo():

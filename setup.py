@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 setup(name='dcos-shakedown',
       version='1.1.15',
       description=u"DC/OS testing harness and library",
-      long_description=u"A tool and library to abstract common DC/OS-related tasks.", 
+      long_description=u"A tool and library to abstract common DC/OS-related tasks.",
       classifiers=[],
       keywords='',
       author=u"Mesosphere QE",

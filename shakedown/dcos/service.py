@@ -252,28 +252,6 @@ def wait_for_mesos_task_removal(task_name, timeout_sec=120):
     return time_wait(lambda: mesos_task_not_present_predicate(task_name), timeout_seconds=timeout_sec)
 
 
-def delete_persistent_data(role, principal, zk_node):
-    """ Deletes any persistent data associated with the specified role, principal, and zk node.
-
-        :param role: the mesos role to delete, or None to omit this
-        :type role: str
-        :param principal: the mesos principal for the data to delete, or None to omit this
-        :type principal: str
-        :param zk_node: the zookeeper node to be deleted, or None to skip this deletion
-        :type zk_node: str
-    """
-    janitor_cmd = ['docker run mesosphere/janitor /janitor.py']
-    if role:
-        janitor_cmd.append('-r {}'.format(role))
-    if principal:
-        janitor_cmd.append('-p {}'.format(principal))
-    if zk_node:
-        janitor_cmd.append('-z {}'.format(zk_node))
-    janitor_cmd.append('--auth_token={}'.format(
-        run_dcos_command('config show core.dcos_acs_token', print_output=False)[0].strip()))
-    run_command_on_master(' '.join(janitor_cmd))
-
-
 def service_available_predicate(service_name):
     url = dcos_service_url(service_name)
     try:

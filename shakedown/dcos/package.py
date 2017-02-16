@@ -308,9 +308,9 @@ def uninstall_package_and_data(
 
     print('\n{}uninstall/delete done after pkg({}) + data({}) = total({})\n'.format(
         shakedown.cli.helpers.fchr('>>'),
-        pretty_duration(data_start start),
-        pretty_duration(finish data_start),
-        pretty_duration(finish start)))
+        pretty_duration(data_start - start),
+        pretty_duration(finish - data_start),
+        pretty_duration(finish - start)))
 
 
 

@@ -274,6 +274,8 @@ def delete_persistent_data(role, zk_node):
 
 
 def destroy_volumes(role):
+    """ Destroys all volumes on all the slaves in the cluster for the role.
+    """
     state = dcos_agents_state()
     if not state or 'slaves' not in state.keys():
         return False
@@ -330,6 +332,8 @@ def destroy_volume(agent, role):
 
 
 def unreserve_resources(role):
+    """ Unreserves all the resources for all the slaves for the role.
+    """
     state = dcos_agents_state()
     if not state or 'slaves' not in state.keys():
         return False
@@ -341,6 +345,8 @@ def unreserve_resources(role):
 
 
 def unreserve_resource(agent, role):
+    """ Unreserves all the resources for the role on the agent.    
+    """
     resources = []
     agent_id = agent['id']
 

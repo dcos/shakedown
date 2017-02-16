@@ -129,10 +129,10 @@ def install_package(
         app_id = pkg.marathon_json(options).get('id')
         shakedown.deployment_wait(timeout_sec, app_id)
         print('\n{}install completed after {}\n'.format(
-            shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() - start)))
+            shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() start)))
     else:
         print('\n{}install started after {}\n'.format(
-            shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() - start)))
+            shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() start)))
 
     return True
 
@@ -256,6 +256,62 @@ def uninstall_package_and_wait(
         wait_for_completion,
         timeout_sec
     )
+
+def uninstall_package_and_data(
+        package_name,
+        service_name=None,
+        role=None,
+        principal=None,
+        zk_node=None,
+        timeout_sec=600):
+    """ Uninstall a package via the DC/OS library, wait for completion, and delete any persistent data
+
+        :param package_name: name of the package
+        :type package_name: str
+        :param service_name: unique service name for the package
+        :type service_name: str
+        :param role: role to use when deleting data, or <service_name>-role if unset
+        :type role: str, or None
+        :param principal: principal to use when deleting data, or <service_name>-principal if unset
+        :type principal: str, or None
+        :param zk_node: zk node to delete, or dcos-service-<service_name> if unset
+        :type zk_node: str, or None
+        :param wait_for_completion: whether or not to wait for task completion before returning
+        :type wait_for_completion: bool
+        :param timeout_sec: number of seconds to wait for task completion
+        :type timeout_sec: int
+    """
+    start = time.time()
+
+    if service_name is None:
+        pkg = _get_package_manager().get_package_version(package_name, None)
+        service_name = _get_service_name(package_name, pkg)
+    print('\n{}uninstalling/deleting {}'.format(shakedown.cli.helpers.fchr('>>'), service_name))
+
+    try:
+        uninstall_package_and_wait(package_name, service_name=service_name, timeout_sec=timeout_sec)
+    except (errors.DCOSException, ValueError) as e:
+        print('Got exception when uninstalling package, ' +
+              'continuing with janitor anyway: {}'.format(e))
+
+    data_start = time.time()
+
+    if (not role or not principal or not zk_node) and service_name is None:
+        raise DCOSException('service_name must be provided when data params are missing AND the package isn\'t installed')
+    if not role:
+        role = '{}-role'.format(service_name)
+    if not zk_node:
+        zk_node = 'dcos-service-{}'.format(service_name)
+    delete_persistent_data(role, zk_node)
+
+    finish = time.time()
+
+    print('\n{}uninstall/delete done after pkg({}) + data({}) = total({})\n'.format(
+        shakedown.cli.helpers.fchr('>>'),
+        pretty_duration(data_start start),
+        pretty_duration(finish data_start),
+        pretty_duration(finish start)))
+
 
 
 def get_package_repos():

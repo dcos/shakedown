@@ -129,10 +129,10 @@ def install_package(
         app_id = pkg.marathon_json(options).get('id')
         shakedown.deployment_wait(timeout_sec, app_id)
         print('\n{}install completed after {}\n'.format(
-            shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() start)))
+            shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() - start)))
     else:
         print('\n{}install started after {}\n'.format(
-            shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() start)))
+            shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() - start)))
 
     return True
 

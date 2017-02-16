@@ -29,6 +29,22 @@ def dcos_service_url(service):
     return _gen_url("/service/{}".format(service))
 
 
+def master_url():
+    """Return the URL of a master running on DC/OS, based on the value of
+    shakedown.dcos.dcos_url().
+    :return: the full DC/OS master URL, as a string
+    """
+    return _gen_url("/mesos/")
+
+
+def agents_url():
+    """Return the URL of a master agents running on DC/OS, based on the value of
+    shakedown.dcos.dcos_url().
+    :return: the full DC/OS master URL, as a string
+    """
+    return _gen_url("/mesos/slaves")
+
+
 def dcos_state():
     client = dcos.mesos.DCOSClient()
     json_data = client.get_state_summary()
@@ -37,6 +53,15 @@ def dcos_state():
         return json_data
     else:
         return None
+
+def dcos_agents_state():
+    response = dcos.http.get(agents_url())
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+
 
 def dcos_leader():
     return dcos_dns_lookup('leader.mesos.')

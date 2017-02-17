@@ -8,8 +8,11 @@
     * General
       * [authenticate()](#authenticate)
       * [dcos_url()](#dcos_url)
+      * [master_url()](#master_url)
+      * [agents_url()](#agents_url)
       * [dcos_service_url()](#dcos_service_url)
       * [dcos_state()](#dcos_state)
+      * [dcos_agents_state()](#dcos_agents_state)
       * [dcos_version()](#dcos_version)
       * [dcos_acs_token()](#dcos_acs_token)
       * [master_ip()](#master_ip)
@@ -18,6 +21,7 @@
       * [install_package_and_wait()](#install_package_and_wait)
       * [uninstall_package()](#uninstall_package)
       * [uninstall_package_and_wait()](#uninstall_package_and_wait)
+      * [uninstall_package_and_data()](#uninstall_package_and_data)
       * [package_installed()](#package_installed)
       * [get_package_repos()](#get_package_repos)
       * [add_package_repo()](#add_package_repo)
@@ -50,6 +54,11 @@
       * [copy_file_from_agent()](#copy_file_from_agent)
     * Services
       * [get_service()](#get_service)
+      * [delete_persistent_data()](#delete_persistent_data)
+      * [destroy_volumes()](#destroy_volumes)
+      * [destroy_volume()](#destroy_volume)
+      * [unreserve_resources()](#unreserve_resources)
+      * [unreserve_resource()](#unreserve_resource)
       * [get_service_framework_id()](#get_service_framework_id)
       * [get_service_task()](#get_service_task)
       * [get_service_tasks()](#get_service_tasks)
@@ -139,6 +148,8 @@ parameter | description | type | default
 token = authenticate('root', 's3cret')
 ```
 
+* [master_url()](#master_url)
+* [agents_url()](#agents_url)
 
 ### dcos_url()
 
@@ -154,6 +165,37 @@ None.
 # Print the DC/OS dashboard URL.
 dcos_url = dcos_url()
 print("Dashboard located at: " + dcos_url)
+```
+
+### master_url()
+
+The URL to the mesos master on the DC/OS cluster under test.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+master_url = master_url()
+print("Master located at: " + master_url)
+```
+
+
+### agents_url()
+
+The URL to the agents end point for the master on the DC/OS cluster under test.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+agents_url = agents_url()
+print("Agent state.json is located at: " + agents_url)
 ```
 
 
@@ -189,6 +231,23 @@ None.
 ```python
 # Print state information of DC/OS slaves.
 state_json = json.loads(dcos_json_state())
+print(state_json['slaves'])
+```
+
+
+### dcos_agents_state()
+
+A JSON hash containing DC/OS state information for the agents.
+
+#### *parameters*
+
+None.
+
+#### *example usage*
+
+```python
+# Print state information of DC/OS slaves.
+state_json = json.loads(dcos_agents_state())
 print(state_json['slaves'])
 ```
 
@@ -295,6 +354,30 @@ timeout_sec | how long in seconds to wait before timing out | int | `600`
 ```python
 # Uninstall the 'jenkins' package; don't wait for the service to unregister
 uninstall_package('jenkins')
+```
+
+
+
+### uninstall_package_and_data()
+
+Uninstall a package, and wait for the service to unregister.  The cleans up the
+reserved resources, the reserved disk and zk entry associated with the service.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**package_name** | the name of the package to install | str
+service_name | custom service name | str | `None`
+role | role for the service if not <service>-role | str | `None`
+principal | principal for the service if not <service>-principal | str | `None`
+zk_node | zk node to delete for the service | str | `None`
+timeout_sec | how long in seconds to wait before timing out | int | `600`
+
+##### *example usage*
+
+```python
+uninstall_package_and_data('confluent-kafka', zk_node='/dcos-service-confluent-kafka')
 ```
 
 
@@ -643,7 +726,7 @@ requires_2_cores = pytest.mark.skipif('required_cpus(2)')
 @requires_2_cores
 @pytest.mark.skipif('required_mem(512)')
 def test_requires_512m_memory():
-# requires dcos 1.9, 2 cores and 512M 
+# requires dcos 1.9, 2 cores and 512M
 ```
 
 
@@ -828,6 +911,98 @@ completed | include completed services? | bool | `False`
 ```python
 # Tell me about the 'jenkins' service
 jenkins = get_service('jenkins')
+```
+
+
+### delete_persistent_data()
+
+Delete the reserved_resources, destroys volumes and deletes the zk node for a given service.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**role** | the role for the service | str
+**zk_node** | the zk node to delete | str
+
+##### *example usage*
+
+```python
+delete_persistent_data('confluent-kafka-role', '/dcos-service-confluent-kafka')
+```
+
+
+### destroy_volumes()
+
+Destroys the volume for the given role (on all slaves in the cluster).  
+It is important to uninstall the service prior to calling this function.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**role** | the role associated with the service | str
+
+##### *example usage*
+
+```python
+destroy_volumes('confluent-kafka-role')
+```
+
+
+### destroy_volume()
+
+Destroys the volume for the given role on a give agent.
+It is important to uninstall the service prior to calling this function.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**agent** | an agent id in the cluster | str
+**role** | the role associated with the service | str
+
+##### *example usage*
+
+```python
+destroy_volumes('a8571994-47f8-4590-8922-47f10886165a-S1', 'confluent-kafka-role')
+```
+
+
+### unreserve_resources()
+
+Unreserve resources for the given role (on all slaves in the cluster).  
+It is important to uninstall the service prior to calling this function.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**role** | the role associated with the service | str
+
+##### *example usage*
+
+```python
+unreserve_resources('confluent-kafka-role')
+```
+
+
+### unreserve_resource()
+
+Unreserve resources for the given role on a give agent.
+It is important to uninstall the service prior to calling this function.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**agent** | an agent id in the cluster | str
+**role** | the role associated with the service | str
+
+##### *example usage*
+
+```python
+unreserve_resource('a8571994-47f8-4590-8922-47f10886165a-S1', 'confluent-kafka-role')
 ```
 
 

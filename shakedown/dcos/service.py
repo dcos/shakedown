@@ -1,8 +1,13 @@
 from dcos import (marathon, mesos, http)
 from shakedown.dcos.command import *
 from shakedown.dcos.spinner import *
-from shakedown.dcos import dcos_service_url
+from shakedown.dcos import dcos_service_url, dcos_agents_state, master_url
+from shakedown.dcos.zookeeper import delete_zk_node
 from dcos.errors import DCOSException, DCOSHTTPException
+
+from urllib.parse import urljoin
+import json
+
 
 def get_service(
         service_name,
@@ -252,6 +257,130 @@ def wait_for_mesos_task_removal(task_name, timeout_sec=120):
     return time_wait(lambda: mesos_task_not_present_predicate(task_name), timeout_seconds=timeout_sec)
 
 
+def delete_persistent_data(role, zk_node):
+    """ Deletes any persistent data associated with the specified role, and zk node.
+
+        :param role: the mesos role to delete, or None to omit this
+        :type role: str
+        :param zk_node: the zookeeper node to be deleted, or None to skip this deletion
+        :type zk_node: str
+    """
+    if role:
+        destroy_volumes(role)
+        unreserve_resources(role)
+
+    if zk_node:
+        delete_zk_node(zk_node)
+
+
+def destroy_volumes(role):
+    """ Destroys all volumes on all the slaves in the cluster for the role.
+    """
+    state = dcos_agents_state()
+    if not state or 'slaves' not in state.keys():
+        return False
+    all_success = True
+    for agent in state['slaves']:
+        if not destroy_volume(agent, role):
+            all_success = False
+    return all_success
+
+
+def destroy_volume(agent, role):
+    """ Deletes the volumes on the specific agent for the role
+    """
+    volumes = []
+    agent_id = agent['id']
+
+    reserved_resources_full = agent.get('reserved_resources_full', None)
+    if not reserved_resources_full:
+        # doesn't exist
+        return True
+
+    reserved_resources = reserved_resources_full.get(role, None)
+    if not reserved_resources:
+        # doesn't exist
+        return True
+
+    for reserved_resource in reserved_resources:
+        name = reserved_resource.get('name', None)
+        disk = reserved_resource.get('disk', None)
+
+        if name == 'disk' and disk is not None and 'persistence' in disk:
+            volumes.append(reserved_resource)
+
+    req_url = urljoin(master_url(), 'destroy-volumes')
+    data = {
+        'slaveId': agent_id,
+        'volumes': json.dumps(volumes)
+    }
+
+    success = False
+    try:
+        response = http.post(req_url, data=data)
+        success = 200 <= response.status_code < 300
+        if response.status_code == 409:
+            # thoughts on what to do here? throw exception
+            # i would rather not print
+            print('''###\nIs a framework using these resources still installed?\n###''')
+    except DCOSHTTPException as e:
+        print("HTTP {}: Unabled to delete volume based on: {}".format(
+            e.response.status_code,
+            e.response.text))
+
+    return success
+
+
+def unreserve_resources(role):
+    """ Unreserves all the resources for all the slaves for the role.
+    """
+    state = dcos_agents_state()
+    if not state or 'slaves' not in state.keys():
+        return False
+    all_success = True
+    for agent in state['slaves']:
+        if not unreserve_resource(agent, role):
+            all_success = False
+    return all_success
+
+
+def unreserve_resource(agent, role):
+    """ Unreserves all the resources for the role on the agent.    
+    """
+    resources = []
+    agent_id = agent['id']
+
+    reserved_resources_full = agent.get('reserved_resources_full', None)
+    if not reserved_resources_full:
+        # doesn't exist
+        return True
+
+    reserved_resources = reserved_resources_full.get(role, None)
+    if not reserved_resources:
+        # doesn't exist
+        return True
+
+    for reserved_resource in reserved_resources:
+        resources.append(reserved_resource)
+
+    req_url = urljoin(master_url(), 'unreserve')
+    data = {
+        'slaveId': agent_id,
+        'resources': json.dumps(resources)
+    }
+
+    success = False
+    try:
+        response = http.post(req_url, data=data)
+        success = 200 <= response.status_code < 300
+    except DCOSHTTPException as e:
+        print("HTTP {}: Unabled to unreserve resources based on: {}".format(
+            e.response.status_code,
+            e.response.text))
+
+    return success
+
+
 def service_available_predicate(service_name):
     url = dcos_service_url(service_name)
     try:
@@ -393,8 +522,8 @@ def tasks_all_replaced_predicate(
         service_name, old_task_ids, task_ids))
     for id in task_ids:
         if id in old_task_ids:
-            return False # old task still present
-    if len(task_ids) < len(old_task_ids): # new tasks haven't fully replaced old tasks
+            return False  # old task still present
+    if len(task_ids) < len(old_task_ids):  # new tasks haven't fully replaced old tasks
         return False
     return True
 
@@ -426,7 +555,7 @@ def tasks_missing_predicate(
         service_name, old_task_ids, task_ids))
     for id in old_task_ids:
         if id not in task_ids:
-            return True # an old task was not present
+            return True  # an old task was not present
     return False
 
 
@@ -481,5 +610,5 @@ def wait_for_service_tasks_all_unchanged(
             timeout_seconds=timeout_sec)
         # shouldn't have exited successfully: raise below
     except TimeoutExpired:
-        return timeout_sec # no changes occurred within timeout, as expected
+        return timeout_sec  # no changes occurred within timeout, as expected
     raise DCOSException("One or more of the following tasks were no longer found: {}".format(old_task_ids))

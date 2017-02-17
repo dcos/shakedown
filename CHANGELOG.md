@@ -1,3 +1,38 @@
+## 1.2.0 (2017-02-17)
+
+Features:
+
+  - ability to skip tests based on required resources, DC/OS versioning
+    - eg. `@pytest.mark.skipif('required_cpus(2)')` and `@dcos_1_9`
+  - support for deleting leftover data following persistent service
+    uninstall (ie.a `janitor.py` shim)
+      - `delete_persistent_data()`
+      - `destroy_volume()` / `destroy_volumes()`
+      - `unreserve_resources()` / `unreserve_resources()`
+  - command methods now allow disabling output and/or raising on error
+  - marathon methods add `delete_app`/`delete_app_wait` for a specific app
+  - package install methods support waiting for service tasks to start
+    running, additional logging
+  - package uninstall methods add support for deleting persistent volumes
+    after uninstall
+  - packge repo methods support waiting for add/remove repo to complete,
+    check for a changed package version
+  - service method function for deleting persistent volumes
+  - service method support waiting for task rollout to complete
+  - service method verifying that tasks are not changed
+
+Fixes:
+
+  - marathon methods fix unused `app_id` when checking deployment
+  - `hello-world` package (previously `riak`) now used to test
+    `test_install_package_with_subcommand()`
+  - spinner-related fixes:
+    - while a spinner is polling, print the spin time and any
+      ignored exceptions by default
+    - don't drop the original stack when rethrowing exceptions
+    - return the result of the spin at the end of `wait_for`,
+      allowing passthrough of the predicate return value
+
 ## 1.1.15 (2017-02-03)
 
 Features:

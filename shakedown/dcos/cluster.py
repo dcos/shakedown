@@ -136,6 +136,15 @@ class Resources(object):
     def __gt__(self, other):
         return self.cpus > other.cpus and self.mem > other.cpus
 
+    def __ge__(self, other):
+        return self.cpus >= other.cpus and self.mem >= other.cpus
+
+    def __lt__(self, other):
+        return self.cpus < other.cpus and self.mem < other.cpus
+
+    def __le__(self, other):
+        return self.cpus <= other.cpus and self.mem <= other.cpus
+
     def __mul__(self, other):
         return Resources(self.cpus * other, self.mem * other)
 

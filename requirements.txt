@@ -4,3 +4,4 @@ paramiko
 pytest
 pytest-timeout
 scp
+retrying

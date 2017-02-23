@@ -875,7 +875,7 @@ None.
 
 ```python
 @pytest.mark.skipif("ee_version() in {'strict', 'disabled'}")
-def test_requires_strict_or_disabled():
+def test_skips_strict_or_disabled():
 ```
 
 

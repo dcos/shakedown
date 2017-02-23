@@ -54,6 +54,7 @@ def dcos_state():
     else:
         return None
 
+
 def dcos_agents_state():
     response = dcos.http.get(agents_url())
 
@@ -66,8 +67,10 @@ def dcos_agents_state():
 def dcos_leader():
     return dcos_dns_lookup('leader.mesos.')
 
+
 def dcos_dns_lookup(name):
     return dcos.mesos.MesosDNSClient().hosts(name)
+
 
 def dcos_version():
     """Return the version of the running cluster.
@@ -124,6 +127,10 @@ def authenticate_oauth(oauth_token):
         return response.json()['token']
     else:
         return None
+
+
+def dcos_url_path(url_path):
+    return _gen_url(url_path)
 
 
 def _gen_url(url_path):

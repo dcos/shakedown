@@ -1,6 +1,7 @@
 from dcos.mesos import DCOSClient
 from distutils.version import LooseVersion
 
+import dcos
 import pytest
 import shakedown
 
@@ -9,6 +10,11 @@ dcos_1_10 = pytest.mark.skipif('dcos_version_less_than("1.10")')
 dcos_1_9 = pytest.mark.skipif('dcos_version_less_than("1.9")')
 dcos_1_8 = pytest.mark.skipif('dcos_version_less_than("1.8")')
 dcos_1_7 = pytest.mark.skipif('dcos_version_less_than("1.7")')
+
+# runs for strict, ignores if not strict (strict is required)
+strict = pytest.mark.skipif("ee_version() != 'strict'")
+permissive = pytest.mark.skipif("ee_version() != 'permissive'")
+disabled = pytest.mark.skipif("ee_version() != 'disabled'")
 
 
 def dcos_canonical_version():
@@ -52,6 +58,62 @@ def required_mem(mem):
     # reverse logic (skip if less than count)
     # returns True if less than count
     return resources.mem < mem
+
+
+def bootstrap_metadata():
+    """ Provides cluster metadata which includes security modes
+    """
+    return __metadata_helper('bootstrap-config.json')
+
+
+def ui_config_metadata():
+    """ Provides cluster metadata used by the ui which includes mesos logging strategy
+    """
+    return __metadata_helper('ui-config.json')
+
+
+def dcos_version_metadata():
+    return __metadata_helper('dcos-version.json')
+
+
+def __metadata_helper(json_path):
+    """ Returns json for specific cluster metadata.  Important to realize that
+        this was introduced in dcos-1.9.  Clusters prior to 1.9 and missing metadata
+        will return None
+    """
+    url = shakedown.dcos_url_path('dcos-metadata/{}'.format(json_path))
+    try:
+        response = dcos.http.request('get', url)
+
+        if response.status_code == 200:
+            return response.json()
+    except:
+        pass
+
+    return None
+
+
+def ee_version():
+    """ Provides the type or version of EE if it is Enterprise.
+        Useful for @pytest.mark.skipif("ee_version() in {'strict', 'disabled'}")
+    """
+    metadata = bootstrap_metadata()
+    if metadata:
+        return metadata['security']
+    else:
+        return None
+
+
+def mesos_logging_strategy():
+    metadata = ui_config_metadata()
+
+    if metadata:
+        try:
+            return metadata['uiConfiguration']['plugins']['mesos']['logging-strategy']
+        except:
+            pass
+
+    return None
 
 
 def get_resources():

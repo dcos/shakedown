@@ -15,6 +15,7 @@
       * [dcos_agents_state()](#dcos_agents_state)
       * [dcos_version()](#dcos_version)
       * [dcos_acs_token()](#dcos_acs_token)
+      * [dcos_url_path()](#dcos_url_path)
       * [master_ip()](#master_ip)
     * Packaging
       * [install_package()](#install_package)
@@ -37,10 +38,19 @@
       * [dcos_version_less_than()](#dcos_version_less_than)
       * [required_cpus()](#required_cpus)
       * [required_mem()](#required_mem)
+      * [bootstrap_metadata()](#bootstrap_metadata)
+      * [ui_config_metadata()](#ui_config_metadata)
+      * [dcos_version_metadata()](#dcos_version_metadata)
+      * [ee_version()](#ee_version)
+      * [mesos_logging_strategy()](#mesos_logging_strategy)
       * [dcos_1_7](#dcos_1_7)
       * [dcos_1_8](#dcos_1_8)
       * [dcos_1_9](#dcos_1_9)
       * [dcos_1_10](#dcos_1_10)      
+      * [strict](#strict)
+      * [permissive](#permissive)
+      * [disabled](#disabled)
+
     * Command execution
       * [run_command()](#run_command)
       * [run_command_on_master()](#run_command_on_master)
@@ -285,6 +295,24 @@ token = dcos_acs_token()
 print("Using token " + token)
 ```
 
+
+
+### dcos_url_path()
+
+Provides a dcos url for the provide path.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**url_path** | the url path | str
+
+##### *example usage*
+
+```python
+url = shakedown.dcos_url_path('marathon/v2/apps')
+response = dcos.http.request('get', url)
+```
 
 
 ### master_ip()
@@ -683,6 +711,57 @@ def test_1_10_plus_feature():
 ```
 
 
+### strict
+
+Preconfigured annotation which requires DCOS Enterprise in strict mode
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the dcos enterprise cluster is not in strict mode it will be skipped
+@strict
+def test_strict_only_feature():
+```
+
+
+### permissive
+
+Preconfigured annotation which requires DCOS Enterprise in permissive mode
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the dcos enterprise cluster is not in permissive mode it will be skipped
+@permissive
+def test_permissive_only_feature():
+```
+
+
+### disabled
+
+Preconfigured annotation which requires DCOS Enterprise in disabled mode
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the dcos enterprise cluster is not in disabled mode it will be skipped
+@disabled
+def test_disabled_only_feature():
+```
+
+
 ### required_cpus()
 
 Returns True if the cluster resources are less than the specified number of cores,
@@ -730,6 +809,92 @@ def test_requires_512m_memory():
 ```
 
 
+### bootstrap_metadata()
+
+Returns the JSON of the boostrap metadata for DCOS Enterprise clusters.
+Return None if DCOS Open or DCOS Version is < 1.9.
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+metadata = bootstrap_metadata()
+if metadata:
+  print(metadata['security'])
+```
+
+
+### ui_config_metadata()
+
+Returns the JSON of the UI configuration metadata for DCOS Enterprise clusters.
+Return None if DCOS Open or DCOS Version is < 1.9.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+metadata = ui_config_metadata()
+if metadata:
+  print(metadata['uiConfiguration']['plugins']['mesos']['logging-strategy'])
+```
+
+
+### dcos_version_metadata()
+
+Returns the JSON of the dcos version metadata for DCOS Enterprise clusters.
+Returns None if not available.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+metadata = dcos_version_metadata()
+if metadata:
+  print(metadata['dcos-image-commit'])
+```
+
+
+### ee_version()
+
+Returns the DCOS Enterprise version type which is {strict, permissive, disabled}
+Return None if DCOS Open or DCOS Version is < 1.9.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+@pytest.mark.skipif("ee_version() in {'strict', 'disabled'}")
+def test_requires_strict_or_disabled():
+```
+
+
+### mesos_logging_strategy()
+
+Returns the mesos logging strategy if available, otherwise None.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+strategy = mesos_logging_strategy()
+print(strategy)
+```
+
+
 ### run_command()
 
 Run a command on a remote host via SSH.
@@ -742,6 +907,7 @@ parameter | description | type | default
 **command** | the command to run | str
 username | the username used for SSH authentication | str | `core`
 key_path | the path to the SSH keyfile used for authentication | str | `None`
+noisy    | Output to stdout if True | bool | True
 
 ##### *example usage*
 
@@ -762,6 +928,7 @@ parameter | description | type | default
 **command** | the command to run | str
 username | the username used for SSH authentication | str | `core`
 key_path | the path to the SSH keyfile used for authentication | str | `None`
+noisy    | Output to stdout if True | bool | True
 
 ##### *example usage*
 

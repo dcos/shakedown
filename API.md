@@ -15,6 +15,7 @@
       * [dcos_agents_state()](#dcos_agents_state)
       * [dcos_version()](#dcos_version)
       * [dcos_acs_token()](#dcos_acs_token)
+      * [dcos_url_path()](#dcos_url_path)
       * [master_ip()](#master_ip)
     * Packaging
       * [install_package()](#install_package)
@@ -37,10 +38,19 @@
       * [dcos_version_less_than()](#dcos_version_less_than)
       * [required_cpus()](#required_cpus)
       * [required_mem()](#required_mem)
+      * [bootstrap_metadata()](#bootstrap_metadata)
+      * [ui_config_metadata()](#ui_config_metadata)
+      * [dcos_version_metadata()](#dcos_version_metadata)
+      * [ee_version()](#ee_version)
+      * [mesos_logging_strategy()](#mesos_logging_strategy)
       * [dcos_1_7](#dcos_1_7)
       * [dcos_1_8](#dcos_1_8)
       * [dcos_1_9](#dcos_1_9)
       * [dcos_1_10](#dcos_1_10)      
+      * [strict](#strict)
+      * [permissive](#permissive)
+      * [disabled](#disabled)
+
     * Command execution
       * [run_command()](#run_command)
       * [run_command_on_master()](#run_command_on_master)
@@ -285,6 +295,24 @@ token = dcos_acs_token()
 print("Using token " + token)
 ```
 
+
+
+### dcos_url_path()
+
+Provides a DC/OS url for the provide path.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**url_path** | the url path | str
+
+##### *example usage*
+
+```python
+url = shakedown.dcos_url_path('marathon/v2/apps')
+response = dcos.http.request('get', url)
+```
 
 
 ### master_ip()
@@ -580,7 +608,7 @@ per_task_mem | the username used for SSH authentication | float | 1
 
 Provides a canonical version number.  `dcos_version` returns a version string with a
 few variations such as `1.9-dev`.  `dcos_canonical_version` returns a distutils.version.LooseVersion
-and will strip `-dev` if present.  It can be used to determine if the dcos cluster version
+and will strip `-dev` if present.  It can be used to determine if the DC/OS cluster version
 is correct for the test or if it should be skipped.
 
 ##### *parameters*
@@ -597,7 +625,7 @@ def test_1_9_specific_test():
 
 ### dcos_version_less_than()
 
-Returns True if the dcos version is less than the provided version, otherwise
+Returns True if the DC/OS version is less than the provided version, otherwise
 returns False.
 
 ##### *parameters*
@@ -617,7 +645,7 @@ def test_1_9_specific_test():
 
 ### dcos_1_7
 
-Preconfigured annotation which requires DCOS 1.7+
+Preconfigured annotation which requires DC/OS 1.7+
 
 ##### *parameters*
 
@@ -626,7 +654,7 @@ None.
 ##### *example usage*
 
 ```python
-# if the dcos cluster version 1.6 the test will be skipped
+# if the DC/OS cluster version 1.6 the test will be skipped
 @dcos_1_7
 def test_1_7_plus_feature():
 ```
@@ -634,7 +662,7 @@ def test_1_7_plus_feature():
 
 ### dcos_1_8
 
-Preconfigured annotation which requires DCOS 1.8+
+Preconfigured annotation which requires DC/OS 1.8+
 
 ##### *parameters*
 
@@ -643,7 +671,7 @@ None.
 ##### *example usage*
 
 ```python
-# if the dcos cluster version 1.7 the test will be skipped
+# if the DC/OS cluster version 1.7 the test will be skipped
 @dcos_1_8
 def test_1_8_plus_feature():
 ```
@@ -651,7 +679,7 @@ def test_1_8_plus_feature():
 
 ### dcos_1_9
 
-Preconfigured annotation which requires DCOS 1.9+
+Preconfigured annotation which requires DC/OS 1.9+
 
 ##### *parameters*
 
@@ -660,7 +688,7 @@ None.
 ##### *example usage*
 
 ```python
-# if the dcos cluster version 1.8 the test will be skipped
+# if the DC/OS cluster version 1.8 the test will be skipped
 @dcos_1_9
 def test_1_9_plus_feature():
 ```
@@ -668,7 +696,7 @@ def test_1_9_plus_feature():
 
 ### dcos_1_10
 
-Preconfigured annotation which requires DCOS 1.10+
+Preconfigured annotation which requires DC/OS 1.10+
 
 ##### *parameters*
 
@@ -677,9 +705,60 @@ None.
 ##### *example usage*
 
 ```python
-# if the dcos cluster version 1.9 the test will be skipped
+# if the DC/OS cluster version 1.9 the test will be skipped
 @dcos_1_10
 def test_1_10_plus_feature():
+```
+
+
+### strict
+
+Preconfigured annotation which requires DC/OS Enterprise in strict mode
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the DC/OS enterprise cluster is not in strict mode it will be skipped
+@strict
+def test_strict_only_feature():
+```
+
+
+### permissive
+
+Preconfigured annotation which requires DC/OS Enterprise in permissive mode
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the DC/OS enterprise cluster is not in permissive mode it will be skipped
+@permissive
+def test_permissive_only_feature():
+```
+
+
+### disabled
+
+Preconfigured annotation which requires DC/OS Enterprise in disabled mode
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+# if the DC/OS enterprise cluster is not in disabled mode it will be skipped
+@disabled
+def test_disabled_only_feature():
 ```
 
 
@@ -726,7 +805,93 @@ requires_2_cores = pytest.mark.skipif('required_cpus(2)')
 @requires_2_cores
 @pytest.mark.skipif('required_mem(512)')
 def test_requires_512m_memory():
-# requires dcos 1.9, 2 cores and 512M
+# requires DC/OS 1.9, 2 cores and 512M
+```
+
+
+### bootstrap_metadata()
+
+Returns the JSON of the boostrap metadata for DC/OS Enterprise clusters.
+Return None if DC/OS Open or DC/OS Version is < 1.9.
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+metadata = bootstrap_metadata()
+if metadata:
+  print(metadata['security'])
+```
+
+
+### ui_config_metadata()
+
+Returns the JSON of the UI configuration metadata for DC/OS Enterprise clusters.
+Return None if DC/OS Open or DC/OS Version is < 1.9.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+metadata = ui_config_metadata()
+if metadata:
+  print(metadata['uiConfiguration']['plugins']['mesos']['logging-strategy'])
+```
+
+
+### dcos_version_metadata()
+
+Returns the JSON of the DC/OS version metadata for DC/OS Enterprise clusters.
+Returns None if not available.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+metadata = dcos_version_metadata()
+if metadata:
+  print(metadata['dcos-image-commit'])
+```
+
+
+### ee_version()
+
+Returns the DC/OS Enterprise version type which is {strict, permissive, disabled}
+Return None if DC/OS Open or DC/OS Version is < 1.9.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+@pytest.mark.skipif("ee_version() in {'strict', 'disabled'}")
+def test_skips_strict_or_disabled():
+```
+
+
+### mesos_logging_strategy()
+
+Returns the mesos logging strategy if available, otherwise None.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+strategy = mesos_logging_strategy()
+print(strategy)
 ```
 
 
@@ -742,6 +907,7 @@ parameter | description | type | default
 **command** | the command to run | str
 username | the username used for SSH authentication | str | `core`
 key_path | the path to the SSH keyfile used for authentication | str | `None`
+noisy    | Output to stdout if True | bool | True
 
 ##### *example usage*
 
@@ -762,6 +928,7 @@ parameter | description | type | default
 **command** | the command to run | str
 username | the username used for SSH authentication | str | `core`
 key_path | the path to the SSH keyfile used for authentication | str | `None`
+noisy    | Output to stdout if True | bool | True
 
 ##### *example usage*
 
@@ -1847,7 +2014,7 @@ count | required number of agents | int
 ##### *example usage*
 
 ```python
-# if the dcos cluster has less than 2 private agents it will be skipped
+# if the DC/OS cluster has less than 2 private agents it will be skipped
 # it will run with 2 or more agents.
 @pytest.mark.skipif('required_private_agents(2)')
 def test_fancy_multi_agent_check():
@@ -1869,7 +2036,7 @@ count | required number of agents | int
 ##### *example usage*
 
 ```python
-# if the dcos cluster has less than 2 public agents it will be skipped
+# if the DC/OS cluster has less than 2 public agents it will be skipped
 # it will run with 2 or more agents.
 @pytest.mark.skipif('required_public_agents(2)')
 def test_fancy_multi_agent_check():
@@ -1888,7 +2055,7 @@ None.
 ##### *example usage*
 
 ```python
-# if the dcos cluster has less than 1 private agents it will be skipped
+# if the DC/OS cluster has less than 1 private agents it will be skipped
 @private_agent_1
 def test_fancy_multi_agent_check():
 ```
@@ -1905,7 +2072,7 @@ None.
 ##### *example usage*
 
 ```python
-# if the dcos cluster has less than 2 private agents it will be skipped
+# if the DC/OS cluster has less than 2 private agents it will be skipped
 @private_agent_2
 def test_fancy_multi_agent_check():
 ```
@@ -1922,7 +2089,7 @@ None.
 ##### *example usage*
 
 ```python
-# if the dcos cluster has less than 5 private agents it will be skipped
+# if the DC/OS cluster has less than 5 private agents it will be skipped
 @private_agent_5
 def test_fancy_multi_agent_check():
 ```
@@ -1939,7 +2106,7 @@ None.
 ##### *example usage*
 
 ```python
-# if the dcos cluster has less than 1 public agents it will be skipped
+# if the DC/OS cluster has less than 1 public agents it will be skipped
 @public_agent_1
 def test_fancy_multi_agent_check():
 ```

@@ -12,7 +12,8 @@ def run_command(
         host,
         command,
         username=None,
-        key_path=None
+        key_path=None,
+        noisy=True
 ):
     """ Run a command via SSH, proxied through the mesos master
 
@@ -48,7 +49,8 @@ def run_command(
         return False, ''
 
     if transport.is_authenticated():
-        print("\n{}{} $ {}\n".format(shakedown.cli.helpers.fchr('>>'), host, command))
+        if noisy:
+            print("\n{}{} $ {}\n".format(shakedown.cli.helpers.fchr('>>'), host, command))
 
         output = ''
 
@@ -60,7 +62,8 @@ def run_command(
             rl, wl, xl = select.select([channel], [], [], 0.0)
             if len(rl) > 0:
                 recv = str(channel.recv(1024), "utf-8")
-                print(recv, end='', flush=True)
+                if noisy:
+                    print(recv, end='', flush=True)
                 output += recv
 
         try_close(channel)
@@ -75,24 +78,26 @@ def run_command(
 def run_command_on_master(
         command,
         username=None,
-        key_path=None
+        key_path=None,
+        noisy=True
 ):
     """ Run a command on the Mesos master
     """
 
-    return run_command(shakedown.master_ip(), command, username, key_path)
+    return run_command(shakedown.master_ip(), command, username, key_path, noisy)
 
 
 def run_command_on_agent(
         host,
         command,
         username=None,
-        key_path=None
+        key_path=None,
+        noisy=True
 ):
     """ Run a command on a Mesos agent, proxied through the master
     """
 
-    return run_command(host, command, username, key_path)
+    return run_command(host, command, username, key_path, noisy)
 
 
 def run_dcos_command(command, raise_on_error=False, print_output=True):

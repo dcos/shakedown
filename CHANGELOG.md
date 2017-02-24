@@ -1,3 +1,12 @@
+## 1.2.1 (2017-02-24)
+
+Features:
+
+  - DC/OS Enterprise Edition version-checking
+    - `ee_version()` method, `@strict`, `@permissive`, and `@disabled`
+      PyTest security mode markers
+  - bumped `dcosdcli` version to `0.4.16`
+
 ## 1.2.0 (2017-02-17)
 
 Features:

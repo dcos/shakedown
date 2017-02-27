@@ -1,8 +1,10 @@
+from dcos import util
 import time as time_module
 import traceback
 
 import shakedown
 
+logger = util.get_logger(__name__)
 
 def wait_for(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions=True, inverse_predicate=False, noisy=True):
     """ waits or spins for a predicate, returning the result.
@@ -20,7 +22,7 @@ def wait_for(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions=
         except Exception as e:
             if ignore_exceptions:
                 if noisy:
-                    traceback.print_exc()
+                    logger.exception("Ignoring error during wait.")
             else:
                 raise # preserve original stack
         else:

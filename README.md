@@ -67,6 +67,13 @@ This virtual environment can then be activated in new terminal sessions with:
 - `shakedown --help` is your friend.
 
 
+### Running in parallel
+
+Shakedown can be run against multiple DC/OS clusters in parallel by setting the `DCOS_CONFIG_ENV` environmental variable to a unique file, eg:
+
+`DCOS_CONFIG_ENV='shakedown-custom-01.toml' shakedown --dcos-url=http://dcos.example.com [options] [path_to_tests]`
+
+
 ## Helper methods
 
 Shakedown is a testing tool as well as a library.  Many helper functions are available via `from shakedown import *` in your tests.  See the [API documentation](API.md) for more information.

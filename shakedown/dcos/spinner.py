@@ -6,7 +6,13 @@ import shakedown
 
 logger = util.get_logger(__name__)
 
-def wait_for(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions=True, inverse_predicate=False, noisy=True):
+def wait_for(
+        predicate,
+        timeout_seconds=120,
+        sleep_seconds=1,
+        ignore_exceptions=True,
+        inverse_predicate=False,
+        noisy=False):
     """ waits or spins for a predicate, returning the result.
         Predicate is a function that returns a truthy or falsy value.
         An exception in the function will be returned.

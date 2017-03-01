@@ -1,9 +1,10 @@
 from dcos import util
 import time as time_module
 import traceback
-from inspect import *
 
 import shakedown
+
+from inspect import currentframe, getargvalues, getsource, getouterframes
 
 logger = util.get_logger(__name__)
 
@@ -31,7 +32,7 @@ def wait_for(
                 if noisy:
                     logger.exception("Ignoring error during wait.")
             else:
-                raise # preserve original stack
+                raise  # preserve original stack
         else:
             if (not inverse_predicate and result) or (inverse_predicate and not result):
                 return result

@@ -1,6 +1,7 @@
 from dcos import util
 import time as time_module
 import traceback
+from inspect import *
 
 import shakedown
 
@@ -35,13 +36,30 @@ def wait_for(
             if (not inverse_predicate and result) or (inverse_predicate and not result):
                 return result
             if timeout.is_expired():
-                raise TimeoutExpired(timeout_seconds, str(predicate.__name__))
+                funname = __stringify_predicate(predicate)
+                raise TimeoutExpired(timeout_seconds, funname)
         if noisy:
             print('{}[{}/{}] spinning...'.format(
                 shakedown.cli.helpers.fchr('>>'),
                 pretty_duration(time_module.time() - start_time),
                 pretty_duration(timeout_seconds)))
         time_module.sleep(sleep_seconds)
+
+
+def __stringify_predicate(predicate):
+    """ Reflection of function name and parameters of the predicate being used.
+    """
+    funname = getsource(predicate).strip().split(' ')[2].rstrip(',')
+    params = 'None'
+
+    # if args dig in the stack
+    if '()' not in funname:
+        stack = getouterframes(currentframe())
+        for frame in range(0, len(stack)):
+            if funname in str(stack[frame]):
+                _, _, _, params = getargvalues(stack[frame][0])
+
+    return "function: {} params: {}".format(funname, params)
 
 
 def time_wait(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions=True, inverse_predicate=False, noisy=True):

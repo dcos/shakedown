@@ -8,6 +8,7 @@ from inspect import currentframe, getargvalues, getsource, getouterframes
 
 logger = util.get_logger(__name__)
 
+
 def wait_for(
         predicate,
         timeout_seconds=120,

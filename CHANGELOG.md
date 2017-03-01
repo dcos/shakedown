@@ -1,3 +1,18 @@
+## 1.2.2 (2017-03-01)
+
+Features:
+
+  - stringified `wait_for` predicate info for better debugging and
+    understanding of which predicate and which values
+
+Fixes:
+
+  - trailing slash added for `/service/{}/` calls
+  - turn off noisy option in `wait_for`
+  - documented how to use `DCOS_CONFIG_ENV` for parallel execution
+  - `wait_for` log previously ignored exception during waiting when noisy
+    enabled
+
 ## 1.2.1 (2017-02-24)
 
 Features:

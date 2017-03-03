@@ -107,6 +107,24 @@ def get_all_master_ips():
     return ips
 
 
+def required_masters(count):
+    """ Returns True if the number of private agents is equal to or greater than
+    the count.  This is useful in using pytest skipif such as:
+    `pytest.mark.skipif('required_masters(3)')` which will skip the test if
+    the number of masters is only 1.
+
+    :param count: the number of required masters.
+    """
+    master_count = len(get_all_masters())
+    # reverse logic (skip if less than count)
+    # returns True if less than count
+    return master_count < count
+
+
+def masters(count=1):
+    return pytest.mark.skipif('required_masters({})'.format(count))
+
+
 @contextlib.contextmanager
 def disconnected_master(incoming=True, outgoing=True):
 

@@ -1,5 +1,6 @@
 """Utilities for working with master"""
 
+from datetime import timedelta
 from shakedown import *
 from shakedown.cli.helpers import *
 
@@ -48,6 +49,22 @@ def systemctl_master(command='restart'):
     """ Used to start, stop or restart the master process
     """
     run_command_on_master('sudo systemctl {} dcos-mesos-master'.format(command))
+
+
+def mesos_available_predicate():
+    url = master_url()
+    try:
+        response = http.get(url)
+        return response.status_code == 200
+    except Exception as e:
+        return False
+
+
+def wait_for_mesos_endpoint(timeout_sec=timedelta(minutes=5).total_seconds()):
+    """Checks the service url if available it returns true, on expiration
+    it returns false"""
+
+    return time_wait(lambda: mesos_available_predicate(), timeout_seconds=timeout_sec)
 
 
 @contextlib.contextmanager

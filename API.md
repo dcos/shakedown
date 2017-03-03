@@ -108,6 +108,7 @@
       * [partition_master()](#partition_master)
       * [reconnect_master()](#reconnect_master)
       * [disconnected_master()](#disconnected_master)
+      * [wait_for_mesos_endpoint()](#wait_for_mesos_endpoint)
     * Agents
       * [get_agents()](#get_agents)
       * [get_private_agents()](#get_private_agents)
@@ -2129,6 +2130,26 @@ with disconnected_master(host):
 # master is reconnected
 wait_for_service_url(PACKAGE_APP_ID)
 ```
+
+
+### wait_for_mesos_endpoint()
+
+Checks the mesos url returns HTTP 200 within a timeout if available it returns true on expiration it returns false.
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+# disconnect master
+restart_master_node
+
+# master is reconnected
+wait_for_mesos_endpoint()
+```
+
 
 ### iptable_rules()
 

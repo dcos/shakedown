@@ -122,10 +122,8 @@
       * [disconnected_agent()](#disconnected_agent)
       * [required_private_agents()](#required_private_agents)
       * [required_public_agents()](#required_public_agents)
-      * [private_agent_1](#private_agent_1)
-      * [private_agent_2](#private_agent_2)
-      * [private_agent_5](#private_agent_5)
-      * [public_agent_1](#public_agent_1)
+      * [private_agents](#private_agents)
+      * [public_agents](#public_agents)
     * Network
       * [restore_iptables()](#restore_iptables)
       * [save_iptables()](#save_iptables)
@@ -2044,70 +2042,48 @@ def test_fancy_multi_agent_check():
 ```
 
 
-### private_agent_1
+### private_agents
 
-Preconfigured annotation which requires 1 private agent.
+Annotation decorator factory.  It requires the import of required_private_agents
+in order to function.
 
 ##### *parameters*
 
-None.
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+count | required number of private agents | int | 1
+
 
 ##### *example usage*
 
 ```python
+from shakedown import private_agents, required_private_agents
+
 # if the DC/OS cluster has less than 1 private agents it will be skipped
-@private_agent_1
+@private_agents(1)
 def test_fancy_multi_agent_check():
 ```
 
 
-### private_agent_2
+### public_agents
 
-Preconfigured annotation which requires 2 private agent.
+Annotation decorator factory.  It requires the import of required_public_agents
+in order to function.
 
 ##### *parameters*
 
-None.
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+count | required number of public agents | int | 1
+
 
 ##### *example usage*
 
 ```python
-# if the DC/OS cluster has less than 2 private agents it will be skipped
-@private_agent_2
-def test_fancy_multi_agent_check():
-```
+from shakedown import public_agents, required_public_agents
 
-
-### private_agent_5
-
-Preconfigured annotation which requires 5 private agent.
-
-##### *parameters*
-
-None.
-
-##### *example usage*
-
-```python
-# if the DC/OS cluster has less than 5 private agents it will be skipped
-@private_agent_5
-def test_fancy_multi_agent_check():
-```
-
-
-### public_agent_1
-
-Preconfigured annotation which requires 1 public agent.
-
-##### *parameters*
-
-None.
-
-##### *example usage*
-
-```python
 # if the DC/OS cluster has less than 1 public agents it will be skipped
-@public_agent_1
+@public_agents(1)
 def test_fancy_multi_agent_check():
 ```
 

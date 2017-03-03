@@ -183,6 +183,20 @@ def required_private_agents(count):
     return agent_count < count
 
 
+def required_masters(count):
+    """ Returns True if the number of masters is equal to or greater than
+    the count.  This is useful in using pytest skipif such as:
+    `pytest.mark.skipif('required_masters(3)')` which will skip the test if
+    the number of agents is not 3 or more.
+
+    :param count: the number of required masters.
+    """
+    agent_count = len(get_private_agents())
+    # reverse logic (skip if less than count)
+    # returns True if less than count
+    return agent_count < count
+
+
 def required_public_agents(count):
     """ Returns True if the number of public agents is equal to or greater than
     the count.  This is useful in using pytest skipif such as:
@@ -196,8 +210,9 @@ def required_public_agents(count):
     return agent_count < count
 
 
-private_agent_1 = pytest.mark.skipif('required_private_agents(1)')
-private_agent_2 = pytest.mark.skipif('required_private_agents(2)')
-private_agent_5 = pytest.mark.skipif('required_private_agents(5)')
+def private_agents(count=1):
+    return pytest.mark.skipif('required_private_agents({})'.format(num))
 
-public_agent_1 = pytest.mark.skipif('required_public_agents(1)')
+
+def public_agents(count=1):
+    return pytest.mark.skipif('required_public_agents({})'.format(num))

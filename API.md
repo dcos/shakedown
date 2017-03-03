@@ -2057,8 +2057,6 @@ count | required number of private agents | int | 1
 ##### *example usage*
 
 ```python
-from shakedown import private_agents, required_private_agents
-
 # if the DC/OS cluster has less than 1 private agents it will be skipped
 @private_agents(1)
 def test_fancy_multi_agent_check():
@@ -2080,8 +2078,6 @@ count | required number of public agents | int | 1
 ##### *example usage*
 
 ```python
-from shakedown import public_agents, required_public_agents
-
 # if the DC/OS cluster has less than 1 public agents it will be skipped
 @public_agents(1)
 def test_fancy_multi_agent_check():

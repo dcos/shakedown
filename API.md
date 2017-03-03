@@ -2144,7 +2144,7 @@ None
 
 ```python
 # disconnect master
-restart_master_node
+restart_master_node()
 
 # master is reconnected
 wait_for_mesos_endpoint()

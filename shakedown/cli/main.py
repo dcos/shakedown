@@ -183,6 +183,8 @@ def cli(**args):
                         if state == 'fail':
                             echo(schr, d='fail')
                         elif state == 'pass':
+                            if '::' in title:
+                                echo(title.split('::')[-1], d='item-min', n=False)
                             echo(schr, d='pass')
 
             if text and args['stdout'] in [state, 'all']:
@@ -245,14 +247,14 @@ def cli(**args):
 
             if not report_file in shakedown.tests['file']:
                 shakedown.tests['file'][report_file] = 1
-                if args['stdout_inline']:
-                    echo('')
                 echo(report_file, d='item-maj')
             if not report.nodeid in shakedown.tests['test']:
                 shakedown.tests['test'][report.nodeid] = {}
                 if args['stdout_inline']:
                     echo('')
-                echo(report_test, d='item-min', n=False)
+                    echo(report_test + ':', d='item-min')
+                else:
+                    echo(report_test, d='item-min', n=False)
 
             if report.failed:
                 shakedown.tests['test'][report.nodeid]['fail'] = True
@@ -300,9 +302,6 @@ def cli(**args):
 
                 if 'tested' in shakedown.tests['test'][report.nodeid]:
                     shakedown.output(report.nodeid, 'fail', 'error: ' + str(longreport.reprcrash), False)
-
-                    if args['stdout_inline']:
-                        echo('')
                 else:
                     shakedown.tests['test'][report.nodeid]['tested'] = True
                     shakedown.output(report.nodeid, 'fail', 'error: ' + str(longreport.reprcrash))
@@ -326,6 +325,9 @@ def cli(**args):
     if args['pytest_option']:
         for opt in args['pytest_option']:
             opts.append(opt)
+
+    if args['stdout_inline']:
+        opts.append('-s')
 
     if args['tests']:
         tests_to_run = []

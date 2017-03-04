@@ -6,7 +6,7 @@ from shakedown import *
 def test_run_command():
     exit_status, output = run_command(master_ip(), 'cat /etc/motd')
     assert exit_status
-    assert 'CoreOS' in output
+    assert 'Core' in output
 
 def test_run_command_on_master():
     exit_status, output = run_command_on_master('uname -a')

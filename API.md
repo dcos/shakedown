@@ -93,7 +93,8 @@
       * [wait_for_dns()](#wait_for_dns)
     * ZooKeeper
       * [get_zk_node_data()](#get_zk_node_data)
-      * [delete_zk_node()](#delete_zk_node)
+      * [get_zk_node_children()](#get_zk_node_children)
+      * [delete_zk_node()](#delete_zk_node)      
     * Marathon
       * [deployment_wait()](#deployment_wait)
       * [delete_all_apps()](#delete_all_apps)
@@ -109,6 +110,8 @@
       * [reconnect_master()](#reconnect_master)
       * [disconnected_master()](#disconnected_master)
       * [wait_for_mesos_endpoint()](#wait_for_mesos_endpoint)
+      * [get_all_masters()](#get_all_masters)
+      * [get_all_master_ips()](#get_all_master_ips)
     * Agents
       * [get_agents()](#get_agents)
       * [get_private_agents()](#get_private_agents)
@@ -1606,6 +1609,22 @@ node_name | the name of the node | str
 get_zk_node_data('universe/marathon-user')
 ```
 
+### get_zk_node_children()
+
+Get child nodes for a Zookeeper node.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+node_name | the name of the node | str
+
+##### *example usage*
+
+```python
+# Get children for a 'universe/marathon-user' ZooKeeper node
+get_zk_node_children('universe/marathon-user')
+```
 
 ### deployment_wait()
 
@@ -1617,7 +1636,6 @@ parameter | description | type | default
 --------- | ----------- | ---- | -------
 timeout | max time to wait for deployment | int | 120
 app_id | wait for deployments on this app | string | None
-
 
 ##### *example usage*
 
@@ -2122,6 +2140,34 @@ restart_master_node()
 wait_for_mesos_endpoint()
 ```
 
+### get_all_masters()
+
+Provides a list of all masters in the cluster
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+for master in get_all_masters():
+  # do master like things
+```
+
+### get_all_master_ips()
+
+Provides a list of all the IP address for the masters
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+for ip in get_all_master_ips():
+```
 
 ### iptable_rules()
 

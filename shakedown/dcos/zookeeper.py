@@ -8,6 +8,12 @@ def get_zk_node_data(node_name):
     return response.json()
 
 
+def get_zk_node_children(node_name):
+    znode_url = "{}/exhibitor/exhibitor/v1/explorer/node?key={}".format(dcos_url(), node_name)
+    response = http.get(znode_url)
+    return response.json()
+
+
 def delete_zk_node(node_name):
     znode_url = "{}/exhibitor/exhibitor/v1/explorer/znode/{}".format(dcos_url(), node_name)
     response = http.delete(znode_url)

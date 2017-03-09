@@ -1,4 +1,5 @@
 """Utilities for working with master"""
+import json
 
 from datetime import timedelta
 from shakedown import *
@@ -65,6 +66,45 @@ def wait_for_mesos_endpoint(timeout_sec=timedelta(minutes=5).total_seconds()):
     it returns false"""
 
     return time_wait(lambda: mesos_available_predicate(), timeout_seconds=timeout_sec)
+
+
+def __mesos_zk_nodes():
+    """ Returns all the children nodes under /mesos in zk
+    """
+    return get_zk_node_children('/mesos')
+
+
+def __master_zk_nodes_keys():
+    """ The masters can be registered in zk with arbitrary ids which start with
+        `json.info_`.  This provides a list of all master keys.
+    """
+    master_zk = []
+    for node in __mesos_zk_nodes():
+        if 'json.info' in node['title']:
+            master_zk.append(node['key'])
+
+    return master_zk
+
+
+def get_all_masters():
+    """ Returns the json object that represents each of the masters.
+    """
+    masters = []
+    for master in __master_zk_nodes_keys():
+        master_zk_str = get_zk_node_data(master)['str']
+        masters.append(json.loads(master_zk_str))
+
+    return masters
+
+
+def get_all_master_ips():
+    """ Returns a list of IPs for the masters
+    """
+    ips = []
+    for master in get_all_masters():
+        ips.append(master['hostname'])
+
+    return ips
 
 
 @contextlib.contextmanager

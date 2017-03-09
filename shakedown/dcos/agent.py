@@ -196,8 +196,9 @@ def required_public_agents(count):
     return agent_count < count
 
 
-private_agent_1 = pytest.mark.skipif('required_private_agents(1)')
-private_agent_2 = pytest.mark.skipif('required_private_agents(2)')
-private_agent_5 = pytest.mark.skipif('required_private_agents(5)')
+def private_agents(count=1):
+    return pytest.mark.skipif('required_private_agents({})'.format(num))
 
-public_agent_1 = pytest.mark.skipif('required_public_agents(1)')
+
+def public_agents(count=1):
+    return pytest.mark.skipif('required_public_agents({})'.format(num))

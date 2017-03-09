@@ -1,3 +1,21 @@
+## 1.3.0 (2017-03-09)
+
+Features:
+
+  - `--stdout-inline` now passes the `--capture=none` (`-s`) flag to
+    PyTest, enabling streaming inline test output
+  - `@private_agents()` and `@public_agents()` PyTest decorators to
+    replace old explicitly-named (eg. `@private_agent_2`) decorators
+  - `wait_for_mesos_endpoint()` method waits for a specific endpoint
+    to return `HTTP 200`
+  - new ZooKeeper method `get_zk_node_children()`
+  - new master methods `get_all_masters()` and `get_all_master_ips()`
+    for clusters deployed with multiple master nodes
+
+Fixes:
+
+  - updated `test_dcos_command` test to work on new release of CoreOS
+
 ## 1.2.2 (2017-03-01)
 
 Features:

@@ -1,3 +1,9 @@
+## 1.3.1 (2017-03-09)
+
+Fixes:
+
+  - `@private_agents()` and `@public_agents()` bug in `1.3.0`
+
 ## 1.3.0 (2017-03-09)
 
 Features:

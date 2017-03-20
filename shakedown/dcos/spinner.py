@@ -37,9 +37,9 @@ def wait_for(
         else:
             if (not inverse_predicate and result) or (inverse_predicate and not result):
                 return result
-            if timeout.is_expired():
-                funname = __stringify_predicate(predicate)
-                raise TimeoutExpired(timeout_seconds, funname)
+        if timeout.is_expired():
+            funname = __stringify_predicate(predicate)
+            raise TimeoutExpired(timeout_seconds, funname)
         if noisy:
             print('{}[{}/{}] spinning...'.format(
                 shakedown.cli.helpers.fchr('>>'),

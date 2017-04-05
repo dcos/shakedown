@@ -259,7 +259,7 @@ None.
 
 ```python
 # Print state information of DC/OS slaves.
-state_json = json.loads(dcos_agents_state())
+state_json = dcos_agents_state()
 print(state_json['slaves'])
 ```
 

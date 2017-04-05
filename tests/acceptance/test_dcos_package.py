@@ -45,7 +45,7 @@ def test_install_package_with_json_options():
 def test_install_package_with_subcommand():
     install_package_and_wait('hello-world')
     stdout, stderr, return_code = run_dcos_command('hello-world --info')
-    assert stdout.startswith('Example')
+    assert stdout.startswith('Hello-World')
 
 def test_uninstall_package_with_subcommand():
     uninstall_package_and_wait('hello-world')

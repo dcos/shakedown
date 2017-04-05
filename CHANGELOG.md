@@ -1,3 +1,12 @@
+## 1.3.2 (2017-04-05)
+
+Fixes:
+
+  - include `partition_cmd` file in package distribution
+  - fixup for `test_install_package_with_subcommand` test
+  - corrected `dcos_agents_state()` example usage docs
+  - `wait_for` now aborts when encountering exception chains
+
 ## 1.3.1 (2017-03-09)
 
 Fixes:

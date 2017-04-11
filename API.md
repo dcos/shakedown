@@ -112,6 +112,9 @@
       * [wait_for_mesos_endpoint()](#wait_for_mesos_endpoint)
       * [get_all_masters()](#get_all_masters)
       * [get_all_master_ips()](#get_all_master_ips)
+      * [start_master_http_service()](#start_master_http_service)
+      * [kill_process_from_pid_file_on_master()](#kill_process_from_pid_file_on_master)
+      * [master_http_service()](#master_http_service)
     * Agents
       * [get_agents()](#get_agents)
       * [get_private_agents()](#get_private_agents)
@@ -2168,6 +2171,71 @@ None
 ```python
 for ip in get_all_master_ips():
 ```
+
+### start_master_http_service()
+
+Starts a http service on the master leader.  The main purpose is to serve up artifacts for launched test applications.   This is commonly used in combination with copying tests or artifacts to the leader
+than configuring the messos task to fetch from http://master.mesos:7777/artifact.tar
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+port | the port to use for http | int | 7777
+
+
+##### *example usage*
+
+```python
+# starts http service on master at port 7777
+start_master_http_service()
+```
+
+### kill_process_from_pid_file_on_master()
+
+Retrieves the PID of a process from a pid file and kills it.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+pid_file | name of file holding the PID on master | str | python_http.pid
+
+
+##### *example usage*
+
+```python
+# starts http service on master at port 7777
+start_master_http_service()
+
+# kill http service
+kill_process_from_pid_file_on_master()
+```
+
+### master_http_service()
+
+Managed context which will start the http service and will kill the process when the
+context is over.  It calls `start_master_http_service` before context and
+`kill_process_from_pid_file_on_master` at the end of the context.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+port | the port to use for http | int | 7777
+
+
+##### *example usage*
+
+```python
+copy_file_to_master('foo.tar')
+# create http service
+with master_http_service():
+    # create an app that fetches from http://master.mesos:7777/foo.tar
+    # verify task
+# http is gone
+```
+
 
 ### iptable_rules()
 

@@ -126,6 +126,7 @@
       * [start_agent()](#start_agent)
       * [delete_agent_log()](#delete_agent_log)
       * [kill_process_on_host()](#kill_process_on_host)
+      * [kill_process_from_pid_file_on_host()](#kill_process_from_pid_file_on_host)      
       * [disconnected_agent()](#disconnected_agent)
       * [required_private_agents()](#required_private_agents)
       * [required_public_agents()](#required_public_agents)
@@ -1978,6 +1979,7 @@ for public_node in public_nodes:
     delete_agent_log(public_node)
 ```
 
+
 ### kill_process_on_host()
 
 Kill the process(es) matching pattern at ip.  This will potentially kill infrastructure processes.
@@ -1995,6 +1997,29 @@ kill | str
 # kill java on the public agents
 for public_node in public_nodes:
     kill_process_on_host(public_node, "java")
+```
+
+
+### kill_process_from_pid_file_on_host()
+
+Kill the process found in pid file on the host.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+hostname | the hostname or IP of the node | str
+pid_file | name of file holding the PID on master | str | python_http.pid
+
+
+##### *example usage*
+
+```python
+# starts http service on master at port 7777
+pid_file = start_master_http_service()
+
+# kill http service
+kill_process_from_pid_file_on_host(shakedown.master_ip(), pid_file)
 ```
 
 
@@ -2182,34 +2207,13 @@ than configuring the messos task to fetch from http://master.mesos:7777/artifact
 parameter | description | type | default
 --------- | ----------- | ---- | -------
 port | the port to use for http | int | 7777
-
-
-##### *example usage*
-
-```python
-# starts http service on master at port 7777
-start_master_http_service()
-```
-
-### kill_process_from_pid_file_on_master()
-
-Retrieves the PID of a process from a pid file and kills it.
-
-##### *parameters*
-
-parameter | description | type | default
---------- | ----------- | ---- | -------
-pid_file | name of file holding the PID on master | str | python_http.pid
-
+pid_file | the file to save the pid to | str | python_http.pid
 
 ##### *example usage*
 
 ```python
 # starts http service on master at port 7777
 start_master_http_service()
-
-# kill http service
-kill_process_from_pid_file_on_master()
 ```
 
 ### master_http_service()

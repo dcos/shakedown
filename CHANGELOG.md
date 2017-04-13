@@ -1,3 +1,14 @@
+## 1.3.3 (2017-04-13)
+
+Features:
+
+  - ability to start a HTTP server running on the master via
+    `start_master_http_service()` method, along with an associated
+    `master_http_service()` context
+  - new methods for killing processes based on pidfiles
+    - `kill_process_from_pid_file_on_host()`
+    - `kill_process_from_pid_file_on_master()`
+
 ## 1.3.2 (2017-04-05)
 
 Fixes:

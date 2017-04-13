@@ -5,8 +5,8 @@ from datetime import timedelta
 from shakedown import *
 from shakedown.cli.helpers import *
 
-DISABLE_MASTER_INCOMING="sudo iptables -I INPUT -p tcp --dport 5050 -j REJECT"
-DISABLE_MASTER_OUTGOING="sudo iptables -I OUTPUT -p tcp --sport 5050 -j REJECT"
+DISABLE_MASTER_INCOMING = "sudo iptables -I INPUT -p tcp --dport 5050 -j REJECT"
+DISABLE_MASTER_OUTGOING = "sudo iptables -I OUTPUT -p tcp --sport 5050 -j REJECT"
 
 
 def partition_master(incoming=True, outgoing=True):
@@ -123,6 +123,28 @@ def required_masters(count):
 
 def masters(count=1):
     return pytest.mark.skipif('required_masters({})'.format(count))
+
+
+def start_master_http_service(port=7777, pid_file='python_http.pid'):
+    """ Starts a http service on the master leader.  The main purpose is to serve
+    up artifacts for launched test applications.   This is commonly used in combination
+    with copying tests or artifacts to the leader than configuring the messos task
+    to fetch from http://master.mesos:7777/artifact.tar (becareful in a multi-master env)
+
+    :param port: port to use for the http service
+    :return: pid_file
+    """
+    shakedown.run_command_on_master(
+        'nohup /opt/mesosphere/bin/python -m http.server {} > http.log 2>&1 & '
+        'echo $! > {}'.format(port, pid_file))
+    return pid_file
+
+
+@contextlib.contextmanager
+def master_http_service(port=7777):
+    pid_file = start_master_http_service(port)
+    yield
+    kill_process_from_pid_file_on_host(shakedown.master_ip(), pid_file)
 
 
 @contextlib.contextmanager

@@ -345,7 +345,7 @@ def unreserve_resources(role):
 
 
 def unreserve_resource(agent, role):
-    """ Unreserves all the resources for the role on the agent.    
+    """ Unreserves all the resources for the role on the agent.
     """
     resources = []
     agent_id = agent['id']

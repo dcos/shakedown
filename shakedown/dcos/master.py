@@ -4,6 +4,7 @@ import json
 from datetime import timedelta
 from shakedown import *
 from shakedown.cli.helpers import *
+from shakedown.dcos.zookeeper import get_zk_node_children, get_zk_node_data
 
 DISABLE_MASTER_INCOMING = "sudo iptables -I INPUT -p tcp --dport 5050 -j REJECT"
 DISABLE_MASTER_OUTGOING = "sudo iptables -I OUTPUT -p tcp --sport 5050 -j REJECT"

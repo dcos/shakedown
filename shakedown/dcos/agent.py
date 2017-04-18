@@ -118,10 +118,11 @@ def kill_process_from_pid_file_on_host(hostname, pid_file='app.pid'):
     :param hostname: the hostname or ip address of the host on which the process will be killed
     :param pid_file: pid file to use holding the pid number to kill
     """
-    status, pid = shakedown.run_command_on_master('cat {}'.format(pid_file))
+    status, pid = run_command_on_agent(hostname, 'cat {}'.format(pid_file))
     status, stdout = run_command_on_agent(hostname, "sudo kill -9 {}".format(pid))
     if status:
         print("Killed pid: {}".format(pid))
+        run_command_on_agent(hostname, 'rm {}'.format(pid_file))
     else:
         print("Unable to killed pid: {}".format(pid))
 

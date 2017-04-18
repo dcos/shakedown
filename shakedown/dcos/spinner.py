@@ -15,14 +15,15 @@ def wait_for(
         sleep_seconds=1,
         ignore_exceptions=True,
         inverse_predicate=False,
-        noisy=False):
+        noisy=False,
+        required_consecutive_success_count=1):
     """ waits or spins for a predicate, returning the result.
         Predicate is a function that returns a truthy or falsy value.
         An exception in the function will be returned.
         A timeout will throw a TimeoutExpired Exception.
 
     """
-
+    count = 0
     start_time = time_module.time()
     timeout = Deadline.create_deadline(timeout_seconds)
     while True:
@@ -33,18 +34,29 @@ def wait_for(
                 if noisy:
                     logger.exception("Ignoring error during wait.")
             else:
+                count = 0
                 raise  # preserve original stack
         else:
             if (not inverse_predicate and result) or (inverse_predicate and not result):
+                count = count + 1
+            if count > required_consecutive_success_count:
                 return result
+
         if timeout.is_expired():
             funname = __stringify_predicate(predicate)
             raise TimeoutExpired(timeout_seconds, funname)
         if noisy:
-            print('{}[{}/{}] spinning...'.format(
+            header = '{}[{}/{}]'.format(
                 shakedown.cli.helpers.fchr('>>'),
                 pretty_duration(time_module.time() - start_time),
-                pretty_duration(timeout_seconds)))
+                pretty_duration(timeout_seconds)
+            )
+            if required_consecutive_success_count > 1:
+                header = '{} [{} of {} times]'.format(
+                    header,
+                    count,
+                    required_consecutive_success_count)
+            print('{} spinning...'.format(header))
         time_module.sleep(sleep_seconds)
 
 
@@ -64,14 +76,21 @@ def __stringify_predicate(predicate):
     return "function: {} params: {}".format(funname, params)
 
 
-def time_wait(predicate, timeout_seconds=120, sleep_seconds=1, ignore_exceptions=True, inverse_predicate=False, noisy=True):
+def time_wait(
+    predicate,
+    timeout_seconds=120,
+    sleep_seconds=1,
+    ignore_exceptions=True,
+    inverse_predicate=False,
+    noisy=True,
+    required_consecutive_success_count=1):
     """ waits or spins for a predicate and returns the time of the wait.
         An exception in the function will be returned.
         A timeout will throw a TimeoutExpired Exception.
 
     """
     start = time_module.time()
-    wait_for(predicate, timeout_seconds, sleep_seconds, ignore_exceptions, inverse_predicate, noisy)
+    wait_for(predicate, timeout_seconds, sleep_seconds, ignore_exceptions, inverse_predicate, noisy, required_consecutive_success_count)
     return elapse_time(start)
 
 

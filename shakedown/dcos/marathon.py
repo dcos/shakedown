@@ -1,6 +1,7 @@
 from distutils.version import LooseVersion
 from dcos import marathon
 from shakedown.dcos.spinner import *
+from shakedown import *
 
 import pytest
 
@@ -8,6 +9,12 @@ import pytest
 marathon_1_3 = pytest.mark.skipif('marthon_version_less_than("1.3")')
 marathon_1_4 = pytest.mark.skipif('marthon_version_less_than("1.4")')
 marathon_1_5 = pytest.mark.skipif('marthon_version_less_than("1.5")')
+
+
+def marathon_leader_ip():
+    """Returns the private IP of the marathon leader.
+    """
+    return dcos_dns_lookup('marathon.mesos')[0]['ip']
 
 
 def marathon_version():

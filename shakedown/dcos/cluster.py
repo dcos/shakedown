@@ -17,6 +17,17 @@ permissive = pytest.mark.skipif("ee_version() != 'permissive'")
 disabled = pytest.mark.skipif("ee_version() != 'disabled'")
 
 
+def shakedown_canonical_version():
+    return __canonical_version(shakedown.VERSION)
+
+
+def shakedown_version_less_than(version):
+    """@pytest.mark.skipif("shakedown_version_less_than('1.3')")
+    skip if shakedown doesn't support it yet.
+    """
+    return shakedown_canonical_version() < LooseVersion(version)
+
+
 def dcos_canonical_version():
     return __canonical_version(shakedown.dcos_version())
 

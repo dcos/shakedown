@@ -34,6 +34,8 @@
       * [get_unreserved_resources()](#get_unreserved_resources)
       * [get_reserved_resources()](#get_reserved_resources)
       * [available_resources()](#available_resources)
+      * [shakedown_canonical_version()](#shakedown_canonical_version)
+      * [shakedown_version_less_than()](#shakedown_version_less_than)
       * [dcos_canonical_version()](#dcos_canonical_version)
       * [dcos_version_less_than()](#dcos_version_less_than)
       * [required_cpus()](#required_cpus)
@@ -607,6 +609,42 @@ per_task_mem | the username used for SSH authentication | float | 1
 
 ```python
 
+```
+
+
+### shakedown_canonical_version()
+
+Provides a canonical version number of shakedown via distutils.version.LooseVersion.
+Useful for shakedown verison comparisons.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+@pytest.mark.skipif('shakedown_canonical_version() < LooseVersion("1.3")')
+def test_1_3_specific_test():
+```
+
+
+### shakedown_version_less_than()
+
+Returns True if the shakedown version is less than the provided version, otherwise
+returns False.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+version | version string "1.3.3" | str
+
+##### *example usage*
+
+```python
+@pytest.mark.skipif('shakedown_version_less_than("1.3.3")')
+def test_1_3_3_specific_test():
 ```
 
 

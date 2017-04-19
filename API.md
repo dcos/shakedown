@@ -100,6 +100,7 @@
       * [delete_all_apps()](#delete_all_apps)
       * [delete_all_apps_wait()](#delete_all_apps_wait)
       * [is_app_healthy()](#is_app_healthy)
+      * [marathon_leader_ip()](#marathon_leader_ip)
       * [marathon_version()](#marathon_version)
       * [marthon_version_less_than()](#marthon_version_less_than)
       * [marathon_1_3](#marathon_1_3)
@@ -111,6 +112,7 @@
       * [disconnected_master()](#disconnected_master)
       * [wait_for_mesos_endpoint()](#wait_for_mesos_endpoint)
       * [get_all_masters()](#get_all_masters)
+      * [master_leader_ip()](#master_leader_ip)
       * [get_all_master_ips()](#get_all_master_ips)
       * [start_master_http_service()](#start_master_http_service)
       * [kill_process_from_pid_file_on_master()](#kill_process_from_pid_file_on_master)
@@ -1694,6 +1696,21 @@ is_app_healthy(app_id)
 ```
 
 
+### marathon_leader_ip
+
+Returns the IP address of the marathon leader.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+ip = marathon_leader_ip()
+```
+
+
 ### marathon_version
 
 Returns the distutils.version.LooseVersion version of marathon.
@@ -2182,6 +2199,22 @@ None
 for master in get_all_masters():
   # do master like things
 ```
+
+
+### master_leader_ip()
+
+Provides the IP of the master leader.  This is the internal IP of leader.
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+ip = master_leader_ip()
+```
+
 
 ### get_all_master_ips()
 

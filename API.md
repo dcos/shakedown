@@ -1398,6 +1398,9 @@ timeout_seconds | how long in seconds to wait before timing out | int | `120`
 sleep_seconds | time to sleep between multiple calls to predicate | int | `1`
 ignore_exceptions | ignore exceptions thrown by predicate | bool | True
 inverse_predicate | if True look for False from predicate | bool | False
+noisy | boolean to increase debug output | bool | True
+required_consecutive_success_count | the number of consecutive successes that required | int | 1
+
 
 ##### *example usage*
 

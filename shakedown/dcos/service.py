@@ -2,6 +2,7 @@ from dcos import (marathon, mesos, http)
 from shakedown.dcos.command import *
 from shakedown.dcos.spinner import *
 from shakedown.dcos import dcos_service_url, dcos_agents_state, master_url
+from shakedown.dcos.master import get_all_masters
 from shakedown.dcos.zookeeper import delete_zk_node
 from dcos.errors import DCOSException, DCOSHTTPException
 
@@ -405,7 +406,10 @@ def wait_for_service_endpoint(service_name, timeout_sec=120):
     """Checks the service url if available it returns true, on expiration
     it returns false"""
 
-    return time_wait(lambda: service_available_predicate(service_name), timeout_seconds=timeout_sec)
+    master_count = len(get_all_masters())
+    return time_wait(lambda: service_available_predicate(service_name),
+                     timeout_seconds=timeout_sec,
+                     required_consecutive_success_count=master_count)
 
 
 def wait_for_service_endpoint_removal(service_name, timeout_sec=120):

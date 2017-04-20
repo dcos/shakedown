@@ -1,3 +1,24 @@
+## 1.3.4 (2017-04-20)
+
+Features:
+
+  - `wait_for` waits for service endpoints to be debounced
+    successfully in a specified number of masters in multi-master
+    setups 
+  - new PyTest decorators methods for determining Shakedown versions
+    - `shakedown_canonical_version()`
+    - `shakedown_version_less_than()`
+  - new methods for determining leaders in multi-master setups
+    - `marathon_leader_ip()`
+    - `master_leader_ip()`
+
+Fixes:
+
+  - fixed lack zookeeper-related methods failing in methods running
+    commands on masters
+  - fixup for `kill_process_from_pid_file_on_host()` which only killed
+    processes on master
+
 ## 1.3.3 (2017-04-13)
 
 Features:

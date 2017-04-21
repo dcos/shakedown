@@ -105,6 +105,9 @@
       * [marathon_leader_ip()](#marathon_leader_ip)
       * [marathon_version()](#marathon_version)
       * [marthon_version_less_than()](#marthon_version_less_than)
+      * [mom_version()](#mom_version)
+      * [mom_version_less_than()](#mom_version_less_than)
+      * [marathon_on_marathon()](#marathon_on_marathon)
       * [marathon_1_3](#marathon_1_3)
       * [marathon_1_4](#marathon_1_4)
       * [marathon_1_5](#marathon_1_5)
@@ -1784,6 +1787,62 @@ version | version str "1.4" | String |
 ```python
 @pytest.mark.skipif('marthon_version_less_than("1.4")')
 def test_requires_marathon_1_4():
+```
+
+
+### mom_version
+
+Returns the distutils.version.LooseVersion version of marathon on marathon.  None if not present.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+@pytest.mark.skipif('mom_version() < LooseVersion("1.4")')
+def test_requires_mom_1_4():
+```
+
+
+### mom_version_less_than
+
+Returns True if the marathon on marathon version is less than the version specified, otherwise
+returns False.  Returns False if MoM not present.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+version | version str "1.4" | String |
+
+##### *example usage*
+
+```python
+@pytest.mark.skipif('mom_version_less_than("1.4")')
+def test_requires_mom_1_4():
+```
+
+
+### marathon_on_marathon
+
+Sets the context of the dcos config such that calls to Marathon are against the
+Marathon on Marathon.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+name | name of the MoM service | String | marathon-user
+
+##### *example usage*
+
+```python
+  with marathon_on_marathon():
+    client = marathon.create_client()
+    # this the client is connected to MoM
+    about = client.get_about()
 ```
 
 

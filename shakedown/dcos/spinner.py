@@ -94,6 +94,40 @@ def time_wait(
     return elapse_time(start)
 
 
+def wait_while_exceptions(
+        predicate,
+        timeout_seconds=120,
+        sleep_seconds=1,
+        noisy=False):
+    """ waits for a predicate, ignoring exceptions, returning the result.
+        Predicate is a function.
+        Exceptions will trigger the sleep and retry; any non-exception result
+        will be returned.
+        A timeout will throw a TimeoutExpired Exception.
+    """
+    start_time = time_module.time()
+    timeout = Deadline.create_deadline(timeout_seconds)
+    while True:
+        try:
+            result = predicate()
+            return result
+        except Exception as e:
+            if noisy:
+                logger.exception("Ignoring error during wait.")
+
+        if timeout.is_expired():
+            funname = __stringify_predicate(predicate)
+            raise TimeoutExpired(timeout_seconds, funname)
+        if noisy:
+            header = '{}[{}/{}]'.format(
+                shakedown.cli.helpers.fchr('>>'),
+                pretty_duration(time_module.time() - start_time),
+                pretty_duration(timeout_seconds)
+            )
+            print('{} spinning...'.format(header))
+        time_module.sleep(sleep_seconds)
+
+
 def elapse_time(start, end=None, precision=3):
     """ Simple time calculation utility.   Given a start time, it will provide an elapse time.
     """

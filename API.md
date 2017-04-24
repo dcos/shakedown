@@ -83,6 +83,7 @@
     * Spinner
       * [wait_for()](#wait_for)
       * [time_wait()](#time_wait)
+      * [wait_while_exceptions()](#wait_while_exceptions)
       * [elapse_time()](#elapse_time)
     * Tasks
       * [get_task()](#get_task)
@@ -1459,6 +1460,37 @@ def service_available_predicate(service_name):
   ...
 
 time_wait(lambda: service_available_predicate(service_name), timeout_seconds=timeout_sec)
+
+```
+
+### wait_while_exceptions()
+
+Waits for a function to return without exception or time out.  Returns the return value of the function.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**predicate** | the predicate function| fn
+timeout_seconds | how long in seconds to wait before timing out | int | `120`
+sleep_seconds | time to sleep between multiple calls to predicate | int | `1`
+noisy | boolean to increase debug output | bool | True
+
+
+##### *example usage*
+
+```python
+# simple predicate
+def deployment_predicate(client=None):
+  ...
+
+wait_while_exceptions(deployment_predicate, timeout)
+
+# predicate with a parameter
+def service_available_predicate(service_name):
+  ...
+
+wait_while_exceptions(lambda: service_available_predicate(service_name), timeout_seconds=timeout_sec)
 
 ```
 

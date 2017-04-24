@@ -52,7 +52,6 @@
       * [strict](#strict)
       * [permissive](#permissive)
       * [disabled](#disabled)
-
     * Command execution
       * [run_command()](#run_command)
       * [run_command_on_master()](#run_command_on_master)
@@ -122,6 +121,22 @@
       * [start_master_http_service()](#start_master_http_service)
       * [kill_process_from_pid_file_on_master()](#kill_process_from_pid_file_on_master)
       * [master_http_service()](#master_http_service)
+    * Auth
+      * [add_user()](#add_user)
+      * [get_user()](#get_user)
+      * [remove_user()](#remove_user)
+      * [ensure_resource()](#ensure_resource)
+      * [set_user_permission()](#set_user_permission)
+      * [remove_user_permission()](#remove_user_permission)
+      * [add_group()](#add_group)
+      * [get_group()](#get_group)
+      * [remove_group()](#remove_group)
+      * [add_user_to_group()](#add_user_to_group)
+      * [remove_user_from_group()](#remove_user_from_group)
+      * [credentials()](#credentials)
+      * [no_user()](#no_user)
+      * [new_dcos_user()](#new_dcos_user)
+      * [dcos_user()](#dcos_user)
     * Agents
       * [get_agents()](#get_agents)
       * [get_private_agents()](#get_private_agents)
@@ -1929,6 +1944,280 @@ None.
 ```python
 # Reconnect the master.
 reconnect_master()
+```
+
+### add_user()
+
+Adds user to the DCOS Enterprise.  If not description is provided the uid will
+be used for the description.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**uid** | user id | str
+**password** | password | str
+desc | description for user | str | None
+
+##### *example usage*
+
+```python
+shakedown.add_user('billy', 'billy', 'billy the admin kid')
+```
+
+
+### get_user()
+
+Returns a user from DCOS Enterprise.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**uid** | user id | str
+
+##### *example usage*
+
+```python
+shakedown.get_user('billy')
+```
+
+
+### remove_user()
+
+Removes a user from DCOS Enterprise.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**uid** | user id | str
+
+##### *example usage*
+
+```python
+shakedown.remove_user('billy')
+```
+
+
+### ensure_resource()
+
+Adds resource if not currently in the system.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**rid** | resource id | str
+
+##### *example usage*
+
+```python
+shakedown.ensure_resource('dcos:service:marathon:marathon:services:/example-secure')
+```
+
+
+### set_user_permission()
+
+Assigns access rights to user by uid for a resource by rid
+rid, uid, action='full'
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**rid** | resource id | str
+**uid** | user id | str
+action | access right: read, write, update, delete or full | str | 'full'
+
+##### *example usage*
+
+```python
+# provides full access for billy to resource
+shakedown.set_user_permission('dcos:service:marathon:marathon:services:/example-secure', 'billy')
+```
+
+
+### remove_user_permission()
+
+Removes user permissions for a resource.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**rid** | resource id | str
+**uid** | user id | str
+action | access right: read, write, update, delete or full | str | 'full'
+
+##### *example usage*
+
+```python
+#  removes full access to resource for billy
+shakedown.remove_user_permission('dcos:service:marathon:marathon:services:/example-secure', 'billy')
+```
+
+
+### add_group()
+
+Adds a group to DCOS Enterprise
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**id** | group id | str
+description | description of group | str | None
+
+
+##### *example usage*
+
+```python
+shakedown.add_group('test-group')
+```
+
+
+### get_group()
+
+Returns a group from DCOS Enterprise
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**id** | group id | str
+
+
+##### *example usage*
+
+```python
+shakedown.get_group('test-group')
+```
+
+
+### remove_group()
+
+Removes a group from DCOS Enterprise
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**id** | group id | str
+
+
+##### *example usage*
+
+```python
+#  removes group
+shakedown.remove_group('test-group')
+```
+
+
+### add_user_to_group()
+
+Adds user to group
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**uid** | user id | str
+**gid** | group id | str
+exist_ok | True results in no error if user already belongs to group | bool | True
+
+##### *example usage*
+
+```python
+shakedown.add_user_to_group('billy', 'test-group')
+```
+
+
+### remove_user_from_group()
+
+Removes user from group
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**uid** | user id | str
+**gid** | group id | str
+
+##### *example usage*
+
+```python
+shakedown.remove_user_from_group('billy', 'test-group')
+```
+
+
+### credentials()
+
+Context for credentials such that super user is returned after test
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+@pytest.mark.usefixtures('credentials')
+def test_monkey_with_users():
+```
+
+
+### no_user()
+
+Context with no logged in user.   Return to super user after context.
+
+##### *parameters*
+
+None.
+
+##### *example usage*
+
+```python
+with shakedown.no_user():
+  # do some action requiring no user auth
+```
+
+
+### new_dcos_user()
+
+Context with a newly created and logged in user.   Return to super user after context.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**username** | the username used for DC/OS authentication | str
+**password** | the password used for DC/OS authentication | str
+
+##### *example usage*
+
+```python
+with shakedown.new_dcos_user('kenny', 'kenny'):
+  # do some action for this user
+```
+
+
+### dcos_user()
+
+Context with an existing user logged in.  Return to super user after context.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**username** | the username used for DC/OS authentication | str
+**password** | the password used for DC/OS authentication | str
+
+##### *example usage*
+
+```python
+with shakedown.dcos_user('kenny', 'kenny'):
+  # do some action for this user
 ```
 
 

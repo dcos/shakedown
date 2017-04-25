@@ -129,6 +129,15 @@ def cli(**args):
         except:
             click.secho("error: authentication failed.", fg='red', bold=True)
     if not authenticated:
+        # test to see if auth isn't necessary (like for vagrant dcos)
+        try:
+            shakedown.dcos_leader()
+
+            echo('ok')
+            authenticated = True
+        except imported['dcos'].errors.DCOSException:
+            click.secho("error: authentication failed.", fg='red', bold=True)
+    if not authenticated:
         click.secho("error: no authentication credentials or token found.", fg='red', bold=True)
         sys.exit(1)
 

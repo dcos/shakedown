@@ -121,7 +121,7 @@
       * [start_master_http_service()](#start_master_http_service)
       * [kill_process_from_pid_file_on_master()](#kill_process_from_pid_file_on_master)
       * [master_http_service()](#master_http_service)
-    * Auth
+    * Security
       * [add_user()](#add_user)
       * [get_user()](#get_user)
       * [remove_user()](#remove_user)

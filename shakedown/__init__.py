@@ -8,6 +8,7 @@ from shakedown.dcos.file import *
 from shakedown.dcos.marathon import *
 from shakedown.dcos.network import *
 from shakedown.dcos.package import *
+from shakedown.dcos.security import *
 from shakedown.dcos.service import *
 from shakedown.dcos.spinner import *
 from shakedown.dcos.task import *

@@ -1,3 +1,29 @@
+## 1.4.0 (2017-04-25)
+
+Features:
+
+  - new security methods:
+    - `ensure_resource()`
+    - `add_user()`, `get_user()`, `remove_user()`
+    - `set_user_permission()`
+    - `add_group()`, `get_group()`, and `remove_group()`
+    - `add_user_to_group()`, `remove_user_from_group()`
+  - new security contexts:
+    - `credentials()`
+    - `no_user()`
+    - `new_dcos_user()`
+    - `dcos_user()`
+  - `wait_while_exceptions()` spinner
+  - new contexts available for Marathon-on-Marathon (MoM) deployments
+    - `mom_version()`
+    - `mom_version_less_than()`
+    - `marathon_on_marathon()`
+
+Fixes:
+
+  - Shakedown now functions without authentication options on clusters not
+    requiring authentication
+
 ## 1.3.4 (2017-04-20)
 
 Features:

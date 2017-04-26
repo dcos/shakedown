@@ -5,6 +5,9 @@ import os
 import pytest
 from dcos import (marathon, mesos)
 
+from shakedown.dcos import network
+
+
 
 def get_public_agents():
     """Provides a list of hostnames / IPs that are public agents in the cluster"""
@@ -56,6 +59,10 @@ def __get_all_agents():
     agents = client.get_state_summary()['slaves']
     return agents
 
+ALLOW_SSH = '-I INPUT -p tcp --dport 22 -j ACCEPT'
+ALLOW_PING = '-I INPUT -p icmp -j ACCEPT'
+DISALLOW_MESOS = '-I OUTPUT -p tcp --sport 5051  -j REJECT'
+DISALLOW_INPUT = '-A INPUT -j REJECT'
 
 def partition_agent(host):
     """ Partition a node from all network traffic except for SSH and loopback
@@ -63,12 +70,13 @@ def partition_agent(host):
         :param hostname: host or IP of the machine to partition from the cluster
     """
 
-    save_iptables(host)
-    flush_all_rules(host)
-    allow_all_traffic(host)
-
-    copy_file_to_agent(host, "{}/partition_cmd".format(shakedown_dcos_dir()))
-    run_command_on_agent(host, "sh partition_cmd")
+    network.save_iptables(host)
+    network.flush_all_rules(host)
+    network.allow_all_traffic(host)
+    network.run_iptables(host, ALLOW_SSH)
+    network.run_iptables(host, ALLOW_PING)
+    network.run_iptables(host, DISALLOW_MESOS)
+    network.run_iptables(host, DISALLOW_INPUT)
 
 
 def reconnect_agent(host):
@@ -77,7 +85,7 @@ def reconnect_agent(host):
         :param hostname: host or IP of the machine to partition from the cluster
     """
 
-    restore_iptables(host)
+    network.restore_iptables(host)
 
 
 @contextlib.contextmanager

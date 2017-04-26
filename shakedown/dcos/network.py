@@ -20,6 +20,14 @@ def save_iptables(host):
     run_command_on_agent(host, 'if [ ! -e iptables.rules ] ; then sudo iptables -L > /dev/null && sudo iptables-save > iptables.rules ; fi')
 
 
+def run_iptables(host, rule):
+    """ iptables is challenging to abstract.  This function takes a rule
+        '-I INPUT -p tcp --dport 22 -j ACCEPT' and runs it on the agent.
+    """
+    ip_table_cmd = 'sudo iptables {}'.format(rule)
+    run_command_on_agent(host, ip_table_cmd)
+
+
 def flush_all_rules(host):
     """ Flushes all the iptables rules
     """

@@ -6,9 +6,10 @@ from shakedown import *
 from shakedown.cli.helpers import *
 from shakedown.dcos.zookeeper import get_zk_node_children, get_zk_node_data
 from shakedown.dcos.agent import kill_process_from_pid_file_on_host
+from shakedown.dcos import network
 
-DISABLE_MASTER_INCOMING = "sudo iptables -I INPUT -p tcp --dport 5050 -j REJECT"
-DISABLE_MASTER_OUTGOING = "sudo iptables -I OUTPUT -p tcp --sport 5050 -j REJECT"
+DISABLE_MASTER_INCOMING = "-I INPUT -p tcp --dport 5050 -j REJECT"
+DISABLE_MASTER_OUTGOING = "-I OUTPUT -p tcp --sport 5050 -j REJECT"
 
 
 def partition_master(incoming=True, outgoing=True):
@@ -20,16 +21,17 @@ def partition_master(incoming=True, outgoing=True):
 
     echo('Partitioning master. Incoming:{} | Outgoing:{}'.format(incoming, outgoing))
 
-    save_iptables(shakedown.master_ip())
-    flush_all_rules(shakedown.master_ip())
-    allow_all_traffic(shakedown.master_ip())
+    network.save_iptables(shakedown.master_ip())
+    network.flush_all_rules(shakedown.master_ip())
+    network.allow_all_traffic(shakedown.master_ip())
 
     if incoming and outgoing:
-        run_command_on_master(DISABLE_MASTER_INCOMING + " && " + DISABLE_MASTER_OUTGOING)
+        network.run_iptables(shakedown.master_ip(), DISABLE_MASTER_INCOMING)
+        network.run_iptables(shakedown.master_ip(), DISABLE_MASTER_OUTGOING)
     elif incoming:
-        run_command_on_master(DISABLE_MASTER_INCOMING)
+        network.run_iptables(shakedown.master_ip(), DISABLE_MASTER_INCOMING)
     elif outgoing:
-        run_command_on_master(DISABLE_MASTER_OUTGOING)
+        network.run_iptables(shakedown.master_ip(), DISABLE_MASTER_OUTGOING)
     else:
         pass
 
@@ -37,8 +39,7 @@ def partition_master(incoming=True, outgoing=True):
 def reconnect_master():
     """ Reconnect a previously partitioned master to the network
     """
-
-    reconnect_node(shakedown.master_ip())
+    network.restore_iptables(shakedown.master_ip())
 
 
 def restart_master_node():

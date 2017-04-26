@@ -43,7 +43,6 @@ def mom_version(name='marathon-user'):
         return None
 
 
-
 def mom_version_less_than(version, name='marathon-user'):
     """ Returns True if MoM with the given {name} exists and has a version less
         than {version}. Note that if MoM does not exist False is returned.

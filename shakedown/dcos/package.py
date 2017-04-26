@@ -257,6 +257,7 @@ def uninstall_package_and_wait(
         timeout_sec
     )
 
+
 def uninstall_package_and_data(
         package_name,
         service_name=None,
@@ -311,7 +312,6 @@ def uninstall_package_and_data(
         pretty_duration(data_start - start),
         pretty_duration(finish - data_start),
         pretty_duration(finish - start)))
-
 
 
 def get_package_repos():
@@ -385,7 +385,6 @@ def remove_package_repo(repo_name, wait_for_package=None):
         except TimeoutExpired:
             return False
     return True
-
 
 
 def remove_package_repo_and_wait(repo_name, wait_for_package):

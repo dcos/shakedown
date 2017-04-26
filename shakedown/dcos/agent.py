@@ -8,7 +8,6 @@ from dcos import (marathon, mesos)
 from shakedown.dcos import network
 
 
-
 def get_public_agents():
     """Provides a list of hostnames / IPs that are public agents in the cluster"""
     agent_list = []
@@ -63,6 +62,7 @@ ALLOW_SSH = '-I INPUT -p tcp --dport 22 -j ACCEPT'
 ALLOW_PING = '-I INPUT -p icmp -j ACCEPT'
 DISALLOW_MESOS = '-I OUTPUT -p tcp --sport 5051  -j REJECT'
 DISALLOW_INPUT = '-A INPUT -j REJECT'
+
 
 def partition_agent(host):
     """ Partition a node from all network traffic except for SSH and loopback

@@ -1,3 +1,10 @@
+## 1.4.1 (2017-04-26)
+
+Fixes:
+
+  - fix partitioning bug (QUALITY-1432), use new network APIs rather than
+    SSH-based command execution
+
 ## 1.4.0 (2017-04-25)
 
 Features:

@@ -91,8 +91,6 @@ def install_package(
         labels = pkg.marathon_json(options).get('labels')
         if 'DCOS_SERVICE_NAME' in labels:
             service_name = labels['DCOS_SERVICE_NAME']
-        else:
-            service_name = package_name
 
     print('\n{}installing {} with service={} options={} version={}'.format(
         shakedown.cli.helpers.fchr('>>'), package_name, service_name, options, package_version))
@@ -123,7 +121,7 @@ def install_package(
     if wait_for_completion:
         print("\n{}waiting for {} deployment to complete...\n".format(
             shakedown.cli.helpers.fchr('>>'), service_name))
-        if expected_running_tasks > 0:
+        if expected_running_tasks > 0 and service_name is not None:
             wait_for_service_tasks_running(service_name, expected_running_tasks, timeout_sec)
 
         app_id = pkg.marathon_json(options).get('id')

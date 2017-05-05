@@ -16,10 +16,11 @@ setup(name='dcos-shakedown',
       zip_safe=False,
       install_requires=[
           'click',
-          'dcoscli',
+          'dcoscli==0.4.16',
           'paramiko',
           'pytest',
           'pytest-timeout',
+          'retrying',
           'scp'
       ],
       entry_points="""

@@ -28,8 +28,6 @@ def get_tasks(task_id='', completed=True):
     mesos_tasks = master.tasks(completed=completed, fltr=task_id)
     return [task.__dict__['_task'] for task in mesos_tasks]
 
-    # return [task for task in tasks if task['id'].startswith(task_id)]
-
 
 def get_task(task_id, completed=True):
     """ Get a task by task id where a task_id is required.

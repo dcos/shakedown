@@ -26,9 +26,9 @@ def get_tasks(task_id='', completed=True):
     client = mesos.DCOSClient()
     master = mesos.Master(client.get_master_state())
     mesos_tasks = master.tasks(completed=completed, fltr=task_id)
-    tasks = [task.__dict__['_task'] for task in mesos_tasks]
+    return [task.__dict__['_task'] for task in mesos_tasks]
 
-    return [task for task in tasks if task['id'].startswith(task_id)]
+    # return [task for task in tasks if task['id'].startswith(task_id)]
 
 
 def get_task(task_id, completed=True):
@@ -43,7 +43,11 @@ def get_task(task_id, completed=True):
         :rtype: obj
     """
     tasks = get_tasks(task_id=task_id, completed=completed)
-    assert len(tasks) == 1
+
+    if len(tasks) == 0:
+        return None
+
+    assert len(tasks) == 1, 'get_task should return at max 1 task for a task id'
     return tasks[0]
 
 

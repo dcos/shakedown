@@ -11,28 +11,42 @@ import time
 
 def get_tasks(task_id='', completed=True):
     """ Get a list of tasks, optionally filtered by task id.
+        The task_id can be the abbrevated.  Example: If a task named 'sleep' is
+        scaled to 3 in marathon, there will be be 3 tasks starting with 'sleep.'
 
         :param task_id: task ID
         :type task_id: str
         :param completed: include completed tasks?
         :type completed: bool
 
-        :return: a tuple of tasks
-        :rtype: tuple
+        :return: a list of tasks
+        :rtype: []
     """
 
     client = mesos.DCOSClient()
     master = mesos.Master(client.get_master_state())
-    tasks = master.tasks(completed=completed, fltr=task_id)
+    mesos_tasks = master.tasks(completed=completed, fltr=task_id)
+    return [task.__dict__['_task'] for task in mesos_tasks]
 
-    return tasks
 
+def get_task(task_id, completed=True):
+    """ Get a task by task id where a task_id is required.
 
-def get_task(task_id='', completed=True):
-    """ An alias to get_tasks()
+        :param task_id: task ID
+        :type task_id: str
+        :param completed: include completed tasks?
+        :type completed: bool
+
+        :return: a task
+        :rtype: obj
     """
+    tasks = get_tasks(task_id=task_id, completed=completed)
 
-    return get_tasks(task_id=task_id, completed=completed)
+    if len(tasks) == 0:
+        return None
+
+    assert len(tasks) == 1, 'get_task should return at max 1 task for a task id'
+    return tasks[0]
 
 
 def get_active_tasks(task_id=''):

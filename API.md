@@ -57,6 +57,10 @@
       * [run_command_on_master()](#run_command_on_master)
       * [run_command_on_agent()](#run_command_on_agent)
       * [run_dcos_command()](#run_dcos_command)
+    * Docker
+      * [create_docker_credentials_file()](#create_docker_credentials_file)
+      * [distribute_docker_credentials_to_private_agents()](#distribute_docker_credentials_to_private_agents)
+      * [prefetch_docker_image_on_private_agents()](#prefetch_docker_image_on_private_agents)
     * File operations
       * [copy_file()](#copy_file)
       * [copy_file_to_master()](#copy_file_to_master)
@@ -1027,6 +1031,63 @@ parameter | description | type | default
 stdout, stderr, return_code = run_dcos_command('package search jenkins --json')
 result_json = json.loads(stdout)
 print(result_json['packages'][0]['currentVersion'])
+```
+
+
+### create_docker_credentials_file()
+
+Creates a docker credentials file for the provided username and password.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**username** | docker repo username | str
+**password** | docker repo password | str
+file_name | the compressed tar filename | str | docker.tar.gz
+
+##### *example usage*
+
+```python
+create_docker_credentials_file('billy', 'secret')
+```
+
+
+### distribute_docker_credentials_to_private_agents()
+
+Creates a docker credentials file for the provided username and password and
+distributes it to all the private agents.  It deletes the file after distribution.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**username** | docker repo username | str
+**password** | docker repo password | str
+file_name | the compressed tar filename | str | docker.tar.gz
+
+##### *example usage*
+
+```python
+distribute_docker_credentials_to_private_agents('billy', 'secret')
+```
+
+
+### prefetch_docker_image_on_private_agents()
+
+Ensures that the docker image provided is prefetched to all the private agents.
+This can decrease image pull time for subsequent tests.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**image** | docker image name | str
+
+##### *example usage*
+
+```python
+prefetch_docker_image_on_private_agents('nginx')
 ```
 
 

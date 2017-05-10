@@ -1,3 +1,18 @@
+## 1.4.2 (2017-05-09)
+
+Features:
+
+  - new methods for deploying Docker credentials
+    - `create_docker_credentials_file()`
+    - `distribute_docker_credentials_to_private_agents()`
+    - `prefetch_docker_image_on_private_agents()`
+  - added ability to query reservations
+    - `get_resources_by_role()`
+
+Fixes:
+
+  - removed redundant filter in `get_task()`
+
 ## 1.4.1 (2017-04-26)
 
 Fixes:

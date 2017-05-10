@@ -4,6 +4,7 @@ from shakedown.dcos import *
 from shakedown.dcos.cluster import *
 from shakedown.dcos.command import *
 from shakedown.dcos.config import *
+from shakedown.dcos.docker import *
 from shakedown.dcos.file import *
 from shakedown.dcos.marathon import *
 from shakedown.dcos.network import *

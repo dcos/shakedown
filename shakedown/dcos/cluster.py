@@ -16,6 +16,7 @@ strict = pytest.mark.skipif("ee_version() != 'strict'")
 permissive = pytest.mark.skipif("ee_version() != 'permissive'")
 disabled = pytest.mark.skipif("ee_version() != 'disabled'")
 
+PUBLIC_ROLE = 'slave_public'
 
 def shakedown_canonical_version():
     return __canonical_version(shakedown.VERSION)
@@ -43,29 +44,31 @@ def dcos_version_less_than(version):
     return dcos_canonical_version() < LooseVersion(version)
 
 
-def required_cpus(cpus):
+def required_cpus(cpus, role='*'):
     """ Returns True if the number of available cpus is equal to or greater than
     the cpus.  This is useful in using pytest skipif such as:
     `pytest.mark.skipif('required_cpus(2)')` which will skip the test if
     the number of cpus is not 2 or more.
 
     :param cpus: the number of required cpus.
+    :param role: the role / reservation (default='*')
     """
-    resources = available_resources()
+    resources = get_resources_by_role()
     # reverse logic (skip if less than count)
     # returns True if less than count
     return resources.cpus < cpus
 
 
-def required_mem(mem):
+def required_mem(mem, role='*'):
     """ Returns True if the number of available memory is equal to or greater than
     the mem.  This is useful in using pytest skipif such as:
     `pytest.mark.skipif('required_mem(2)')` which will skip the test if
     the number of mem is not 2m or more.
 
     :param mem: the amount of required mem in meg.
+    :param role: the role / reservation (default='*')
     """
-    resources = available_resources()
+    resources = get_resources_by_role()
     # reverse logic (skip if less than count)
     # returns True if less than count
     return resources.mem < mem
@@ -145,15 +148,18 @@ def get_unreserved_resources():
     return _get_resources('unreserved_resources')
 
 
-def get_reserved_resources():
-    return _get_resources('reserved_resources')
-
-
 def available_resources():
     res = get_resources()
     used = get_used_resources()
 
     return res - used
+
+
+def get_resources_by_role(role='*'):
+    if '*' in role:
+        return get_resources() - get_reserved_resources()
+    else:
+        return get_reserved_resources(role)
 
 
 def _get_resources(rtype='resources'):
@@ -162,6 +168,8 @@ def _get_resources(rtype='resources'):
     The default is resources.
 
     :param rtype: the type of resources to return
+    :type rtype: str
+    :param role: the name of the role if for reserved and if None all reserved
     :type rtype: str
 
     :return: resources(cpu,mem)
@@ -178,6 +186,38 @@ def _get_resources(rtype='resources'):
                 cpus += agent[rtype].get('cpus')
             if agent[rtype].get('mem') is not None:
                 mem += agent[rtype].get('mem')
+
+    return Resources(cpus, mem)
+
+
+def get_reserved_resources(role=None):
+    """ resource types from state summary include: reserved_resources
+
+    :param role: the name of the role if for reserved and if None all reserved
+    :type role: str
+
+    :return: resources(cpu,mem)
+    :rtype: Resources
+    """
+    rtype = 'reserved_resources'
+    cpus = 0.0
+    mem = 0.0
+    summary = DCOSClient().get_state_summary()
+
+    if 'slaves' in summary:
+        agents = summary.get('slaves')
+        for agent in agents:
+            resource_reservations = agent.get(rtype)
+            reservations = []
+            if role is None or '*' in role:
+                reservations = resource_reservations.values()
+            elif role in resource_reservations:
+                reservations = [resource_reservations.get(role)]
+            for reservation in reservations:
+                if reservation.get('cpus') is not None:
+                    cpus += reservation.get('cpus')
+                if reservation.get('mem') is not None:
+                    mem += reservation.get('mem')
 
     return Resources(cpus, mem)
 

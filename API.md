@@ -33,6 +33,7 @@
       * [get_used_resources()](#get_used_resources)
       * [get_unreserved_resources()](#get_unreserved_resources)
       * [get_reserved_resources()](#get_reserved_resources)
+      * [get_resources_by_role()](#get_resources_by_role)
       * [available_resources()](#available_resources)
       * [shakedown_canonical_version()](#shakedown_canonical_version)
       * [shakedown_version_less_than()](#shakedown_version_less_than)
@@ -576,20 +577,46 @@ if resources.cpus > 2:
   # do stuff
 ```
 
-
 ### get_reserved_resources()
 
-Gets a Resource object which includes the amount of cpu and memory that is  currently reserved.
+Gets a Resource object which includes the amount of cpu and memory that is currently reserved.
+Role == None is all reserved and 'slave_public' would be the public resources.
 
 ##### *parameters*
 
-None.
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+role | role of reservation | str | None
+
 
 ##### *example usage*
 
 ```python
 
 resources = get_reserved_resources()
+
+if resources.cpus > 2:
+  # do stuff
+```
+
+
+### get_resources_by_role()
+
+Gets a Resource object which includes the amount of cpu and memory that is currently reserved by
+a role.  The default is *
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+role | role of reservation | str | None
+
+
+##### *example usage*
+
+```python
+
+resources = get_resources_by_role()
 
 if resources.cpus > 2:
   # do stuff
@@ -837,7 +864,7 @@ otherwise returns False.  This is based on available resources.
 parameter | description | type | default
 --------- | ----------- | ---- | -------
 cpus | number of cpus | int
-
+role | reservation role | str | *
 
 ##### *example usage*
 
@@ -857,7 +884,8 @@ otherwise returns False.  This is based on available resources.
 
 parameter | description | type | default
 --------- | ----------- | ---- | -------
-mem | amount of mem in M | int
+mem  | amount of mem    | int
+role | reservation role | str | *
 
 
 ##### *example usage*

@@ -66,7 +66,7 @@ def task_completed(task_id):
         :rtype: bool
     """
 
-    tasks = get_task(task_id=task_id)
+    tasks = get_tasks(task_id=task_id)
     completed_states = ('TASK_FINISHED',
                         'TASK_FAILED',
                         'TASK_KILLED',

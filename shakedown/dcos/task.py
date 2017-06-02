@@ -80,7 +80,7 @@ def task_completed(task_id):
     return False
 
 
-def wait_for_task_completion(task_id):
+def wait_for_task_completion(task_id, timeout_sec=None):
     """ Block until the task completes
 
         :param task_id: task ID
@@ -88,8 +88,7 @@ def wait_for_task_completion(task_id):
 
         :rtype: None
     """
-    while not task_completed(task_id):
-        time.sleep(1)
+    return time_wait(lambda: task_completed(task_id), timeout_seconds=timeout_sec)
 
 
 def task_property_value_predicate(service, task, prop, value):

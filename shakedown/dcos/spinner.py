@@ -140,6 +140,8 @@ def pretty_duration(seconds):
     """ Returns a user-friendly representation of the provided duration in seconds.
     For example: 62.8 => "1m2.8s", or 129837.8 => "2d12h4m57.8s"
     """
+    if seconds is None:
+        return ''
     ret = ''
     if seconds >= 86400:
         ret += '{:.0f}d'.format(int(seconds / 86400))

@@ -1,3 +1,11 @@
+## 1.4.3 (2017-06-05)
+
+Fixes:
+
+  - properly timeout with `time_wait()` in `wait_for_task_completion()`
+  - `time_wait` was not being imported in `dcos/master.py`
+  - use `get_tasks()` in `task_completed()`
+
 ## 1.4.2 (2017-05-09)
 
 Features:

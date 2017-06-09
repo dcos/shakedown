@@ -39,7 +39,7 @@ def wait_for(
         else:
             if (not inverse_predicate and result) or (inverse_predicate and not result):
                 count = count + 1
-            if count > required_consecutive_success_count:
+            if count >= required_consecutive_success_count:
                 return result
 
         if timeout.is_expired():

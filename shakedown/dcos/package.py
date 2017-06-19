@@ -28,9 +28,9 @@ def _get_options(options_file=None):
 def _get_service_name(package_name, pkg):
     labels = pkg.marathon_json({}).get('labels')
     if 'DCOS_SERVICE_NAME' in labels:
-        service_name = labels['DCOS_SERVICE_NAME']
+        return labels['DCOS_SERVICE_NAME']
     else:
-        service_name = package_name
+        return package_name
 
 
 def _get_package_manager():
@@ -218,7 +218,7 @@ def uninstall_package(
 
     # Optionally wait for the service to unregister as a framework
     if wait_for_completion:
-        wait_for_mesos_task_removal(service_name)
+        wait_for_mesos_task_removal(service_name, timeout_sec=timeout_sec)
 
     return True
 

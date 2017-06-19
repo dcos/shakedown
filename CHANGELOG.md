@@ -1,3 +1,11 @@
+## 1.4.4 (2017-06-19)
+
+Fixes:
+
+  - use `timeout_sec` in `install_package()`
+  - return service name in `_get_service_name()`
+  - `wait_for()` should use `>=`, not `>`
+
 ## 1.4.3 (2017-06-05)
 
 Fixes:

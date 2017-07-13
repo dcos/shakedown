@@ -1,3 +1,9 @@
+## 1.4.5 (2017-07-13)
+
+Features:
+
+  - bumped `dcoscli` version to `0.5.3`
+
 ## 1.4.4 (2017-06-19)
 
 Fixes:
@@ -149,7 +155,7 @@ Features:
   - DC/OS Enterprise Edition version-checking
     - `ee_version()` method, `@strict`, `@permissive`, and `@disabled`
       PyTest security mode markers
-  - bumped `dcosdcli` version to `0.4.16`
+  - bumped `dcoscli` version to `0.4.16`
 
 ## 1.2.0 (2017-02-17)
 
@@ -212,7 +218,7 @@ Features:
 
 Features:
 
-  - bumped `dcosdcli` version to `0.4.15`
+  - bumped `dcoscli` version to `0.4.15`
 
 Fixes:
 
@@ -262,7 +268,7 @@ Features:
     and `delete_all_apps_wait`
   - support for passing a dict object containing JSON options to
     `install_package` methods
-  - bumped `dcosdcli` version to `0.4.14`
+  - bumped `dcoscli` version to `0.4.14`
 
 Fixes:
 
@@ -343,7 +349,7 @@ Fixes:
 
 Features:
 
-  - bumped `dcosdcli` version to `0.4.13`
+  - bumped `dcoscli` version to `0.4.13`
   - modified CLI 'short' flags to match SSH/curl
 
 Fixes:

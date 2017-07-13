@@ -96,7 +96,7 @@ def install_package(
         shakedown.cli.helpers.fchr('>>'), package_name, service_name, options, package_version))
 
     # Install subcommands (if defined)
-    if pkg.has_cli_definition():
+    if pkg.cli_definition():
         print("{}installing CLI commands for package '{}'".format(
             shakedown.cli.helpers.fchr('>>'), package_name))
         subcommand.install(pkg)
@@ -206,7 +206,7 @@ def uninstall_package(
         service_name = _get_service_name(package_name, pkg)
 
     # Uninstall subcommands (if defined)
-    if pkg.has_cli_definition():
+    if pkg.cli_definition():
         print("{}uninstalling CLI commands for package '{}'".format(
             shakedown.cli.helpers.fchr('>>'), package_name))
         subcommand.uninstall(package_name)

@@ -1,7 +1,24 @@
 import os
 import dcos
+import dcos.cluster
 
 import shakedown
+
+
+def attach_cluster(url):
+    """Attach to an already set-up cluster
+    :return: True if successful, else False
+    """
+    clusters = [c.dict() for c in dcos.cluster.get_clusters()]
+    for c in clusters:
+        if url == c['url']:
+            try:
+                dcos.cluster.set_attached(dcos.cluster.get_cluster(c['name']).get_cluster_path())
+                return True
+            except:
+                return False
+
+    return False
 
 
 def dcos_acs_token():

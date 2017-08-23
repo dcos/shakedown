@@ -13,10 +13,6 @@ DC/OS test harness.
 
 Shakedown requires Python 3.4+.
 
-### Cluster compatibility
-
-Shakedown requires DC/OS 1.10+.  Shakedown [1.4.4](https://github.com/dcos/shakedown/releases/tag/1.4.4) is pinned to [dcos-cli 0.4.16](https://github.com/dcos/dcos-cli/tree/0.4.16) and can be used with older cluster versions.
-
 ### Installing from PyPI
 
 The recommended Shakedown installation method is via the PyPI Python Package Index repository at [https://pypi.python.org/pypi/dcos-shakedown](https://pypi.python.org/pypi/dcos-shakedown).  To install the latest version and all required modules:

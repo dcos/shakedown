@@ -1,3 +1,11 @@
+## 1.4.6 (2017-08-23)
+
+Features:
+
+  - bumped `dcoscli` version to `0.5.4`
+  - better attach error handling
+  - move from pip to pip3
+
 ## 1.4.5 (2017-07-13)
 
 Features:
@@ -74,7 +82,7 @@ Features:
 
   - `wait_for` waits for service endpoints to be debounced
     successfully in a specified number of masters in multi-master
-    setups 
+    setups
   - new PyTest decorators methods for determining Shakedown versions
     - `shakedown_canonical_version()`
     - `shakedown_version_less_than()`

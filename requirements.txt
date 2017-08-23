@@ -1,5 +1,5 @@
 click
-dcoscli==0.5.3
+dcoscli==0.5.4
 paramiko
 pytest
 pytest-timeout

@@ -1,3 +1,9 @@
+## 1.4.7 (2017-09-01)
+
+Features:
+
+  - bumped `dcoscli` version to `0.5.5`
+
 ## 1.4.6 (2017-08-23)
 
 Features:

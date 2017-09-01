@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 
 setup(name='dcos-shakedown',
-      version='1.4.6',
+      version='1.4.7',
       description=u"DC/OS testing harness and library",
       long_description=u"A tool and library to abstract common DC/OS-related tasks.",
       classifiers=[],
@@ -16,7 +16,7 @@ setup(name='dcos-shakedown',
       zip_safe=False,
       install_requires=[
           'click',
-          'dcoscli==0.5.4',
+          'dcoscli==0.5.5',
           'paramiko',
           'pytest',
           'pytest-timeout',

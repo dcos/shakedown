@@ -1,3 +1,17 @@
+## 1.4.8 (2017-09-14)
+
+Features:
+
+  - all CLI options now have the option to be specified as environmental
+    variables, eg. `SHAKEDOWN_DCOS_URL`, `SHAKDOWN_USER`, etc.
+
+Fixes:
+
+  - CLI subcommand (non-app) packages now treated the same as app/service
+    packages
+    - `install_package()` and `uninstall_package()` won't throw exceptions
+    - `package_installed()` returns `True` for non-app packages
+
 ## 1.4.7 (2017-09-01)
 
 Features:

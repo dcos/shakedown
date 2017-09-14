@@ -1,7 +1,7 @@
 import json
 import time
 
-from dcos import (cosmos, errors, packagemanager, subcommand)
+from dcos import (cosmos, errors, package, packagemanager, subcommand)
 from shakedown.dcos.service import *
 
 import shakedown
@@ -87,50 +87,54 @@ def install_package(
 
     package_manager = _get_package_manager()
     pkg = package_manager.get_package_version(package_name, package_version)
-    if service_name is None:
-        labels = pkg.marathon_json(options).get('labels')
-        if 'DCOS_SERVICE_NAME' in labels:
-            service_name = labels['DCOS_SERVICE_NAME']
 
-    print('\n{}installing {} with service={} options={} version={}'.format(
-        shakedown.cli.helpers.fchr('>>'), package_name, service_name, options, package_version))
+    if service_name is None:
+        try:
+            labels = pkg.marathon_json(options).get('labels')
+            if 'DCOS_SERVICE_NAME' in labels:
+                service_name = labels['DCOS_SERVICE_NAME']
+        except errors.DCOSException as e:
+            pass
+
+    try:
+        print('\n{}installing {} with service={} options={} version={}'.format(
+            shakedown.cli.helpers.fchr('>>'), package_name, service_name, options, package_version))
+
+        # Print pre-install notes to console log
+        pre_install_notes = pkg.package_json().get('preInstallNotes')
+        if pre_install_notes:
+            print(pre_install_notes)
+
+        package_manager.install_app(pkg, options, service_name)
+
+        # Print post-install notes to console log
+        post_install_notes = pkg.package_json().get('postInstallNotes')
+        if post_install_notes:
+            print(post_install_notes)
+
+        # Optionally wait for the app's deployment to finish
+        if wait_for_completion:
+            print("\n{}waiting for {} deployment to complete...".format(
+                shakedown.cli.helpers.fchr('>>'), service_name))
+            if expected_running_tasks > 0 and service_name is not None:
+                wait_for_service_tasks_running(service_name, expected_running_tasks, timeout_sec)
+
+            app_id = pkg.marathon_json(options).get('id')
+            shakedown.deployment_wait(timeout_sec, app_id)
+            print('\n{}install completed after {}\n'.format(
+                shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() - start)))
+        else:
+            print('\n{}install started after {}\n'.format(
+                shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() - start)))
+    except errors.DCOSException as e:
+        print('\n{}{}'.format(
+            shakedown.cli.helpers.fchr('>>'), e))
 
     # Install subcommands (if defined)
     if pkg.cli_definition():
         print("{}installing CLI commands for package '{}'".format(
             shakedown.cli.helpers.fchr('>>'), package_name))
         subcommand.install(pkg)
-
-    print("{}installing package '{}' with service name '{}'\n".format(
-        shakedown.cli.helpers.fchr('>>'), package_name, service_name)
-    )
-
-    # Print pre-install notes to console log
-    pre_install_notes = pkg.package_json().get('preInstallNotes')
-    if pre_install_notes:
-        print(pre_install_notes)
-
-    package_manager.install_app(pkg, options, service_name)
-
-    # Print post-install notes to console log
-    post_install_notes = pkg.package_json().get('postInstallNotes')
-    if post_install_notes:
-        print(post_install_notes)
-
-    # Optionally wait for the app's deployment to finish
-    if wait_for_completion:
-        print("\n{}waiting for {} deployment to complete...\n".format(
-            shakedown.cli.helpers.fchr('>>'), service_name))
-        if expected_running_tasks > 0 and service_name is not None:
-            wait_for_service_tasks_running(service_name, expected_running_tasks, timeout_sec)
-
-        app_id = pkg.marathon_json(options).get('id')
-        shakedown.deployment_wait(timeout_sec, app_id)
-        print('\n{}install completed after {}\n'.format(
-            shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() - start)))
-    else:
-        print('\n{}install started after {}\n'.format(
-            shakedown.cli.helpers.fchr('>>'), pretty_duration(time.time() - start)))
 
     return True
 
@@ -161,7 +165,7 @@ def install_package_and_wait(
 
 
 def package_installed(package_name, service_name=None):
-    """ Check whether thea package package_name is currently installed.
+    """ Check whether the package package_name is currently installed.
 
         :param package_name: package name
         :type package_name: str
@@ -173,7 +177,16 @@ def package_installed(package_name, service_name=None):
     """
 
     package_manager = _get_package_manager()
-    return len(package_manager.installed_apps(package_name, service_name)) > 0
+
+    app_installed = len(package_manager.installed_apps(package_name, service_name)) > 0
+
+    subcommand_installed = False
+    for subcmd in package.installed_subcommands():
+        package_json = subcmd.package_json()
+        if package_json['name'] == package_name:
+            subcommand_installed = True
+
+    return (app_installed or subcommand_installed)
 
 
 def uninstall_package(
@@ -202,23 +215,28 @@ def uninstall_package(
 
     package_manager = _get_package_manager()
     pkg = package_manager.get_package_version(package_name, None)
-    if service_name is None:
-        service_name = _get_service_name(package_name, pkg)
+
+    try:
+        if service_name is None:
+            service_name = _get_service_name(package_name, pkg)
+
+        print("{}uninstalling package '{}' with service name '{}'\n".format(
+            shakedown.cli.helpers.fchr('>>'), package_name, service_name))
+
+        package_manager.uninstall_app(package_name, all_instances, service_name)
+
+        # Optionally wait for the service to unregister as a framework
+        if wait_for_completion:
+            wait_for_mesos_task_removal(service_name, timeout_sec=timeout_sec)
+    except errors.DCOSException as e:
+        print('\n{}{}'.format(
+            shakedown.cli.helpers.fchr('>>'), e))
 
     # Uninstall subcommands (if defined)
     if pkg.cli_definition():
         print("{}uninstalling CLI commands for package '{}'".format(
             shakedown.cli.helpers.fchr('>>'), package_name))
         subcommand.uninstall(package_name)
-
-    print("{}uninstalling package '{}' with service name '{}'\n".format(
-        shakedown.cli.helpers.fchr('>>'), package_name, service_name))
-
-    package_manager.uninstall_app(package_name, all_instances, service_name)
-
-    # Optionally wait for the service to unregister as a framework
-    if wait_for_completion:
-        wait_for_mesos_task_removal(service_name, timeout_sec=timeout_sec)
 
     return True
 

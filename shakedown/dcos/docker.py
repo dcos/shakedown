@@ -9,6 +9,58 @@ import shakedown
 from dcos import marathon
 
 
+def docker_version(host=None, component='server'):
+    """ Return the version of Docker [Server]
+
+        :param host: host or IP of the machine Docker is running on
+        :type host: str
+        :param component: Docker component
+        :type component: str
+        :return: Docker version
+        :rtype: str
+    """
+
+    if component.lower() == 'client':
+        component = 'Client'
+    else:
+        component = 'Server'
+
+    # sudo is required for non-coreOS installs
+    command = 'sudo docker version -f {{.{}.Version}}'.format(component)
+
+    if host is None:
+        success, output = shakedown.run_command_on_master(command, None, None, False)
+    else:
+        success, output = shakedown.run_command_on_host(host, command, None, None, False)
+
+    if success:
+        return output
+    else:
+        return 'unknown'
+
+
+def docker_client_version(host):
+    """ Return the version of Docker Client
+
+        :param host: host or IP of the machine Docker is running on
+        :type host: str
+        :return: Docker Client version
+        :rtype: str
+    """
+    return docker_version('{{.Client.Version}}')
+
+
+def docker_server_version(host):
+    """ Return the version of Docker Server
+
+        :param host: host or IP of the machine Docker is running on
+        :type host: str
+        :return: Docker Server version
+        :rtype: str
+    """
+    return docker_version('{{.Server.Version}}')
+
+
 def create_docker_credentials_file(
         username,
         password,

@@ -59,6 +59,9 @@
       * [run_command_on_agent()](#run_command_on_agent)
       * [run_dcos_command()](#run_dcos_command)
     * Docker
+      * [docker_version()](#docker_version)
+      * [docker_server_version()](#docker_server_version)
+      * [docker_client_version()](#docker_client_version)
       * [create_docker_credentials_file()](#create_docker_credentials_file)
       * [distribute_docker_credentials_to_private_agents()](#distribute_docker_credentials_to_private_agents)
       * [prefetch_docker_image_on_private_agents()](#prefetch_docker_image_on_private_agents)
@@ -1059,6 +1062,61 @@ parameter | description | type | default
 stdout, stderr, return_code = run_dcos_command('package search jenkins --json')
 result_json = json.loads(stdout)
 print(result_json['packages'][0]['currentVersion'])
+```
+
+
+### docker_version()
+
+Get the version of Docker [Server]
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+host | host or IP of the machine Docker is running on | str | `master_ip()`
+component | which Docker version component to query (`server` or `client`) | str | `server`
+
+##### *example usage*
+
+```python
+master_docker_version = docker_version()
+print("DC/OS master is running Docker version {}".format(master_docker_version))
+```
+
+
+### docker_server_version()
+
+Get the version of Docker Server
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+host | host or IP of the machine Docker is running on | str | `master_ip()`
+
+##### *example usage*
+
+```python
+docker_server = docker_server_version()
+print("DC/OS master is running Docker Server version {}".format(docker_server))
+```
+
+
+### docker_client_version()
+
+Get the version of Docker Client
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+host | host or IP of the machine Docker is running on | str | `master_ip()`
+
+##### *example usage*
+
+```python
+docker_client = docker_client_version()
+print("DC/OS master is running Docker Client version {}".format(docker_client))
 ```
 
 

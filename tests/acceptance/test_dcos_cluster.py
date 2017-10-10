@@ -20,8 +20,8 @@ def test_get_used_resources():
 
 def test_get_reserved_resources():
     resources = get_reserved_resources()
-    assert resources.cpus == 4
-    assert resources.mem == 14021.0
+    assert resources.cpus > 0
+    assert resources.mem > 0
 
 
 def test_resources_needed():

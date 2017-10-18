@@ -1,3 +1,18 @@
+## 1.4.9 (2017-10-18)
+
+Features:
+
+  - added API functions to query for Docker version
+    - `docker_version()`
+    - `docker_client_version()`
+    - `docker_server_version()`
+  - added classifiers to the setup to specify the programming langauge to
+    be used with pipenv
+
+Fixes:
+
+  - removed staticly-set assertions in `test_get_reserved_resources()`
+
 ## 1.4.8 (2017-09-14)
 
 Features:

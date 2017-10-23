@@ -88,7 +88,12 @@ def install_package(
     package_manager = _get_package_manager()
     pkg = package_manager.get_package_version(package_name, package_version)
 
+    if package_version is None:
+        # Get the resolved version for logging below
+        package_version = 'auto:{}'.format(pkg.version())
+
     if service_name is None:
+        # Get the service name from the marathon template
         try:
             labels = pkg.marathon_json(options).get('labels')
             if 'DCOS_SERVICE_NAME' in labels:
@@ -96,10 +101,10 @@ def install_package(
         except errors.DCOSException as e:
             pass
 
-    try:
-        print('\n{}installing {} with service={} options={} version={}'.format(
-            shakedown.cli.helpers.fchr('>>'), package_name, service_name, options, package_version))
+    print('\n{}installing {} with service={} version={} options={}'.format(
+        shakedown.cli.helpers.fchr('>>'), package_name, service_name, package_version, options))
 
+    try:
         # Print pre-install notes to console log
         pre_install_notes = pkg.package_json().get('preInstallNotes')
         if pre_install_notes:

@@ -111,6 +111,12 @@ def master_ip():
     return dcos.mesos.DCOSClient().metadata().get('PUBLIC_IPV4')
 
 
+def leader_ip():
+    """Returns the private IP of the mesos leader.
+    """
+    return dcos_dns_lookup('leader.mesos')[0]['ip']
+
+
 def authenticate(username, password):
     """Authenticate with a DC/OS cluster and return an ACS token.
     return: ACS token

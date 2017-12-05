@@ -87,6 +87,30 @@ def run_command_on_master(
     return run_command(shakedown.master_ip(), command, username, key_path, noisy)
 
 
+def run_command_on_leader(
+        command,
+        username=None,
+        key_path=None,
+        noisy=True
+):
+    """ Run a command on the Mesos leader.  Important for Multi-Master.
+    """
+
+    return run_command(shakedown.leader_ip(), command, username, key_path, noisy)
+
+
+def run_command_on_marathon_leader(
+        command,
+        username=None,
+        key_path=None,
+        noisy=True
+):
+    """ Run a command on the Marathon leader
+    """
+
+    return run_command(shakedown.marathon_leader_ip(), command, username, key_path, noisy)
+
+
 def run_command_on_agent(
         host,
         command,

@@ -96,7 +96,7 @@ def run_command_on_leader(
     """ Run a command on the Mesos leader.  Important for Multi-Master.
     """
 
-    return run_command(shakedown.leader_ip(), command, username, key_path, noisy)
+    return run_command(shakedown.master_leader_ip(), command, username, key_path, noisy)
 
 
 def run_command_on_marathon_leader(

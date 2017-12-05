@@ -13,6 +13,16 @@ def test_run_command_on_master():
     assert exit_status
     assert output.startswith('Linux')
 
+def test_run_command_on_leader():
+    exit_status, output = run_command_on_leader('uname -a')
+    assert exit_status
+    assert output.startswith('Linux')
+
+def test_run_command_on_marathon_leader():
+    exit_status, output = run_command_on_marathon_leader('uname -a')
+    assert exit_status
+    assert output.startswith('Linux')
+
 def test_run_command_on_agent():
     # Get all IPs associated with the 'jenkins' task running in the 'marathon' service
     service_ips = get_service_ips('marathon', 'jenkins')

@@ -57,6 +57,8 @@
       * [run_command()](#run_command)
       * [run_command_on_master()](#run_command_on_master)
       * [run_command_on_agent()](#run_command_on_agent)
+      * [run_command_on_leader()](#run_command_on_leader)
+      * [run_command_on_marathon_leader()](#run_command_on_marathon_leader)
       * [run_dcos_command()](#run_dcos_command)
     * Docker
       * [docker_version()](#docker_version)
@@ -1043,6 +1045,47 @@ exit_status, output = run_command_on_master('uname -a')
 Run a command on a Mesos agent via SSH, proxied via the Mesos master.
 
 *This method uses the same parameters as [`run_command()`](#run_command)*
+
+### run_command_on_leader()
+
+Run a command on the Mesos master leader via SSH.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**command** | the command to run | str
+username | the username used for SSH authentication | str | `core`
+key_path | the path to the SSH keyfile used for authentication | str | `None`
+noisy    | Output to stdout if True | bool | True
+
+##### *example usage*
+
+```python
+# What kernel is our Mesos leader running?
+exit_status, output = run_command_on_leader('uname -a')
+```
+
+
+### run_command_on_marathon_leader()
+
+Run a command on the Marathon leader via SSH.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**command** | the command to run | str
+username | the username used for SSH authentication | str | `core`
+key_path | the path to the SSH keyfile used for authentication | str | `None`
+noisy    | Output to stdout if True | bool | True
+
+##### *example usage*
+
+```python
+# What kernel is our Marathon leader running?
+exit_status, output = run_command_on_marathon_leader('uname -a')
+```
 
 
 ### run_dcos_command()

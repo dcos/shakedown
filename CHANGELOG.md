@@ -1,3 +1,12 @@
+## 1.4.10 (2017-12-06)
+
+Features:
+
+  - new leader-based run functions
+    - `run_command_on_leader()`
+    - `run_command_on_marathon_leader()`
+  - log the resulting package version when installing from `latest`
+
 ## 1.4.9 (2017-10-18)
 
 Features:

@@ -63,6 +63,10 @@ def test_get_package_repo():
 def test_remove_package_repo():
     assert remove_package_repo('Multiverse')
 
+def test_get_package_versions():
+    versions = get_package_versions('marathon')
+    assert '1.5.2' in versions
+
 def remove_chronos():
     try:
         if package_installed('chronos'):

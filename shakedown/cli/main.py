@@ -181,7 +181,7 @@ def cli(**args):
                 schr = fchr('FF')
             elif state == 'pass':
                 schr = fchr('PP')
-            else
+            else:
                 schr = ''
 
             if status:

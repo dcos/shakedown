@@ -181,6 +181,8 @@ def cli(**args):
                 schr = fchr('FF')
             elif state == 'pass':
                 schr = fchr('PP')
+            else
+                schr = ''
 
             if status:
                 if not args['stdout_inline']:

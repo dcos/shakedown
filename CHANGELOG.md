@@ -1,3 +1,15 @@
+## 1.4.11 (2017-12-08)
+
+Features:
+
+  - new function to retrieve available versions of packages
+    - `get_package_versions()`
+  - bumped `dcoscli` version to `0.5.7`
+
+Fixes:
+
+  - handle `skip` state when printing output
+
 ## 1.4.10 (2017-12-06)
 
 Features:

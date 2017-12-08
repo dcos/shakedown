@@ -420,3 +420,13 @@ def remove_package_repo_and_wait(repo_name, wait_for_package):
         :rtype: bool
     """
     return remove_package_repo(repo_name, wait_for_package)
+
+
+def get_package_versions(package_name):
+    """ Returns the list of versions of a given package
+        :param package_name: name of the package
+        :type package_name: str
+    """
+    package_manager = _get_package_manager()
+    pkg = package_manager.get_package_version(package_name, None)
+    return pkg.package_versions()

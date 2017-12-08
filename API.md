@@ -23,6 +23,7 @@
       * [uninstall_package()](#uninstall_package)
       * [uninstall_package_and_wait()](#uninstall_package_and_wait)
       * [uninstall_package_and_data()](#uninstall_package_and_data)
+      * [get_package_versions()](#get_package_versions)
       * [package_installed()](#package_installed)
       * [get_package_repos()](#get_package_repos)
       * [add_package_repo()](#add_package_repo)
@@ -453,6 +454,25 @@ uninstall_package_and_data('confluent-kafka', zk_node='/dcos-service-confluent-k
 Uninstall a package, and wait for the service to unregister.
 
 *This method uses the same parameters as [`uninstall_package()`](#uninstall_package)*
+
+
+### get_package_versions()
+
+Returns the list of versions of a given package.
+
+##### *parameters*
+
+parameter | description | type | default
+--------- | ----------- | ---- | -------
+**package_name** | the name of the package to install | str
+
+##### *example usage*
+
+```python
+versions = get_package_versions('marathon')
+if '1.5.2' not in versions:
+    raise VersionException("version is not in this universe")
+```
 
 
 ### package_installed()

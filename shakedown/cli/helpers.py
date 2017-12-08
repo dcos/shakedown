@@ -67,6 +67,7 @@ def fchr(char):
     return {
         'PP': chr(10003),
         'FF': chr(10005),
+        'SK': chr(10073),
         '>>': chr(12299)
     }.get(char, '')
 

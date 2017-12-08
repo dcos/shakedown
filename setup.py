@@ -34,7 +34,7 @@ setup(name='dcos-shakedown',
       zip_safe=False,
       install_requires=[
           'click',
-          'dcoscli==0.5.5',
+          'dcoscli==0.5.7',
           'paramiko',
           'pytest',
           'pytest-timeout',

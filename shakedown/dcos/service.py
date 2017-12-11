@@ -207,8 +207,13 @@ def get_service_ips(
 
     for task in service_tasks:
         if task_name is None or task['name'] == task_name:
-            for ip in task['statuses'][0]['container_status']['network_infos'][0]['ip_addresses']:
-                ips.add(ip['ip_address'])
+            for status in task['statuses']:
+                # Only the TASK_RUNNING status will have correct IP information.
+                if status["state"] != "TASK_RUNNING":
+                    continue
+
+                for ip in status['container_status']['network_infos'][0]['ip_addresses']:
+                    ips.add(ip['ip_address'])
 
     return ips
 

@@ -5,7 +5,7 @@ import dcos
 import pytest
 import shakedown
 
-
+dcos_1_11 = pytest.mark.skipif('dcos_version_less_than("1.11")')
 dcos_1_10 = pytest.mark.skipif('dcos_version_less_than("1.10")')
 dcos_1_9 = pytest.mark.skipif('dcos_version_less_than("1.9")')
 dcos_1_8 = pytest.mark.skipif('dcos_version_less_than("1.8")')

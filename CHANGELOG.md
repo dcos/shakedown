@@ -1,3 +1,13 @@
+## 1.4.12 (2017-12-20)
+
+Features:
+
+  - support for DC/OS 1.11 (`@dcos_1_11` PyTest marker)
+
+Fixes:
+
+  - don't flake if a connection error occurs during an install
+
 ## 1.4.11 (2017-12-08)
 
 Features:

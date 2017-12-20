@@ -4,7 +4,7 @@ from shakedown.dcos.spinner import *
 from shakedown.dcos import dcos_service_url, dcos_agents_state, master_url
 from shakedown.dcos.master import get_all_masters
 from shakedown.dcos.zookeeper import delete_zk_node
-from dcos.errors import DCOSException, DCOSHTTPException
+from dcos.errors import DCOSException, DCOSConnectionError, DCOSHTTPException
 
 from urllib.parse import urljoin
 import json
@@ -441,7 +441,7 @@ def task_states_predicate(service_name, expected_task_count, expected_task_state
     """
     try:
         tasks = get_service_tasks(service_name)
-    except DCOSHTTPException:
+    except (DCOSConnectionError, DCOSHTTPException):
         tasks = []
     matching_tasks = []
     other_tasks = []

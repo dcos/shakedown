@@ -1,8 +1,7 @@
-import select
 import shlex
 import subprocess
 
-from shakedown.dcos.helpers import *
+from . import HostSession
 from dcos.errors import DCOSException
 
 import shakedown
@@ -25,54 +24,18 @@ def run_command(
         :type username: str
         :param key_path: path to the SSH private key to use for SSH authentication
         :type key_path: str
-
+    
         :return: True if successful, False otherwise
         :rtype: bool
         :return: Output of command
         :rtype: string
     """
-
-    if not username:
-        username = shakedown.cli.ssh_user
-
-    if not key_path:
-        key_path = shakedown.cli.ssh_key_file
-
-    key = validate_key(key_path)
-
-    transport = get_transport(host, username, key)
-
-    if transport:
-        transport = start_transport(transport, username, key)
-    else:
-        print("error: unable to connect to {}".format(host))
-        return False, ''
-
-    if transport.is_authenticated():
-        if noisy:
-            print("\n{}{} $ {}\n".format(shakedown.cli.helpers.fchr('>>'), host, command))
-
-        output = ''
-
-        channel = transport.open_session()
-        channel.exec_command(command)
-        exit_status = channel.recv_exit_status()
-
-        while channel.recv_ready():
-            rl, wl, xl = select.select([channel], [], [], 0.0)
-            if len(rl) > 0:
-                recv = str(channel.recv(1024), "utf-8")
-                if noisy:
-                    print(recv, end='', flush=True)
-                output += recv
-
-        try_close(channel)
-        try_close(transport)
-
-        return exit_status == 0, output
-    else:
-        print("error: unable to authenticate {}@{} with key {}".format(username, host, key_path))
-        return False, ''
+    
+    with HostSession(host, username, key_path, noisy) as s:
+        s.exec_command(command)
+    
+    ec, output = s.exit_code, s.output
+    return ec == 0, output
 
 
 def run_command_on_master(

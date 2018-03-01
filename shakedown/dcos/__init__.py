@@ -1,9 +1,93 @@
 import os
-import dcos
-import dcos.cluster
 import sys
 
+import select
+
+import dcos
+import dcos.cluster
 import shakedown
+from .helpers import validate_key, try_close, get_transport, start_transport
+from shakedown.cli.helpers import fchr
+
+
+class TransportManager(object):
+    
+    def __init__(self):
+        self.connections = {}
+    
+    @staticmethod
+    def key_name(host, username):
+        return "{h}-{u}".format(h=host, u=username)
+
+    def _open_transport(self, host, username, key_path, noisy):
+        """ Open a new SSH transport/connection to host. This operation
+        is heavy, as it includes authenticating.
+
+        :param host: host or IP of the machine
+        :type host: str
+        :param username: SSH username
+        :type username: str
+        :param key_path: path to the SSH private key for SSH auth
+        :type key_path: str
+        :param noisy: verbose output
+        :type noisy: bool
+        :return: new, connected transport or None
+        """
+        t = None
+
+        if not username:
+            username = shakedown.cli.ssh_user
+
+        if not key_path:
+            key_path = shakedown.cli.ssh_key_file
+            
+        key = validate_key(key_path)
+        transport = get_transport(host, username, key)
+    
+        if transport:
+            transport = start_transport(transport, username, key)
+        else:
+            print("error: unable to connect to {}".format(host))
+            return None
+    
+        if transport.is_authenticated():
+            if noisy:
+                print("\n{}{} $ {}\n".format(fchr('>>'), host))
+        
+            self.connections[self.key_name(host, username)] = transport
+            t = transport
+        else:
+            print("error: unable to authenticate {}@{} with key {}".format(username, host, key_path))
+        
+        return t
+
+    def get_connection(self, host, username, key_path, noisy=True):
+        """ Return an SSH transport that is authenticated and ready for
+        use.
+
+        :param host: host or IP of the machine
+        :type host: str
+        :param username: SSH username
+        :type username: str
+        :param key_path: path to the SSH private key for SSH auth
+        :type key_path: str
+        :param noisy: verbose output
+        :type noisy: bool
+        :return: Open
+        """
+        needle = self.key_name(host, username)
+        if needle not in self.connections:
+            t = self._open_transport(host, username, key_path, noisy)
+        else:
+            t = self.connections[needle]
+        
+        return t
+    
+    def get_session(self, host, username, key_path, noisy=True):
+        transport = self.get_connection(host, username, key_path, noisy)
+        if transport:
+            return transport.open_session()
+        return None
 
 
 def attach_cluster(url):
@@ -162,3 +246,38 @@ def _gen_url(url_path):
     """
     from six.moves import urllib
     return urllib.parse.urljoin(dcos_url(), url_path)
+
+
+# Initialize some things.
+transportManager = TransportManager()
+
+
+class HostSession:
+    def __init__(self, host, username, key_path, verbose):
+        self.host = host
+        self.username = username
+        self.key_path = key_path
+        self.verbose = verbose
+        self.exit_code = -1
+        self.output = ''
+        self.session = None
+    
+    def __enter__(self):
+        self.session = transportManager.get_session(
+                self.host,
+                self.username,
+                self.key_path,
+                self.verbose)
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.exit_code = self.session.recv_exit_status()
+        while self.session.recv_ready():
+            rl, wl, xl = select.select([self.session], [], [], 0.0)
+            if len(rl) > 0:
+                recv = str(self.session.recv(1024), "utf-8")
+                if self.verbose:
+                    print(recv, end='', flush=True)
+                self.output += recv
+        try_close(self.session)
+        return None

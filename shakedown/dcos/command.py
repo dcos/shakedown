@@ -32,6 +32,8 @@ def run_command(
     """
     
     with HostSession(host, username, key_path, noisy) as s:
+        if noisy:
+            print("\n{}{} $ {}\n".format(shakedown.fchr('>>'), host, command))
         s.exec_command(command)
     
     ec, output = s.exit_code, s.output
@@ -104,7 +106,7 @@ def run_dcos_command(command, raise_on_error=False, print_output=True):
     call = shlex.split(command)
     call.insert(0, 'dcos')
 
-    print("\n{}{}\n".format(shakedown.cli.helpers.fchr('>>'), ' '.join(call)))
+    print("\n{}{}\n".format(shakedown.fchr('>>'), ' '.join(call)))
 
     proc = subprocess.Popen(call, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, error = proc.communicate()

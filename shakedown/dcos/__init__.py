@@ -7,7 +7,6 @@ import dcos
 import dcos.cluster
 import shakedown
 from .helpers import validate_key, try_close, get_transport, start_transport
-from shakedown.cli.helpers import fchr
 
 
 class TransportManager(object):
@@ -19,7 +18,7 @@ class TransportManager(object):
     def key_name(host, username):
         return "{h}-{u}".format(h=host, u=username)
 
-    def _open_transport(self, host, username, key_path, noisy):
+    def _open_transport(self, host, username, key_path):
         """ Open a new SSH transport/connection to host. This operation
         is heavy, as it includes authenticating.
 
@@ -33,8 +32,6 @@ class TransportManager(object):
         :type noisy: bool
         :return: new, connected transport or None
         """
-        t = None
-
         if not username:
             username = shakedown.cli.ssh_user
 
@@ -51,17 +48,16 @@ class TransportManager(object):
             return None
     
         if transport.is_authenticated():
-            if noisy:
-                print("\n{}{} $ {}\n".format(fchr('>>'), host))
-        
+            # connection is auth'd successfully, add to connection
+            # list.
             self.connections[self.key_name(host, username)] = transport
-            t = transport
+            return transport
         else:
             print("error: unable to authenticate {}@{} with key {}".format(username, host, key_path))
         
-        return t
+        return None
 
-    def get_connection(self, host, username, key_path, noisy=True):
+    def _get_transport(self, host, username, key_path):
         """ Return an SSH transport that is authenticated and ready for
         use.
 
@@ -76,16 +72,18 @@ class TransportManager(object):
         :return: Open
         """
         needle = self.key_name(host, username)
-        if needle not in self.connections:
-            t = self._open_transport(host, username, key_path, noisy)
-        else:
-            t = self.connections[needle]
+        # check for needle in connection (haystack)
+        if needle in self.connections:
+            return self.connections[needle]
         
-        return t
+        # try to create a new connection
+        return self._open_transport(host, username, key_path)
     
-    def get_session(self, host, username, key_path, noisy=True):
-        transport = self.get_connection(host, username, key_path, noisy)
+    def get_session(self, host, username, key_path):
+        transport = self._get_transport(host, username, key_path)
         if transport:
+            # open a new session/channel on an existing,
+            # authenticated connection
             return transport.open_session()
         return None
 
@@ -266,8 +264,7 @@ class HostSession:
         self.session = transportManager.get_session(
                 self.host,
                 self.username,
-                self.key_path,
-                self.verbose)
+                self.key_path)
         return self
     
     def __exit__(self, exc_type, exc_val, exc_tb):

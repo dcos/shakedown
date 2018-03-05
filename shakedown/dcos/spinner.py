@@ -1,6 +1,5 @@
 from dcos import util
 import time as time_module
-import traceback
 
 import shakedown
 

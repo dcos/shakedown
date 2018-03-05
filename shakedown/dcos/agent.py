@@ -3,7 +3,7 @@
 from shakedown import *
 import os
 import pytest
-from dcos import (marathon, mesos)
+from dcos import mesos
 
 from shakedown.dcos import network
 

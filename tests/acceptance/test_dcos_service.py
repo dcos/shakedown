@@ -1,5 +1,3 @@
-import time
-
 from shakedown import *
 
 

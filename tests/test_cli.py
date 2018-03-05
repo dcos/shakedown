@@ -1,8 +1,6 @@
 from click.testing import CliRunner
 
 from shakedown import *
-from dcos import config
-
 
 def test_cli_require_dcos_uri():
     runner = CliRunner()

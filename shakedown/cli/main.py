@@ -1,5 +1,4 @@
 import click
-import json
 import importlib
 import os
 import sys

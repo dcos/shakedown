@@ -1,12 +1,9 @@
-from dcos import mesos
-
 from shakedown.dcos.helpers import *
 from shakedown.dcos.service import *
 from shakedown.dcos.spinner import *
 from shakedown.dcos import *
+from dcos import mesos
 
-import shakedown
-import time
 
 
 def get_tasks(task_id='', completed=True):

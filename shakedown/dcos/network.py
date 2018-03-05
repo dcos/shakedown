@@ -3,6 +3,7 @@
     which are provided here.
 """
 from shakedown import *
+import contextlib
 
 
 def restore_iptables(host):

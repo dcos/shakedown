@@ -2,6 +2,7 @@ import os
 import sys
 
 import select
+import threading
 
 import dcos
 import dcos.cluster
@@ -71,7 +72,7 @@ class TransportManager(object):
         :type key_path: str
         :param noisy: verbose output
         :type noisy: bool
-        :return: Open
+        :return: authenticated SSH connection or None
         """
         username = self._check_username(username)
         needle = self.key_name(host, username)
@@ -254,6 +255,9 @@ transportManager = TransportManager()
 
 
 class HostSession:
+    """Context manager that returns an SSH session to run commands.
+    
+    """
     def __init__(self, host, username, key_path, verbose):
         self.host = host
         self.username = username
@@ -264,6 +268,11 @@ class HostSession:
         self.session = None
     
     def __enter__(self):
+        """Called when using a `with` closure.
+
+        :return: this session manager
+        :rtype: HostSession
+        """
         self.session = transportManager.get_session(
                 self.host,
                 self.username,
@@ -271,7 +280,17 @@ class HostSession:
         return self
     
     def __exit__(self, exc_type, exc_val, exc_tb):
+        """Executed when the context manager is complete (exits
+        the with closure).
+
+        :param exc_type:
+        :param exc_val:
+        :param exc_tb:
+        :return: None
+        """
         self.exit_code = self.session.recv_exit_status()
+        self._wait_for_recv()
+        # read data that is ready
         while self.session.recv_ready():
             rl, wl, xl = select.select([self.session], [], [], 0.0)
             if len(rl) > 0:
@@ -282,7 +301,32 @@ class HostSession:
         try_close(self.session)
         return None
     
+    def _wait_for_recv(self):
+        """After executing a command, wait for results.
+        
+        Because `recv_ready()` can return False, but still have a
+        valid, open connection, it is not enough to ensure output
+        from a command execution is properly captured.
+
+        :return: None
+        """
+        event = threading.Event()
+        while True:
+            event.wait(0.1)
+            if self.session.recv_ready():
+                return
+            if self.session.closed:
+                return
+
     def run(self, command):
+        """Run `command` on this SSH session. This does not return the
+        result, use `get_result` to retrieve command's results.
+
+        :param command: SSH command to run
+        :type command: str
+        
+        :return: None
+        """
         self.session.exec_command(command)
     
     def get_result(self):

@@ -17,6 +17,10 @@ class TransportManager(object):
     @staticmethod
     def key_name(host, username):
         return "{h}-{u}".format(h=host, u=username)
+    
+    @staticmethod
+    def _check_username(username):
+        return shakedown.cli.ssh_user if not username else username
 
     def _open_transport(self, host, username, key_path):
         """ Open a new SSH transport/connection to host. This operation
@@ -32,8 +36,7 @@ class TransportManager(object):
         :type noisy: bool
         :return: new, connected transport or None
         """
-        if not username:
-            username = shakedown.cli.ssh_user
+        username = self._check_username(username)
 
         if not key_path:
             key_path = shakedown.cli.ssh_key_file
@@ -48,8 +51,7 @@ class TransportManager(object):
             return None
     
         if transport.is_authenticated():
-            # connection is auth'd successfully, add to connection
-            # list.
+            # connection is auth'd, add to connection list.
             self.connections[self.key_name(host, username)] = transport
             return transport
         else:
@@ -71,6 +73,7 @@ class TransportManager(object):
         :type noisy: bool
         :return: Open
         """
+        username = self._check_username(username)
         needle = self.key_name(host, username)
         # check for needle in connection (haystack)
         if needle in self.connections:

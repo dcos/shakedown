@@ -281,3 +281,9 @@ class HostSession:
                 self.output += recv
         try_close(self.session)
         return None
+    
+    def run(self, command):
+        self.session.exec_command(command)
+    
+    def get_result(self):
+        return self.exit_code, self.output

@@ -34,9 +34,9 @@ def run_command(
     with HostSession(host, username, key_path, noisy) as s:
         if noisy:
             print("\n{}{} $ {}\n".format(shakedown.fchr('>>'), host, command))
-        s.exec_command(command)
+        s.run(command)
     
-    ec, output = s.exit_code, s.output
+    ec, output = s.get_result()
     return ec == 0, output
 
 

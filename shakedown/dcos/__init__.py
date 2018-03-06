@@ -14,6 +14,7 @@ class TransportManager(object):
     
     def __init__(self):
         self.connections = {}
+        self.mutex = threading.RLock()
     
     @staticmethod
     def key_name(host, username):
@@ -24,7 +25,7 @@ class TransportManager(object):
         return shakedown.cli.ssh_user if not username else username
 
     def _open_transport(self, host, username, key_path):
-        """ Open a new SSH transport/connection to host. This operation
+        """Open a new SSH transport/connection to host. This operation
         is heavy, as it includes authenticating.
 
         :param host: host or IP of the machine
@@ -38,10 +39,9 @@ class TransportManager(object):
         :return: new, connected transport or None
         """
         username = self._check_username(username)
-
         if not key_path:
             key_path = shakedown.cli.ssh_key_file
-            
+        
         key = validate_key(key_path)
         transport = get_transport(host, username, key)
     
@@ -50,18 +50,29 @@ class TransportManager(object):
         else:
             print("error: unable to connect to {}".format(host))
             return None
-    
+        
         if transport.is_authenticated():
-            # connection is auth'd, add to connection list.
-            self.connections[self.key_name(host, username)] = transport
-            return transport
+            needle = self.key_name(host, username)
+            with self.mutex:
+                # make extra sure nothing else added this needle.
+                # if it did, use the existing one and close this one.
+                close_this_one = needle in self.connections
+                if not close_this_one:
+                    self.connections[needle] = transport
+                returnable = self.connections[needle]
+            
+            if close_this_one:
+                try_close(transport)
+            
+            # scope is weird
+            return returnable
         else:
             print("error: unable to authenticate {}@{} with key {}".format(username, host, key_path))
         
         return None
 
     def _get_transport(self, host, username, key_path):
-        """ Return an SSH transport that is authenticated and ready for
+        """Return an SSH transport that is authenticated and ready for
         use.
 
         :param host: host or IP of the machine
@@ -77,8 +88,9 @@ class TransportManager(object):
         username = self._check_username(username)
         needle = self.key_name(host, username)
         # check for needle in connection (haystack)
-        if needle in self.connections:
-            return self.connections[needle]
+        with self.mutex:
+            if needle in self.connections:
+                return self.connections[needle]
         
         # try to create a new connection
         return self._open_transport(host, username, key_path)

@@ -64,7 +64,6 @@ class TransportManager(object):
             if close_this_one:
                 try_close(transport)
             
-            # scope is weird
             return returnable
         else:
             print("error: unable to authenticate {}@{} with key {}".format(username, host, key_path))
@@ -262,7 +261,7 @@ def _gen_url(url_path):
     return urllib.parse.urljoin(dcos_url(), url_path)
 
 
-# Initialize some things.
+# Create a TransportManager to be used by HostSession later.
 transportManager = TransportManager()
 
 

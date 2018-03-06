@@ -24,7 +24,6 @@ def run_command(
         :type username: str
         :param key_path: path to the SSH private key to use for SSH authentication
         :type key_path: str
-    
         :return: True if successful, False otherwise
         :rtype: bool
         :return: Output of command

@@ -3,104 +3,12 @@ import sys
 
 import select
 import threading
+from functools import lru_cache
 
 import dcos
 import dcos.cluster
 import shakedown
 from .helpers import validate_key, try_close, get_transport, start_transport
-
-
-class TransportManager(object):
-    
-    def __init__(self):
-        self.connections = {}
-        self.mutex = threading.RLock()
-    
-    @staticmethod
-    def key_name(host, username):
-        return "{h}-{u}".format(h=host, u=username)
-    
-    @staticmethod
-    def _check_username(username):
-        return shakedown.cli.ssh_user if not username else username
-
-    def _open_transport(self, host, username, key_path):
-        """Open a new SSH transport/connection to host. This operation
-        is heavy, as it includes authenticating.
-
-        :param host: host or IP of the machine
-        :type host: str
-        :param username: SSH username
-        :type username: str
-        :param key_path: path to the SSH private key for SSH auth
-        :type key_path: str
-        :param noisy: verbose output
-        :type noisy: bool
-        :return: new, connected transport or None
-        """
-        username = self._check_username(username)
-        if not key_path:
-            key_path = shakedown.cli.ssh_key_file
-        
-        key = validate_key(key_path)
-        transport = get_transport(host, username, key)
-    
-        if transport:
-            transport = start_transport(transport, username, key)
-        else:
-            print("error: unable to connect to {}".format(host))
-            return None
-        
-        if transport.is_authenticated():
-            needle = self.key_name(host, username)
-            with self.mutex:
-                # make extra sure nothing else added this needle.
-                # if it did, use the existing one and close this one.
-                close_this_one = needle in self.connections
-                if not close_this_one:
-                    self.connections[needle] = transport
-                returnable = self.connections[needle]
-            
-            if close_this_one:
-                try_close(transport)
-            
-            return returnable
-        else:
-            print("error: unable to authenticate {}@{} with key {}".format(username, host, key_path))
-        
-        return None
-
-    def _get_transport(self, host, username, key_path):
-        """Return an SSH transport that is authenticated and ready for
-        use.
-
-        :param host: host or IP of the machine
-        :type host: str
-        :param username: SSH username
-        :type username: str
-        :param key_path: path to the SSH private key for SSH auth
-        :type key_path: str
-        :param noisy: verbose output
-        :type noisy: bool
-        :return: authenticated SSH connection or None
-        """
-        username = self._check_username(username)
-        needle = self.key_name(host, username)
-        # check for needle in connection (haystack)
-        with self.mutex:
-            if needle in self.connections:
-                return self.connections[needle]
-        
-        # try to create a new connection
-        return self._open_transport(host, username, key_path)
-    
-    def get_session(self, host, username, key_path):
-        transport = self._get_transport(host, username, key_path)
-        if transport:
-            # open a new session/channel on an existing,
-            # authenticated connection
-            return transport.open_session()
-        return None
 
 
 def attach_cluster(url):
@@ -261,8 +169,50 @@ def _gen_url(url_path):
     return urllib.parse.urljoin(dcos_url(), url_path)
 
 
-# Create a TransportManager to be used by HostSession later.
-transportManager = TransportManager()
+@lru_cache(maxsize=None)
+def _get_connection(host, username, key_path):
+    """Return an authenticated SSH connection.
+
+    :param host: host or IP of the machine
+    :type host: str
+    :param username: SSH username
+    :type username: str
+    :param key_path: path to the SSH private key for SSH auth
+    :type key_path: str
+    :return: SSH connection
+    """
+    if not username:
+        username = shakedown.cli.ssh_user
+    if not key_path:
+        key_path = shakedown.cli.ssh_key_file
+    key = validate_key(key_path)
+    transport = get_transport(host, username, key)
+    
+    if transport:
+        transport = start_transport(transport, username, key)
+        if transport.is_authenticated():
+            return transport
+        else:
+            print("error: unable to authenticate {}@{} with key {}".format(username, host, key_path))
+    else:
+        print("error: unable to connect to {}".format(host))
+    
+    return None
+
+
+def get_session(host, username, key_path):
+    """Return a new session on an authenticated SSH connection.
+
+    :param host: host or IP of the machine
+    :type host: str
+    :param username: SSH username
+    :type username: str
+    :param key_path: path to the SSH private key for SSH auth
+    :type key_path: str
+    :return: SSH connection
+    """
+    c = _get_connection(host, username, key_path)
+    return c.open_session()
 
 
 class HostSession:
@@ -284,7 +234,7 @@ class HostSession:
         :return: this session manager
         :rtype: HostSession
         """
-        self.session = transportManager.get_session(
+        self.session = get_session(
                 self.host,
                 self.username,
                 self.key_path)

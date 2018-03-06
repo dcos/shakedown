@@ -290,19 +290,18 @@ class HostSession:
                 self.key_path)
         return self
     
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, *args):
         """Executed when the context manager is complete (exits
         the with closure).
 
-        :param exc_type:
-        :param exc_val:
-        :param exc_tb:
         :return: None
         """
         self.exit_code = self.session.recv_exit_status()
         self._wait_for_recv()
         # read data that is ready
         while self.session.recv_ready():
+            # lists of file descriptors that are ready for IO
+            # read, write, "exceptional condition" (?)
             rl, wl, xl = select.select([self.session], [], [], 0.0)
             if len(rl) > 0:
                 recv = str(self.session.recv(1024), "utf-8")
@@ -324,9 +323,7 @@ class HostSession:
         event = threading.Event()
         while True:
             event.wait(0.1)
-            if self.session.recv_ready():
-                return
-            if self.session.closed:
+            if self.session.recv_ready() or self.session.closed:
                 return
 
     def run(self, command):

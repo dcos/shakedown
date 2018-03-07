@@ -42,21 +42,6 @@ def _get_connection(host, username, key_path):
     return None
 
 
-def get_session(host, username, key_path):
-    """Return a new session on an authenticated SSH connection.
-
-    :param host: host or IP of the machine
-    :type host: str
-    :param username: SSH username
-    :type username: str
-    :param key_path: path to the SSH private key for SSH auth
-    :type key_path: str
-    :return: SSH connection
-    """
-    c = _get_connection(host, username, key_path)
-    return c.open_session()
-
-
 def run_command(
         host,
         command,
@@ -175,7 +160,7 @@ def run_dcos_command(command, raise_on_error=False, print_output=True):
 
 
 class HostSession:
-    """Context manager that returns an SSH session to run commands.
+    """Context manager that returns an SSH session, reusing authenticated connections.
     
     """
     def __init__(self, host, username, key_path, verbose):
@@ -188,20 +173,18 @@ class HostSession:
         self.session = None
     
     def __enter__(self):
-        """Called when using a `with` closure.
-
+        """
         :return: this session manager
         :rtype: HostSession
         """
-        self.session = get_session(
-                self.host,
-                self.username,
-                self.key_path)
+        c = _get_connection(self.host, self.username, self.key_path)
+        if c:
+            self.session = c.open_session()
+        
         return self
     
     def __exit__(self, *args):
-        """Executed when the context manager is complete (exits
-        the with closure).
+        """Executed when the context manager is complete.
 
         :return: None
         """

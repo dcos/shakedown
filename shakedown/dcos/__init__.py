@@ -1,8 +1,8 @@
 import os
-import sys
-
 import dcos
 import dcos.cluster
+import sys
+
 import shakedown
 
 
@@ -162,4 +162,3 @@ def _gen_url(url_path):
     """
     from six.moves import urllib
     return urllib.parse.urljoin(dcos_url(), url_path)
-

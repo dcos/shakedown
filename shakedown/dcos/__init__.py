@@ -1,8 +1,8 @@
 import os
 import sys
+import time
 
 import select
-import threading
 from functools import lru_cache
 
 import dcos
@@ -270,9 +270,8 @@ class HostSession:
 
         :return: None
         """
-        event = threading.Event()
         while True:
-            event.wait(0.1)
+            time.sleep(0.2)
             if self.session.recv_ready() or self.session.closed:
                 return
 

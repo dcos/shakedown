@@ -1,14 +1,9 @@
 import os
 import sys
-import time
-
-import select
-from functools import lru_cache
 
 import dcos
 import dcos.cluster
 import shakedown
-from .helpers import validate_key, try_close, get_transport, start_transport
 
 
 def attach_cluster(url):
@@ -168,123 +163,3 @@ def _gen_url(url_path):
     from six.moves import urllib
     return urllib.parse.urljoin(dcos_url(), url_path)
 
-
-@lru_cache(maxsize=None)
-def _get_connection(host, username, key_path):
-    """Return an authenticated SSH connection.
-
-    :param host: host or IP of the machine
-    :type host: str
-    :param username: SSH username
-    :type username: str
-    :param key_path: path to the SSH private key for SSH auth
-    :type key_path: str
-    :return: SSH connection
-    """
-    if not username:
-        username = shakedown.cli.ssh_user
-    if not key_path:
-        key_path = shakedown.cli.ssh_key_file
-    key = validate_key(key_path)
-    transport = get_transport(host, username, key)
-    
-    if transport:
-        transport = start_transport(transport, username, key)
-        if transport.is_authenticated():
-            return transport
-        else:
-            print("error: unable to authenticate {}@{} with key {}".format(username, host, key_path))
-    else:
-        print("error: unable to connect to {}".format(host))
-    
-    return None
-
-
-def get_session(host, username, key_path):
-    """Return a new session on an authenticated SSH connection.
-
-    :param host: host or IP of the machine
-    :type host: str
-    :param username: SSH username
-    :type username: str
-    :param key_path: path to the SSH private key for SSH auth
-    :type key_path: str
-    :return: SSH connection
-    """
-    c = _get_connection(host, username, key_path)
-    return c.open_session()
-
-
-class HostSession:
-    """Context manager that returns an SSH session to run commands.
-    
-    """
-    def __init__(self, host, username, key_path, verbose):
-        self.host = host
-        self.username = username
-        self.key_path = key_path
-        self.verbose = verbose
-        self.exit_code = -1
-        self.output = ''
-        self.session = None
-    
-    def __enter__(self):
-        """Called when using a `with` closure.
-
-        :return: this session manager
-        :rtype: HostSession
-        """
-        self.session = get_session(
-                self.host,
-                self.username,
-                self.key_path)
-        return self
-    
-    def __exit__(self, *args):
-        """Executed when the context manager is complete (exits
-        the with closure).
-
-        :return: None
-        """
-        self.exit_code = self.session.recv_exit_status()
-        self._wait_for_recv()
-        # read data that is ready
-        while self.session.recv_ready():
-            # lists of file descriptors that are ready for IO
-            # read, write, "exceptional condition" (?)
-            rl, wl, xl = select.select([self.session], [], [], 0.0)
-            if len(rl) > 0:
-                recv = str(self.session.recv(1024), "utf-8")
-                if self.verbose:
-                    print(recv, end='', flush=True)
-                self.output += recv
-        try_close(self.session)
-        return None
-    
-    def _wait_for_recv(self):
-        """After executing a command, wait for results.
-        
-        Because `recv_ready()` can return False, but still have a
-        valid, open connection, it is not enough to ensure output
-        from a command execution is properly captured.
-
-        :return: None
-        """
-        while True:
-            time.sleep(0.2)
-            if self.session.recv_ready() or self.session.closed:
-                return
-
-    def run(self, command):
-        """Run `command` on this SSH session. This does not return the
-        result, use `get_result` to retrieve command's results.
-
-        :param command: SSH command to run
-        :type command: str
-        
-        :return: None
-        """
-        self.session.exec_command(command)
-    
-    def get_result(self):
-        return self.exit_code, self.output

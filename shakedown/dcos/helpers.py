@@ -29,7 +29,7 @@ def get_transport(host, username, key):
         transport_master = start_transport(transport_master, username, key)
 
         if not transport_master.is_authenticated():
-            print("error: unable to authenticate {}@{} with key {}".format(username, shakedown.master_ip(), key_path))
+            print("error: unable to authenticate {}@{} with key {}".format(username, shakedown.master_ip(), key))
             return False
 
         try:

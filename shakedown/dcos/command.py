@@ -201,7 +201,8 @@ class HostSession:
                     print(recv, end='', flush=True)
                 self.output += recv
         try_close(self.session)
-        return None
+        # no Exceptions were handled; return False
+        return False
     
     def _wait_for_recv(self):
         """After executing a command, wait for results.

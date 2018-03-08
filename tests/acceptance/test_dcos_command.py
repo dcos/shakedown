@@ -26,7 +26,7 @@ def test_run_command_on_agent():
     for host in service_ips:
         exit_status, output = run_command_on_agent(host, 'ps -eaf | grep -i docker | grep -i jenkins')
         assert exit_status
-        assert output.startswith('root')
+        assert len(output) > 0
 
 def test_run_dcos_command():
     stdout, stderr, return_code = run_dcos_command('package search jenkins --json')

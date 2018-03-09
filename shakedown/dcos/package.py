@@ -109,8 +109,8 @@ def install_package(
         pre_install_notes = pkg.package_json().get('preInstallNotes')
         if pre_install_notes:
             print(pre_install_notes)
-
-        package_manager.install_app(pkg, options, service_name)
+        
+        package_manager.install_app(pkg, options)
 
         # Print post-install notes to console log
         post_install_notes = pkg.package_json().get('postInstallNotes')

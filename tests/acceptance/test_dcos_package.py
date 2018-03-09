@@ -37,10 +37,12 @@ def task_cpu_predicate(service, task):
 
 @pytest.mark.usefixtures("chronos_cleanup")
 def test_install_package_with_json_options():
-    install_package_and_wait('chronos', None, 'big-chronos', None, {"chronos": {"cpus": 2}})
-    wait_for(lambda: task_cpu_predicate('marathon', 'big-chronos'))
-    assert get_service_task('marathon', 'big-chronos')['resources']['cpus'] == 2
-    uninstall_package_and_wait('chronos', 'big-chronos')
+    service_name = 'big-chronos'
+    opts = {"chronos": {"cpus": 2, "id": '/{}'.format(service_name)}}
+    install_package_and_wait('chronos', None, service_name, None, opts)
+    wait_for(lambda: task_cpu_predicate('marathon', service_name))
+    assert get_service_task('marathon', service_name)['resources']['cpus'] == 2
+    uninstall_package_and_wait('chronos', service_name)
 
 def test_install_package_with_subcommand():
     install_package_and_wait('hello-world')

@@ -1,3 +1,9 @@
+## 1.5.0 (2018-03-13)
+
+Fixes:
+
+  - improved SSH session-handling
+
 ## 1.4.12 (2017-12-20)
 
 Features:

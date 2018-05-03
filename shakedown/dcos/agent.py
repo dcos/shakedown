@@ -13,7 +13,7 @@ def get_public_agents_public_ip():
     public_ip_list = []
     agents = get_public_agents()
     for agent in agents:
-        status, public_ip = shakedown.run_command_on_agent(agent, "curl ifconfig.co")
+        status, public_ip = shakedown.run_command_on_agent(agent, "/opt/mesosphere/bin/detect_ip_public")
         public_ip_list.append(public_ip)
 
     return public_ip_list

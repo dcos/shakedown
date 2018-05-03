@@ -153,6 +153,7 @@
       * [get_agents()](#get_agents)
       * [get_private_agents()](#get_private_agents)
       * [get_public_agents()](#get_public_agents)
+      * [get_public_agents_public_ip()](#get_public_agents_public_ip)      
       * [partition_agent()](#partition_agent)
       * [reconnect_agent()](#reconnect_agent)
       * [restart_agent()](#restart_agent)
@@ -2495,7 +2496,6 @@ private_nodes = get_private_agents()
 print("Private IP addresses: " + private_nodes)
 ```
 
-
 ### get_public_agents()
 
 Retrieve a list of all public agent node IP addresses.
@@ -2510,6 +2510,22 @@ None
 # What do I look like in IP space?
 public_nodes = get_public_agents()
 print("Public IP addresses: " + public_nodes)
+```
+
+### get_public_agents_public_ip()
+
+Retrieve a list of public IPs for public agent nodes.
+
+##### *parameters*
+
+None
+
+##### *example usage*
+
+```python
+# What do I look like in IP space?
+public_ips = get_public_agents_public_ip()
+print("Public IP addresses: " + public_ips)
 ```
 
 ### partition_agent()

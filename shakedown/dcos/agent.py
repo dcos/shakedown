@@ -8,8 +8,19 @@ from dcos import (marathon, mesos)
 from shakedown.dcos import network
 
 
+def get_public_agents_public_ip():
+    """Provides a list public IPs for public agents in the cluster"""
+    public_ip_list = []
+    agents = get_public_agents()
+    for agent in agents:
+        status, public_ip = shakedown.run_command_on_agent(agent, "curl ifconfig.co")
+        public_ip_list.append(public_ip)
+
+    return public_ip_list
+
+
 def get_public_agents():
-    """Provides a list of hostnames / IPs that are public agents in the cluster"""
+    """Provides a list of hostnames / private IPs that are public agents in the cluster"""
     agent_list = []
     agents = __get_all_agents()
     for agent in agents:

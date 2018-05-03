@@ -7,7 +7,7 @@ def test_get_public_agents():
     public_agents = get_public_agents()
 
     assert isinstance(public_agents, list)
-    print(public_agents)
+
     try:
         assert socket.inet_aton(public_agents[0])
     except:

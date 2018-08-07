@@ -14,6 +14,13 @@ def test_get_public_agents():
         assert False
 
 
+def test_get_public_agents_public_ip():
+    public_ips = get_public_agents_public_ip()
+
+    assert isinstance(public_ips, list)
+    assert socket.inet_aton(public_ips[0])
+
+
 def test_get_private_agents():
     private_agents = get_private_agents()
 
